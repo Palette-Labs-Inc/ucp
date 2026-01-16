@@ -8,33 +8,17 @@ if [[ -z "$1" ]]; then
 fi
 
 SPEC_DIR="${1%/}"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-quicktype \
-  --lang typescript-zod \
-  --src-lang schema \
-  --src "$SPEC_DIR"/discovery/*.json \
-  --src "$SPEC_DIR"/schemas/shopping/*.json \
-  --src "$SPEC_DIR"/schemas/shopping/types/*.json \
-  --src "$SPEC_DIR"/schemas/commerce/*.json \
-  --src "$SPEC_DIR"/schemas/commerce/types/*.json \
-  --src "$SPEC_DIR/schemas/shopping/ap2_mandate.json#/\$defs/complete_request_with_ap2" \
-  --src "$SPEC_DIR/schemas/shopping/ap2_mandate.json#/\$defs/checkout_response_with_ap2" \
-  --src "$SPEC_DIR/schemas/shopping/buyer_consent.create_req.json#/\$defs/checkout" \
-  --src "$SPEC_DIR/schemas/shopping/buyer_consent.update_req.json#/\$defs/checkout" \
-  --src "$SPEC_DIR/schemas/shopping/buyer_consent_resp.json#/\$defs/checkout" \
-  --src "$SPEC_DIR/schemas/shopping/discount.create_req.json#/\$defs/checkout" \
-  --src "$SPEC_DIR/schemas/shopping/discount.update_req.json#/\$defs/checkout" \
-  --src "$SPEC_DIR/schemas/shopping/discount_resp.json#/\$defs/checkout" \
-  --src "$SPEC_DIR/schemas/shopping/fulfillment.create_req.json#/\$defs/checkout" \
-  --src "$SPEC_DIR/schemas/shopping/fulfillment.update_req.json#/\$defs/checkout" \
-  --src "$SPEC_DIR/schemas/shopping/fulfillment_resp.json#/\$defs/checkout" \
-  --src "$SPEC_DIR/schemas/commerce/menu.json#/\$defs/list_response" \
-  --src "$SPEC_DIR/schemas/commerce/menu.json#/\$defs/search_request" \
-  --src "$SPEC_DIR/schemas/commerce/menu.json#/\$defs/search_response" \
-  --src "$SPEC_DIR/schemas/commerce/merchant.json#/\$defs/search_request" \
-  --src "$SPEC_DIR/schemas/commerce/merchant.json#/\$defs/search_response" \
-  --src "$SPEC_DIR/schemas/commerce/merchant.json#/\$defs/get_merchant_response" \
-  --src "$SPEC_DIR/schemas/commerce/checkout.create_req.json#/\$defs/checkout" \
-  --src "$SPEC_DIR/schemas/commerce/checkout.update_req.json#/\$defs/checkout" \
-  --src "$SPEC_DIR/schemas/commerce/checkout_resp.json#/\$defs/checkout" \
-  -o src/spec_generated.ts
+QUICKTYPE_SOURCES=()
+while IFS= read -r line; do
+  QUICKTYPE_SOURCES+=("$line")
+done < <(node "${SCRIPT_DIR}/scripts/build_quicktype_sources.js" "${SPEC_DIR}")
+
+QUICKTYPE_ARGS=(--lang typescript-zod --src-lang schema)
+for src in "${QUICKTYPE_SOURCES[@]}"; do
+  QUICKTYPE_ARGS+=(--src "${src}")
+done
+QUICKTYPE_ARGS+=(-o src/spec_generated.ts)
+
+quicktype "${QUICKTYPE_ARGS[@]}"

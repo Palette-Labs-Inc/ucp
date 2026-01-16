@@ -123,12 +123,8 @@ cd packages/js-sdk
 
 Inputs:
 
-- Explicit globbed schemas under `spec/spec/`:
-  - `discovery/*.json`
-  - `schemas/shopping/**`
-  - `schemas/commerce/**`
-- Explicit `$defs` fragments used by the SDK (e.g. checkout request/response
-  shapes within certain schemas).
+- All JSON schemas under `spec/spec/schemas/**` and `spec/spec/discovery/**`.
+- All `$defs` discovered in those schema files (auto-enumerated).
 
 Output:
 
