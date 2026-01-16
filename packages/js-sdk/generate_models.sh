@@ -15,6 +15,8 @@ quicktype \
   --src "$SPEC_DIR"/discovery/*.json \
   --src "$SPEC_DIR"/schemas/shopping/*.json \
   --src "$SPEC_DIR"/schemas/shopping/types/*.json \
+  --src "$SPEC_DIR"/schemas/commerce/*.json \
+  --src "$SPEC_DIR"/schemas/commerce/types/*.json \
   --src "$SPEC_DIR/schemas/shopping/ap2_mandate.json#/\$defs/complete_request_with_ap2" \
   --src "$SPEC_DIR/schemas/shopping/ap2_mandate.json#/\$defs/checkout_response_with_ap2" \
   --src "$SPEC_DIR/schemas/shopping/buyer_consent.create_req.json#/\$defs/checkout" \
@@ -26,4 +28,13 @@ quicktype \
   --src "$SPEC_DIR/schemas/shopping/fulfillment.create_req.json#/\$defs/checkout" \
   --src "$SPEC_DIR/schemas/shopping/fulfillment.update_req.json#/\$defs/checkout" \
   --src "$SPEC_DIR/schemas/shopping/fulfillment_resp.json#/\$defs/checkout" \
+  --src "$SPEC_DIR/schemas/commerce/menu.json#/\$defs/list_response" \
+  --src "$SPEC_DIR/schemas/commerce/menu.json#/\$defs/search_request" \
+  --src "$SPEC_DIR/schemas/commerce/menu.json#/\$defs/search_response" \
+  --src "$SPEC_DIR/schemas/commerce/merchant.json#/\$defs/search_request" \
+  --src "$SPEC_DIR/schemas/commerce/merchant.json#/\$defs/search_response" \
+  --src "$SPEC_DIR/schemas/commerce/merchant.json#/\$defs/get_merchant_response" \
+  --src "$SPEC_DIR/schemas/commerce/checkout.create_req.json#/\$defs/checkout" \
+  --src "$SPEC_DIR/schemas/commerce/checkout.update_req.json#/\$defs/checkout" \
+  --src "$SPEC_DIR/schemas/commerce/checkout_resp.json#/\$defs/checkout" \
   -o src/spec_generated.ts
