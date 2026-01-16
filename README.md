@@ -105,6 +105,25 @@ The initial release focuses on the essential primitives for transacting:
     to start building your own integrations.
 *   📝 **Check conformance** with our [conformance tests](https://github.com/Universal-Commerce-Protocol/conformance).
 
+## Keeping This Repo in Sync
+
+keeping up to date with upstream changes:
+
+1. Add the upstream remote (one-time setup):
+   `git remote add upstream https://github.com/Universal-Commerce-Protocol/ucp.git`
+2. Fetch the latest upstream changes:
+   `git fetch upstream`
+3. Create a rebase branch:
+   `git checkout main && git checkout -b rebase/your-branch-name`
+4. Rebase your local main on upstream:
+   `git checkout main && git rebase upstream/main`
+5. Push updates to your fork:
+   `git push origin main`
+
+If you keep long-lived branches, rebase them after syncing main:
+
+`git checkout your-branch && git rebase main`
+
 ## Contributing
 
 We welcome community contributions to enhance and evolve UCP.
