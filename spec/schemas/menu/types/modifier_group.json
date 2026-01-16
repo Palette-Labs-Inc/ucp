@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localprotocol.xyz/schemas/menu/types/modifier_group.json",
+  "title": "Menu Modifier Group",
+  "description": "Group of modifier options with selection constraints.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "modifier_options"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Modifier group identifier."
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name for the modifier group."
+    },
+    "minimum_selections": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Minimum number of selections required from this group."
+    },
+    "maximum_selections": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Maximum number of selections allowed from this group."
+    },
+    "max_per_modifier": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 1,
+      "description": "Maximum quantity allowed per modifier option. Defaults to 1 (each modifier can be selected at most once). Set value > 1 to allow per-modifier quantities."
+    },
+    "modifier_options": {
+      "type": "array",
+      "items": {
+        "$ref": "modifier_option.json"
+      },
+      "minItems": 1,
+      "description": "Available modifier options within this group."
+    },
+    "type": {
+      "type": "string",
+      "description": "Modifier group type classification."
+    }
+  }
+}

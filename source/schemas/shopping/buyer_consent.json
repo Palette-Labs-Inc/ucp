@@ -45,7 +45,6 @@
         }
       ]
     },
-
     "checkout": {
       "title": "Checkout with Buyer Consent",
       "description": "Checkout extended with consent tracking via buyer object.",

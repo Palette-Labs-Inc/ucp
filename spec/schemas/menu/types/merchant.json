@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://ucp.dev/schemas/shopping/types/merchant.json",
+  "$id": "https://localprotocol.xyz/schemas/menu/types/merchant.json",
   "title": "Merchant",
   "description": "A merchant available for discovery and commerce.",
   "type": "object",
@@ -48,7 +48,7 @@
     "media": {
       "type": "array",
       "items": {
-        "$ref": "media.json"
+        "$ref": "../../shopping/types/media.json"
       },
       "description": "Merchant media (images, videos). First item is the featured media."
     },
@@ -62,12 +62,12 @@
     "locations": {
       "type": "array",
       "items": {
-        "$ref": "retail_location.json"
+        "$ref": "../../shopping/types/retail_location_resp.json"
       },
       "description": "Merchant retail locations (stores, pickup points, etc.)."
     },
     "fulfillment_config": {
-      "$ref": "merchant_fulfillment_config.json",
+      "$ref": "../../shopping/types/merchant_fulfillment_config.json",
       "description": "Merchant fulfillment capabilities and constraints."
     },
     "metadata": {

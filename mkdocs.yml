@@ -48,6 +48,10 @@ nav:
       - Overview: specification/merchant.md
       - HTTP/REST Binding: specification/merchant-rest.md
       - MCP Binding: specification/merchant-mcp.md
+    - Menu Capability:
+      - Overview: specification/menu.md
+      - HTTP/REST Binding: specification/menu-rest.md
+      - MCP Binding: specification/menu-mcp.md
     - Order Capability: specification/order.md
     - Identity Linking Capability: specification/identity-linking.md
     - Payment Handlers:

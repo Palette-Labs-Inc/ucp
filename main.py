@@ -43,7 +43,11 @@ def define_env(env):
 
   """
   # --- CONFIGURATION ---
-  openapi_dir = "spec/services/shopping/"
+  openapi_dirs = [
+    "spec/services/shopping/",
+    "spec/services/menu/",
+    "spec/services/restaurant/",
+  ]
   schemas_dirs = [
     "spec/handlers/google_pay/",
     "spec/schemas/",
@@ -755,6 +759,17 @@ def define_env(env):
       return f"**Error loading extension '{entity_name}':** {e}"
 
   # --- MACRO 3: For Transport Operations ---
+  def _load_openapi_file(file_name):
+    """Try loading an OpenAPI file from configured service directories."""
+    for openapi_dir in openapi_dirs:
+      full_path = Path(openapi_dir) / file_name
+      try:
+        with full_path.open(encoding="utf-8") as f:
+          return json.load(f)
+      except FileNotFoundError:
+        continue
+    raise FileNotFoundError(file_name)
+
   @env.macro
   def method_fields(operation_id, file_name, spec_file_name, io_type=None):
     """Extract Request/Response schemas for a specific OpenAPI operationId.
@@ -768,11 +783,8 @@ def define_env(env):
         both (if None).
 
     """
-    full_path = Path(openapi_dir) / file_name
-
     try:
-      with full_path.open(encoding="utf-8") as f:
-        data = json.load(f)
+      data = _load_openapi_file(file_name)
 
       # 1. Find the Operation Object by ID (search paths first, then webhooks)
       operation = None
@@ -952,11 +964,8 @@ def define_env(env):
       file_name: The name of the OpenAPI file to read.
 
     """
-    full_path = Path(openapi_dir) / file_name
-
     try:
-      with full_path.open(encoding="utf-8") as f:
-        data = json.load(f)
+      data = _load_openapi_file(file_name)
 
       # 1. Find the Operation Object by ID
       operation = None

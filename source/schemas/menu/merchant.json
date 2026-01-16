@@ -1,15 +1,15 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://ucp.dev/schemas/shopping/merchant.json",
-  "name": "dev.ucp.shopping.merchant",
+  "$id": "https://localprotocol.xyz/schemas/menu/merchant.json",
+  "name": "xyz.localprotocol.commerce.merchant",
   "version": "2026-01-11",
   "title": "Merchant",
-  "description": "Merchant search and retrieval capability.",
+  "description": "Merchant search and retrieval capability for menu discovery.",
   "type": "object",
   "$defs": {
     "context": {
       "allOf": [
-        { "$ref": "types/context.json" },
+        { "$ref": "../shopping/types/context.json" },
         {
           "type": "object",
           "properties": {
@@ -37,16 +37,13 @@
           "$ref": "types/merchant_search_filters.json"
         },
         "pagination": {
-          "$ref": "types/pagination.json#/$defs/request"
+          "$ref": "../shopping/types/pagination.json#/$defs/request"
         }
       }
     },
     "search_response": {
       "type": "object",
-      "required": [
-        "ucp",
-        "merchants"
-      ],
+      "required": ["ucp", "merchants"],
       "properties": {
         "ucp": {
           "$ref": "../ucp.json#/$defs/response"
@@ -59,12 +56,12 @@
           "description": "Merchants matching the search criteria."
         },
         "pagination": {
-          "$ref": "types/pagination.json#/$defs/response"
+          "$ref": "../shopping/types/pagination.json#/$defs/response"
         },
         "messages": {
           "type": "array",
           "items": {
-            "$ref": "types/message.json"
+            "$ref": "../shopping/types/message.json"
           },
           "description": "Errors, warnings, or informational messages about the search results."
         }
@@ -72,9 +69,7 @@
     },
     "get_merchant_response": {
       "type": "object",
-      "required": [
-        "ucp"
-      ],
+      "required": ["ucp"],
       "properties": {
         "ucp": {
           "$ref": "../ucp.json#/$defs/response"
@@ -86,7 +81,7 @@
         "messages": {
           "type": "array",
           "items": {
-            "$ref": "types/message.json"
+            "$ref": "../shopping/types/message.json"
           },
           "description": "Errors, warnings, or informational messages about the requested merchant."
         }

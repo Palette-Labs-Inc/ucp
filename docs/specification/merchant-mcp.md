@@ -31,21 +31,21 @@ Businesses advertise MCP transport availability through their UCP profile at
   "ucp": {
     "version": "2026-01-11",
     "services": {
-      "dev.ucp.shopping": {
+      "dev.ucp.restaurant": {
         "version": "2026-01-11",
         "spec": "https://ucp.dev/specification/overview",
         "mcp": {
-          "schema": "https://ucp.dev/services/shopping/mcp.openrpc.json",
+          "schema": "https://ucp.dev/services/restaurant/mcp.openrpc.json",
           "endpoint": "https://business.example.com/ucp/mcp"
         }
       }
     },
     "capabilities": [
       {
-        "name": "dev.ucp.shopping.merchant",
+        "name": "dev.ucp.menu.merchant",
         "version": "2026-01-11",
         "spec": "https://ucp.dev/specification/merchant",
-        "schema": "https://ucp.dev/schemas/shopping/merchant.json"
+        "schema": "https://ucp.dev/schemas/menu/merchant.json"
       }
     ]
   }
@@ -152,7 +152,7 @@ Maps to the [Search Merchants](merchant.md#search-merchants) operation.
           "version": "2026-01-11",
           "capabilities": [
             {
-              "name": "dev.ucp.shopping.merchant",
+              "name": "dev.ucp.menu.merchant",
               "version": "2026-01-11"
             }
           ]
@@ -216,7 +216,7 @@ Maps to the [Get Merchant](merchant.md#get-merchant) operation.
           "version": "2026-01-11",
           "capabilities": [
             {
-              "name": "dev.ucp.shopping.merchant",
+              "name": "dev.ucp.menu.merchant",
               "version": "2026-01-11"
             }
           ]
@@ -265,7 +265,7 @@ for message semantics and common scenarios.
       "version": "2026-01-11",
       "capabilities": [
         {
-          "name": "dev.ucp.shopping.merchant",
+          "name": "dev.ucp.menu.merchant",
           "version": "2026-01-11"
         }
       ]

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localprotocol.xyz/schemas/menu/types/category.json",
+  "title": "Menu Category",
+  "description": "A menu category grouping items for display.",
+  "type": "object",
+  "required": ["id", "name", "items"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Category identifier."
+    },
+    "name": {
+      "type": "string",
+      "description": "Category display name."
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional category description."
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "item.json"
+      },
+      "minItems": 1,
+      "description": "Items contained in this category."
+    }
+  }
+}

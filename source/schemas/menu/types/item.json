@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localprotocol.xyz/schemas/menu/types/item.json",
+  "title": "Menu Item",
+  "description": "A configurable menu item with modifier groups.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "description",
+    "price"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Menu item identifier."
+    },
+    "name": {
+      "type": "string",
+      "description": "Menu item name."
+    },
+    "description": {
+      "type": "object",
+      "description": "Menu item description in one or more formats. At least one format must be provided.",
+      "properties": {
+        "plain": {
+          "type": "string",
+          "description": "Plain text description."
+        },
+        "html": {
+          "type": "string",
+          "description": "HTML-formatted description."
+        },
+        "markdown": {
+          "type": "string",
+          "description": "Markdown-formatted description."
+        }
+      },
+      "minProperties": 1
+    },
+    "price": {
+      "$ref": "../../shopping/types/price.json",
+      "description": "Base price for the menu item."
+    },
+    "media": {
+      "type": "array",
+      "items": {
+        "$ref": "../../shopping/types/media.json"
+      },
+      "description": "Menu item media (images, videos, 3D models)."
+    },
+    "modifier_groups": {
+      "type": "array",
+      "items": {
+        "$ref": "modifier_group.json"
+      },
+      "description": "Modifier groups available for this item."
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Business-defined custom data extending the menu item model."
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localprotocol.xyz/schemas/menu/types/modifier_selection.json",
+  "title": "Menu Modifier Selection",
+  "description": "Selected modifiers for a modifier group, including nested selections.",
+  "type": "object",
+  "required": ["modifier_group_id", "selections"],
+  "properties": {
+    "modifier_group_id": {
+      "type": "string",
+      "description": "Modifier group identifier for this selection."
+    },
+    "selections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["item_id"],
+        "properties": {
+          "item_id": {
+            "type": "string",
+            "description": "Selected modifier item identifier."
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Selected quantity for this modifier option."
+          },
+          "child_selections": {
+            "type": "array",
+            "items": {
+              "$ref": "modifier_selection.json"
+            },
+            "description": "Nested modifier selections triggered by this option."
+          }
+        }
+      },
+      "description": "Selections made within the modifier group."
+    }
+  }
+}

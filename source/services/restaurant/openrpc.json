@@ -1,0 +1,167 @@
+{
+  "openrpc": "1.3.2",
+  "info": {
+    "title": "UCP Restaurant Service",
+    "version": "2026-01-11",
+    "description": "Canonical MCP/JSON-RPC interface for UCP Restaurant service. Schema references are logical pointers - actual payload shape is determined by negotiated capabilities.\n\n**Endpoint Resolution:** This spec defines methods only. The endpoint URL MUST be obtained from the merchant's discovery profile at `/.well-known/ucp` under `services[\"dev.ucp.restaurant\"].mcp.endpoint`. The server entry below is a placeholder for tooling compatibility."
+  },
+  "servers": [
+    {
+      "name": "merchant",
+      "url": "{endpoint}",
+      "description": "Merchant-provided endpoint from UCP discovery profile",
+      "variables": {
+        "endpoint": {
+          "default": "https://merchant.example.com/ucp/mcp",
+          "description": "Obtain from /.well-known/ucp → services[\"dev.ucp.restaurant\"].mcp.endpoint"
+        }
+      }
+    }
+  ],
+  "methods": [
+    {
+      "name": "search_merchants",
+      "summary": "Search merchants",
+      "params": [
+        {
+          "name": "request",
+          "required": true,
+          "schema": {
+            "$ref": "https://localprotocol.xyz/schemas/menu/merchant.json#/$defs/search_request"
+          }
+        }
+      ],
+      "result": {
+        "name": "response",
+        "schema": {
+          "$ref": "https://localprotocol.xyz/schemas/menu/merchant.json#/$defs/search_response"
+        }
+      }
+    },
+    {
+      "name": "get_merchant",
+      "summary": "Get merchant",
+      "params": [
+        {
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "result": {
+        "name": "response",
+        "schema": {
+          "$ref": "https://localprotocol.xyz/schemas/menu/merchant.json#/$defs/get_merchant_response"
+        }
+      }
+    },
+    {
+      "name": "get_merchant_menus",
+      "summary": "Get merchant menus",
+      "params": [
+        {
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "result": {
+        "name": "response",
+        "schema": {
+          "$ref": "https://localprotocol.xyz/schemas/menu/menu.json#/$defs/list_response"
+        }
+      }
+    },
+    {
+      "name": "search_menu",
+      "summary": "Search menu items",
+      "params": [
+        {
+          "name": "request",
+          "required": true,
+          "schema": {
+            "$ref": "https://localprotocol.xyz/schemas/menu/menu.json#/$defs/search_request"
+          }
+        }
+      ],
+      "result": {
+        "name": "response",
+        "schema": {
+          "$ref": "https://localprotocol.xyz/schemas/menu/menu.json#/$defs/search_response"
+        }
+      }
+    },
+    {
+      "name": "list_menu_items",
+      "summary": "List menu items",
+      "params": [],
+      "result": {
+        "name": "response",
+        "schema": {
+          "$ref": "https://localprotocol.xyz/schemas/menu/menu.json#/$defs/list_response"
+        }
+      }
+    },
+    {
+      "name": "get_menu_item",
+      "summary": "Get menu item",
+      "params": [
+        {
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "result": {
+        "name": "response",
+        "schema": {
+          "$ref": "https://localprotocol.xyz/schemas/menu/menu.json#/$defs/get_item_response"
+        }
+      }
+    },
+    {
+      "name": "get_item_modifier_groups",
+      "summary": "Get item modifier groups",
+      "params": [
+        {
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "result": {
+        "name": "response",
+        "schema": {
+          "$ref": "https://localprotocol.xyz/schemas/menu/menu.json#/$defs/get_item_modifier_groups_response"
+        }
+      }
+    },
+    {
+      "name": "get_modifier_item",
+      "summary": "Get modifier item",
+      "params": [
+        {
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "result": {
+        "name": "response",
+        "schema": {
+          "$ref": "https://localprotocol.xyz/schemas/menu/menu.json#/$defs/get_modifier_item_response"
+        }
+      }
+    }
+  ]
+}

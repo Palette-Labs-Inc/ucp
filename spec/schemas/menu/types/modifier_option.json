@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localprotocol.xyz/schemas/menu/types/modifier_option.json",
+  "title": "Menu Modifier Option",
+  "description": "Selectable option within a modifier group.",
+  "type": "object",
+  "required": [
+    "item_id"
+  ],
+  "properties": {
+    "item_id": {
+      "type": "string",
+      "description": "Modifier item identifier for this option."
+    },
+    "child_modifier_groups": {
+      "type": "array",
+      "items": {
+        "$ref": "modifier_group.json"
+      },
+      "description": "Nested modifier groups required after selecting this option."
+    }
+  }
+}

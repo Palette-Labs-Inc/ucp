@@ -16,7 +16,7 @@
 
 # Merchant Capability
 
-* **Capability Name:** `dev.ucp.shopping.merchant`
+* **Capability Name:** `dev.ucp.menu.merchant`
 * **Version:** `DRAFT`
 
 ## Overview
