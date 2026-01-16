@@ -1,0 +1,12 @@
+{
+  "name": "@ucp/specs",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "generate:ts": "node generate_ts_schema_types.js"
+  },
+  "dependencies": {
+    "json-schema-to-typescript": "^15.0.4",
+    "quicktype": "^23.2.6"
+  }
+}
