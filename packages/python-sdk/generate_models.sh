@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 # Generate Pydantic models from UCP JSON Schemas
 
 # Ensure we are in the script's directory
@@ -9,6 +10,9 @@ OUTPUT_DIR="src/ucp_sdk/models"
 
 # Schema directory (relative to this script)
 SCHEMA_DIR="../../spec/"
+if [ -d "../../spec/spec/schemas" ]; then
+    SCHEMA_DIR="../../spec/spec/"
+fi
 
 echo "Generating Pydantic models from $SCHEMA_DIR..."
 

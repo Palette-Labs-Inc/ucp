@@ -18,22 +18,21 @@
 
 from __future__ import annotations
 
-from .._internal import (
-  DiscoveryProfile,
-  ResponseCheckout,
-  ResponseOrder,
-  Response_1 as Response,
-  Services,
-  UcpMetadata,
-  Version,
-)
+from pydantic import BaseModel, ConfigDict, Field
+from . import option_value
 
-__all__ = [
-  "DiscoveryProfile",
-  "Response",
-  "ResponseCheckout",
-  "ResponseOrder",
-  "Services",
-  "UcpMetadata",
-  "Version",
-]
+
+class ProductOption(BaseModel):
+  """A product option such as size, color, or material."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  name: str
+  """
+    Option name (e.g., 'Size', 'Color').
+    """
+  values: list[option_value.OptionValue] = Field(..., min_length=1)
+  """
+    Available values for this option.
+    """

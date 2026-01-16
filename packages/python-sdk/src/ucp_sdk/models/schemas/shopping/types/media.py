@@ -18,22 +18,33 @@
 
 from __future__ import annotations
 
-from .._internal import (
-  DiscoveryProfile,
-  ResponseCheckout,
-  ResponseOrder,
-  Response_1 as Response,
-  Services,
-  UcpMetadata,
-  Version,
-)
+from typing import Literal
+from pydantic import AnyUrl, BaseModel, ConfigDict, Field
 
-__all__ = [
-  "DiscoveryProfile",
-  "Response",
-  "ResponseCheckout",
-  "ResponseOrder",
-  "Services",
-  "UcpMetadata",
-  "Version",
-]
+
+class Media(BaseModel):
+  """Product media item (image, video, etc.)."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  type: Literal["image", "video", "model_3d"]
+  """
+    Media type discriminator.
+    """
+  url: AnyUrl
+  """
+    URL to the media resource.
+    """
+  alt_text: str | None = None
+  """
+    Accessibility text describing the media.
+    """
+  width: int | None = Field(None, ge=1)
+  """
+    Width in pixels (for images/video).
+    """
+  height: int | None = Field(None, ge=1)
+  """
+    Height in pixels (for images/video).
+    """

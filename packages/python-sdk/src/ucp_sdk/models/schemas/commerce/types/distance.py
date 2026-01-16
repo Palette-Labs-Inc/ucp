@@ -18,22 +18,21 @@
 
 from __future__ import annotations
 
-from .._internal import (
-  DiscoveryProfile,
-  ResponseCheckout,
-  ResponseOrder,
-  Response_1 as Response,
-  Services,
-  UcpMetadata,
-  Version,
-)
+from pydantic import BaseModel, ConfigDict, Field
+from typing import Literal
 
-__all__ = [
-  "DiscoveryProfile",
-  "Response",
-  "ResponseCheckout",
-  "ResponseOrder",
-  "Services",
-  "UcpMetadata",
-  "Version",
-]
+
+class Distance(BaseModel):
+  """A distance value with a unit."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  value: float = Field(..., ge=0.0)
+  """
+    Distance value.
+    """
+  unit: Literal["km", "mi"]
+  """
+    Distance unit.
+    """

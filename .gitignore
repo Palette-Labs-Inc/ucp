@@ -111,6 +111,7 @@ celerybeat.pid
 .env
 .venv
 .venv*
+.ucp/
 env/
 venv/
 ENV/
@@ -158,6 +159,9 @@ tmp*
 **/node_modules
 npm-debug.log
 yarn-error.log
+
+# uv
+**/uv.lock.bak
 
 # IDEs and editors
 .idea/

@@ -16,17 +16,29 @@ async function generate() {
 
   const properties = {};
 
-  // Add shopping schemas
-  const shoppingDir = path.join(SOURCE_ROOT, 'schemas/shopping');
-  if (fs.existsSync(shoppingDir)) {
-    for (const file of fs.readdirSync(shoppingDir)) {
-      if (file.endsWith('.json')) {
-        properties[path.basename(file, '.json')] = {
-          $ref: path.join(shoppingDir, file)
-        };
+  function addSchemasFromDir(baseDir, prefix = '') {
+    if (!fs.existsSync(baseDir)) return;
+
+    for (const entry of fs.readdirSync(baseDir, { withFileTypes: true })) {
+      const entryPath = path.join(baseDir, entry.name);
+      if (entry.isDirectory()) {
+        const nextPrefix = prefix
+          ? `${prefix}_${entry.name}`
+          : entry.name;
+        addSchemasFromDir(entryPath, nextPrefix);
+        continue;
       }
+
+      if (!entry.isFile() || !entry.name.endsWith('.json')) continue;
+
+      const baseName = path.basename(entry.name, '.json');
+      const name = `${prefix ? `${prefix}_` : ''}${baseName}`.replace(/-/g, '_');
+      properties[name] = { $ref: entryPath };
     }
   }
+
+  // Add all schemas under spec/schemas (shopping, commerce, and future sections)
+  addSchemasFromDir(path.join(SOURCE_ROOT, 'schemas'));
 
   // Add handler schemas
   const handlersDir = path.join(SOURCE_ROOT, 'handlers');

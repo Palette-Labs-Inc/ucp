@@ -18,22 +18,20 @@
 
 from __future__ import annotations
 
-from .._internal import (
-  DiscoveryProfile,
-  ResponseCheckout,
-  ResponseOrder,
-  Response_1 as Response,
-  Services,
-  UcpMetadata,
-  Version,
-)
+from pydantic import BaseModel, ConfigDict
 
-__all__ = [
-  "DiscoveryProfile",
-  "Response",
-  "ResponseCheckout",
-  "ResponseOrder",
-  "Services",
-  "UcpMetadata",
-  "Version",
-]
+
+class SelectedOption(BaseModel):
+  """A specific option selection on a variant (e.g., Size: Large)."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  name: str
+  """
+    Option name (e.g., 'Size').
+    """
+  label: str
+  """
+    Selected option label (e.g., 'Large').
+    """

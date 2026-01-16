@@ -16,24 +16,3 @@
 # pylint: disable=all
 # pyformat: disable
 
-from __future__ import annotations
-
-from .._internal import (
-  DiscoveryProfile,
-  ResponseCheckout,
-  ResponseOrder,
-  Response_1 as Response,
-  Services,
-  UcpMetadata,
-  Version,
-)
-
-__all__ = [
-  "DiscoveryProfile",
-  "Response",
-  "ResponseCheckout",
-  "ResponseOrder",
-  "Services",
-  "UcpMetadata",
-  "Version",
-]

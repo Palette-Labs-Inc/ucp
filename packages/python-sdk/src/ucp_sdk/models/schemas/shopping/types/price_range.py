@@ -18,22 +18,21 @@
 
 from __future__ import annotations
 
-from .._internal import (
-  DiscoveryProfile,
-  ResponseCheckout,
-  ResponseOrder,
-  Response_1 as Response,
-  Services,
-  UcpMetadata,
-  Version,
-)
+from pydantic import BaseModel, ConfigDict
+from . import price
 
-__all__ = [
-  "DiscoveryProfile",
-  "Response",
-  "ResponseCheckout",
-  "ResponseOrder",
-  "Services",
-  "UcpMetadata",
-  "Version",
-]
+
+class PriceRange(BaseModel):
+  """A price range representing minimum and maximum values (e.g., across product variants)."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  min: price.Price
+  """
+    Minimum price in the range.
+    """
+  max: price.Price
+  """
+    Maximum price in the range.
+    """

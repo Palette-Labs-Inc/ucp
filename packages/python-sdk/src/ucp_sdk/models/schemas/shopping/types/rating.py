@@ -18,22 +18,24 @@
 
 from __future__ import annotations
 
-from .._internal import (
-  DiscoveryProfile,
-  ResponseCheckout,
-  ResponseOrder,
-  Response_1 as Response,
-  Services,
-  UcpMetadata,
-  Version,
-)
+from pydantic import BaseModel, ConfigDict, Field
 
-__all__ = [
-  "DiscoveryProfile",
-  "Response",
-  "ResponseCheckout",
-  "ResponseOrder",
-  "Services",
-  "UcpMetadata",
-  "Version",
-]
+
+class Rating(BaseModel):
+  """Product rating aggregate."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  value: float = Field(..., ge=0.0)
+  """
+    Average rating value.
+    """
+  scale_max: float = Field(..., ge=1.0)
+  """
+    Maximum value on the rating scale (e.g., 5 for 5-star).
+    """
+  count: int | None = Field(None, ge=0)
+  """
+    Number of reviews contributing to the rating.
+    """

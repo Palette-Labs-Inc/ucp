@@ -18,22 +18,20 @@
 
 from __future__ import annotations
 
-from .._internal import (
-  DiscoveryProfile,
-  ResponseCheckout,
-  ResponseOrder,
-  Response_1 as Response,
-  Services,
-  UcpMetadata,
-  Version,
-)
+from pydantic import BaseModel, ConfigDict, Field
 
-__all__ = [
-  "DiscoveryProfile",
-  "Response",
-  "ResponseCheckout",
-  "ResponseOrder",
-  "Services",
-  "UcpMetadata",
-  "Version",
-]
+
+class PriceFilter(BaseModel):
+  """Price range filter in minor currency units. Currency determined by context."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  min: int | None = Field(None, ge=0)
+  """
+    Minimum price in minor units.
+    """
+  max: int | None = Field(None, ge=0)
+  """
+    Maximum price in minor units.
+    """

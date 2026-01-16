@@ -113,8 +113,8 @@ class DiscoveryProfile(BaseModel):
     """
 
 
-class ResponseCheckout(BaseModel):
-  """UCP metadata for checkout responses."""
+class Response_1(BaseModel):
+  """Generic UCP envelope for all API responses."""
 
   model_config = ConfigDict(
     extra="allow",
@@ -126,16 +126,17 @@ class ResponseCheckout(BaseModel):
     """
 
 
-class ResponseOrder(BaseModel):
-  """UCP metadata for order responses. No payment handlers needed post-purchase."""
-
-  model_config = ConfigDict(
-    extra="allow",
-  )
-  version: Version
-  capabilities: list[Response]
+class ResponseCheckout(RootModel[Response_1]):
+  root: Response_1 = Field(..., title="UCP Checkout Response")
   """
-    Active capabilities for this response.
+    UCP metadata for checkout responses.
+    """
+
+
+class ResponseOrder(RootModel[Response_1]):
+  root: Response_1 = Field(..., title="UCP Order Response")
+  """
+    UCP metadata for order responses.
     """
 
 

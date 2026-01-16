@@ -18,22 +18,16 @@
 
 from __future__ import annotations
 
-from .._internal import (
-  DiscoveryProfile,
-  ResponseCheckout,
-  ResponseOrder,
-  Response_1 as Response,
-  Services,
-  UcpMetadata,
-  Version,
-)
+from pydantic import BaseModel, ConfigDict
 
-__all__ = [
-  "DiscoveryProfile",
-  "Response",
-  "ResponseCheckout",
-  "ResponseOrder",
-  "Services",
-  "UcpMetadata",
-  "Version",
-]
+
+class OptionValue(BaseModel):
+  """A selectable value for a product option."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  label: str
+  """
+    Display text for this option value (e.g., 'Small', 'Blue').
+    """

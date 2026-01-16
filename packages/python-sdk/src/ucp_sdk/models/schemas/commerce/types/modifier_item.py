@@ -18,22 +18,30 @@
 
 from __future__ import annotations
 
-from .._internal import (
-  DiscoveryProfile,
-  ResponseCheckout,
-  ResponseOrder,
-  Response_1 as Response,
-  Services,
-  UcpMetadata,
-  Version,
-)
+from typing import Any
+from pydantic import BaseModel, ConfigDict
+from ...shopping.types import price as price_1
 
-__all__ = [
-  "DiscoveryProfile",
-  "Response",
-  "ResponseCheckout",
-  "ResponseOrder",
-  "Services",
-  "UcpMetadata",
-  "Version",
-]
+
+class MenuModifierItem(BaseModel):
+  """A purchasable modifier item that can be selected within a modifier group."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  id: str
+  """
+    Modifier item identifier.
+    """
+  title: str
+  """
+    Modifier item title.
+    """
+  price: price_1.Price
+  """
+    Price for this modifier item.
+    """
+  metadata: dict[str, Any] | None = None
+  """
+    Business-defined custom data extending the modifier item model.
+    """

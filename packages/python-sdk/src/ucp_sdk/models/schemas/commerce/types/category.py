@@ -18,22 +18,29 @@
 
 from __future__ import annotations
 
-from .._internal import (
-  DiscoveryProfile,
-  ResponseCheckout,
-  ResponseOrder,
-  Response_1 as Response,
-  Services,
-  UcpMetadata,
-  Version,
-)
+from pydantic import BaseModel, ConfigDict, Field
+from . import item
 
-__all__ = [
-  "DiscoveryProfile",
-  "Response",
-  "ResponseCheckout",
-  "ResponseOrder",
-  "Services",
-  "UcpMetadata",
-  "Version",
-]
+
+class MenuCategory(BaseModel):
+  """A menu category grouping items for display."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  id: str
+  """
+    Category identifier.
+    """
+  name: str
+  """
+    Category display name.
+    """
+  description: str | None = None
+  """
+    Optional category description.
+    """
+  items: list[item.MenuItem] = Field(..., min_length=1)
+  """
+    Items contained in this category.
+    """

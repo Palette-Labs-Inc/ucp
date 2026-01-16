@@ -18,22 +18,20 @@
 
 from __future__ import annotations
 
-from .._internal import (
-  DiscoveryProfile,
-  ResponseCheckout,
-  ResponseOrder,
-  Response_1 as Response,
-  Services,
-  UcpMetadata,
-  Version,
-)
+from pydantic import BaseModel, ConfigDict, Field
 
-__all__ = [
-  "DiscoveryProfile",
-  "Response",
-  "ResponseCheckout",
-  "ResponseOrder",
-  "Services",
-  "UcpMetadata",
-  "Version",
-]
+
+class Price(BaseModel):
+  """Price with explicit currency. Amount is always in minor units (e.g., cents for USD)."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  amount: int = Field(..., ge=0)
+  """
+    Amount in minor currency units (e.g., 1000 = $10.00 USD). Use 0 for free items.
+    """
+  currency: str = Field(..., pattern="^[A-Z]{3}$")
+  """
+    ISO 4217 currency code (e.g., 'USD', 'EUR', 'GBP').
+    """

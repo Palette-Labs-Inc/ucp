@@ -18,22 +18,18 @@
 
 from __future__ import annotations
 
-from .._internal import (
-  DiscoveryProfile,
-  ResponseCheckout,
-  ResponseOrder,
-  Response_1 as Response,
-  Services,
-  UcpMetadata,
-  Version,
-)
+from pydantic import BaseModel, ConfigDict
+from . import price_filter
 
-__all__ = [
-  "DiscoveryProfile",
-  "Response",
-  "ResponseCheckout",
-  "ResponseOrder",
-  "Services",
-  "UcpMetadata",
-  "Version",
-]
+
+class SearchFilters(BaseModel):
+  """Filter criteria to narrow search results. All specified filters combine with AND logic."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  category: str | None = None
+  """
+    Filter by product category. Categories are merchant-defined strings representing product taxonomy. Valid values can be discovered from the category field in search results, merchant documentation, or standard taxonomies that businesses may align with.
+    """
+  price: price_filter.PriceFilter | None = None
