@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ucp.dev/schemas/shopping/types/distance.json",
+  "title": "Distance",
+  "description": "A distance value with a unit.",
+  "type": "object",
+  "required": [
+    "value",
+    "unit"
+  ],
+  "properties": {
+    "value": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Distance value."
+    },
+    "unit": {
+      "type": "string",
+      "enum": [
+        "km",
+        "mi"
+      ],
+      "description": "Distance unit."
+    }
+  }
+}

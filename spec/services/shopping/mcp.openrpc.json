@@ -148,6 +148,40 @@
         "name": "response",
         "schema": {"$ref": "https://ucp.dev/schemas/shopping/catalog.json#/$defs/get_item_response"}
       }
+    },
+    {
+      "name": "search_merchants",
+      "summary": "Search for merchants",
+      "params": [
+        {
+          "name": "request",
+          "required": true,
+          "schema": {"$ref": "https://ucp.dev/schemas/shopping/merchant.json#/$defs/search_request"}
+        }
+      ],
+      "result": {
+        "name": "response",
+        "schema": {"$ref": "https://ucp.dev/schemas/shopping/merchant.json#/$defs/search_response"}
+      }
+    },
+    {
+      "name": "get_merchant",
+      "summary": "Get a merchant by ID",
+      "params": [
+        {
+          "name": "id",
+          "required": true,
+          "schema": {"type": "string", "description": "Global ID (GID) of merchant."}
+        },
+        {
+          "name": "context",
+          "schema": {"$ref": "https://ucp.dev/schemas/shopping/types/context.json", "description": "Location and market context. Platforms MAY geo-detect from request; provided fields MUST override."}
+        }
+      ],
+      "result": {
+        "name": "response",
+        "schema": {"$ref": "https://ucp.dev/schemas/shopping/merchant.json#/$defs/get_merchant_response"}
+      }
     }
   ]
 }

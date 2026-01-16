@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ucp.dev/schemas/shopping/types/merchant_search_filters.json",
+  "title": "Merchant Search Filters",
+  "description": "Filter criteria to narrow merchant search results. All specified filters combine with AND logic.",
+  "type": "object",
+  "properties": {
+    "category": {
+      "type": "string",
+      "description": "Filter by merchant category. Categories are merchant-defined strings representing merchant taxonomy."
+    },
+    "open_now": {
+      "type": "boolean",
+      "description": "Whether the merchant is open at request time."
+    },
+    "fulfillment_method": {
+      "type": "string",
+      "enum": ["shipping", "pickup"],
+      "description": "Required fulfillment method type for the merchant."
+    },
+    "location": {
+      "type": "object",
+      "description": "Filter by location using address fields and an optional radius. Partial matches are implementation-defined.",
+      "properties": {
+        "address": {
+          "$ref": "postal_address.json",
+          "description": "Reference address for location-based search."
+        },
+        "radius": {
+          "$ref": "distance.json",
+          "description": "Optional distance radius from the reference address."
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

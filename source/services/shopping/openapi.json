@@ -408,6 +408,76 @@
           }
         }
       }
+    },
+    "/merchants/search": {
+      "post": {
+        "operationId": "search_merchants",
+        "summary": "Search Merchants",
+        "description": "Search for merchants by name, category, and context.",
+        "parameters": [
+          { "$ref": "#/components/parameters/authorization" },
+          { "$ref": "#/components/parameters/x_api_key" },
+          { "$ref": "#/components/parameters/request_signature" },
+          { "$ref": "#/components/parameters/request_id" },
+          { "$ref": "#/components/parameters/user_agent" },
+          { "$ref": "#/components/parameters/content_type" },
+          { "$ref": "#/components/parameters/accept" },
+          { "$ref": "#/components/parameters/accept_language" },
+          { "$ref": "#/components/parameters/accept_encoding" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/merchant_search_request" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Search results",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/merchant_search_response" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/merchants/{id}": {
+      "get": {
+        "operationId": "get_merchant",
+        "summary": "Get Merchant",
+        "description": "Get a merchant by ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Global ID (GID) of merchant."
+          },
+          { "$ref": "#/components/parameters/authorization" },
+          { "$ref": "#/components/parameters/x_api_key" },
+          { "$ref": "#/components/parameters/request_signature" },
+          { "$ref": "#/components/parameters/request_id" },
+          { "$ref": "#/components/parameters/user_agent" },
+          { "$ref": "#/components/parameters/accept" },
+          { "$ref": "#/components/parameters/accept_language" },
+          { "$ref": "#/components/parameters/accept_encoding" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Merchant details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/merchant_get_merchant_response" }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "webhooks": {
@@ -602,6 +672,15 @@
       },
       "catalog_get_item_response": {
         "$ref": "https://ucp.dev/schemas/shopping/catalog.json#/$defs/get_item_response"
+      },
+      "merchant_search_response": {
+        "$ref": "https://ucp.dev/schemas/shopping/merchant.json#/$defs/search_response"
+      },
+      "merchant_search_request": {
+        "$ref": "https://ucp.dev/schemas/shopping/merchant.json#/$defs/search_request"
+      },
+      "merchant_get_merchant_response": {
+        "$ref": "https://ucp.dev/schemas/shopping/merchant.json#/$defs/get_merchant_response"
       },
       "ucp": {
         "$ref": "https://ucp.dev/schemas/ucp.json"
