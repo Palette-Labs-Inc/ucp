@@ -26,13 +26,6 @@
       "type": "string",
       "description": "Product image URI.",
       "format": "uri"
-    },
-    "modifier_groups": {
-      "type": "array",
-      "items": {
-        "$ref": "modifier_group.json"
-      },
-      "description": "Modifier groups available for this item."
     }
   }
 }
