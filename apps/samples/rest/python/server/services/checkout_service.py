@@ -94,8 +94,8 @@ from ucp_sdk.models.schemas.shopping.types.fulfillment_resp import (
   FulfillmentResponse,
 )
 from ucp_sdk.models.schemas.shopping.types.item_resp import ItemResponse
-from ucp_sdk.models.schemas.shopping.types.line_item_resp import (
-  LineItemResponse,
+from ucp_sdk.models.schemas.commerce.checkout_resp import (
+  CommerceLineItem as CommerceLineItemResponse,
 )
 from ucp_sdk.models.schemas.shopping.types.order_confirmation import (
   OrderConfirmation,
@@ -143,6 +143,13 @@ class CheckoutService:
       json_str = json.dumps(data, sort_keys=True)
     return hashlib.sha256(json_str.encode("utf-8")).hexdigest()
 
+  def _has_modifier_selections(self, line_items: list[Any]) -> bool:
+    """Return True if any line item contains menu modifier selections."""
+    for item in line_items:
+      if getattr(item, "modifier_selections", None):
+        return True
+    return False
+
   async def create_checkout(
     self,
     checkout_req: UnifiedCheckoutCreateRequest,
@@ -170,10 +177,11 @@ class CheckoutService:
     checkout_id = getattr(checkout_req, "id", None) or str(uuid.uuid4())
 
     # Map line items
-    line_items = []
+    line_items: list[CommerceLineItemResponse] = []
     for li_req in checkout_req.line_items:
+      modifier_selections = getattr(li_req, "modifier_selections", None)
       line_items.append(
-        LineItemResponse(
+        CommerceLineItemResponse(
           id=str(uuid.uuid4()),
           item=ItemResponse(
             id=li_req.item.id,
@@ -182,6 +190,7 @@ class CheckoutService:
           ),
           quantity=li_req.quantity,
           totals=[],
+          modifier_selections=modifier_selections,
         )
       )
 
@@ -301,15 +310,24 @@ class CheckoutService:
         root=FulfillmentResponse(methods=resp_methods)
       )
 
+    checkout_capabilities = [
+      Response(
+        name="dev.ucp.shopping.checkout",
+        version=Version(config.get_server_version()),
+      )
+    ]
+    if self._has_modifier_selections(line_items):
+      checkout_capabilities.append(
+        Response(
+          name="xyz.localprotocol.commerce.checkout",
+          version=Version(config.get_server_version()),
+        )
+      )
+
     checkout = Checkout(
       ucp=ResponseCheckout(
         version=Version(config.get_server_version()),
-        capabilities=[
-          Response(
-            name="dev.ucp.shopping.checkout",
-            version=Version(config.get_server_version()),
-          )
-        ],
+        capabilities=checkout_capabilities,
       ),
       id=checkout_id,
       status=CheckoutStatus.IN_PROGRESS,
@@ -413,8 +431,9 @@ class CheckoutService:
     if checkout_req.line_items:
       line_items = []
       for li_req in checkout_req.line_items:
+        modifier_selections = getattr(li_req, "modifier_selections", None)
         line_items.append(
-          LineItemResponse(
+          CommerceLineItemResponse(
             id=li_req.id or str(uuid.uuid4()),
             item=ItemResponse(
               id=li_req.item.id,
@@ -424,6 +443,7 @@ class CheckoutService:
             quantity=li_req.quantity,
             totals=[],
             parent_id=li_req.parent_id,
+            modifier_selections=modifier_selections,
           )
         )
       existing.line_items = line_items
@@ -582,6 +602,21 @@ class CheckoutService:
 
     if platform_config:
       existing.platform = platform_config
+
+    if self._has_modifier_selections(existing.line_items):
+      existing.ucp = ResponseCheckout(
+        version=Version(config.get_server_version()),
+        capabilities=[
+          Response(
+            name="dev.ucp.shopping.checkout",
+            version=Version(config.get_server_version()),
+          ),
+          Response(
+            name="xyz.localprotocol.commerce.checkout",
+            version=Version(config.get_server_version()),
+          ),
+        ],
+      )
 
     # Validate inventory and recalculate totals (Server is authority)
     await self._recalculate_totals(existing)

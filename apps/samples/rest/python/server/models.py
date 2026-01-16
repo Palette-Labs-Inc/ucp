@@ -22,6 +22,15 @@ objects used by the sample server implementation.
 from ucp_sdk.models.schemas.shopping.ap2_mandate import (
   CheckoutResponseWithAp2 as Ap2Checkout,
 )
+from ucp_sdk.models.schemas.commerce.checkout_create_req import (
+  Checkout as CommerceCheckoutCreateRequest,
+)
+from ucp_sdk.models.schemas.commerce.checkout_resp import (
+  Checkout as CommerceCheckoutResponse,
+)
+from ucp_sdk.models.schemas.commerce.checkout_update_req import (
+  Checkout as CommerceCheckoutUpdateRequest,
+)
 from ucp_sdk.models.schemas.shopping.buyer_consent_create_req import (
   Checkout as BuyerConsentCheckoutCreate,
 )
@@ -58,6 +67,7 @@ class UnifiedOrder(Order):
 
 
 class UnifiedCheckout(
+  CommerceCheckoutResponse,
   BuyerConsentCheckoutResp,
   FulfillmentCheckout,
   DiscountCheckoutResp,
@@ -69,13 +79,19 @@ class UnifiedCheckout(
 
 
 class UnifiedCheckoutCreateRequest(
-  FulfillmentCreateRequest, DiscountCheckoutCreate, BuyerConsentCheckoutCreate
+  CommerceCheckoutCreateRequest,
+  FulfillmentCreateRequest,
+  DiscountCheckoutCreate,
+  BuyerConsentCheckoutCreate,
 ):
   """Create request model combining base fields and extensions."""
 
 
 class UnifiedCheckoutUpdateRequest(
-  FulfillmentUpdateRequest, DiscountCheckoutUpdate, BuyerConsentCheckoutUpdate
+  CommerceCheckoutUpdateRequest,
+  FulfillmentUpdateRequest,
+  DiscountCheckoutUpdate,
+  BuyerConsentCheckoutUpdate,
 ):
   """Update request model combining base fields and extensions."""
 

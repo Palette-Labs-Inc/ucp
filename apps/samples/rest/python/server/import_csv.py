@@ -31,6 +31,14 @@ from pathlib import Path
 from absl import app as absl_app
 from absl import flags
 import db
+from db import CommerceCategoryItem
+from db import CommerceItemModifierGroup
+from db import CommerceMenuCategory
+from db import CommerceMenuItem
+from db import CommerceMerchant
+from db import CommerceModifierGroup
+from db import CommerceModifierItem
+from db import CommerceModifierOption
 from db import Customer
 from db import CustomerAddress
 from db import Discount
@@ -111,6 +119,161 @@ async def import_csv_data() -> None:
               )
             )
         session.add_all(promotions)
+
+      await session.commit()
+
+      logger.info("Clearing existing commerce merchants...")
+      await session.execute(delete(CommerceMerchant))
+
+      logger.info("Importing Commerce Merchants from CSV...")
+      merchants_path = data_dir / "commerce_merchants.csv"
+      if merchants_path.exists():
+        merchants = []
+        with merchants_path.open() as f:
+          reader = csv.DictReader(f)
+          for row in reader:
+            tags = json.loads(row["tags_json"]) if row.get("tags_json") else []
+            merchants.append(
+              CommerceMerchant(
+                id=row["id"],
+                name=row["name"],
+                description_plain=row["description_plain"],
+                url=row["url"],
+                category=row["category"],
+                tags=tags,
+              )
+            )
+        session.add_all(merchants)
+
+      logger.info("Clearing existing commerce menu categories...")
+      await session.execute(delete(CommerceMenuCategory))
+
+      logger.info("Importing Commerce Menu Categories from CSV...")
+      categories_path = data_dir / "commerce_menu_categories.csv"
+      if categories_path.exists():
+        categories = []
+        with categories_path.open() as f:
+          reader = csv.DictReader(f)
+          for row in reader:
+            categories.append(
+              CommerceMenuCategory(id=row["id"], name=row["name"])
+            )
+        session.add_all(categories)
+
+      logger.info("Clearing existing commerce menu items...")
+      await session.execute(delete(CommerceMenuItem))
+
+      logger.info("Importing Commerce Menu Items from CSV...")
+      items_path = data_dir / "commerce_menu_items.csv"
+      if items_path.exists():
+        items = []
+        with items_path.open() as f:
+          reader = csv.DictReader(f)
+          for row in reader:
+            items.append(
+              CommerceMenuItem(
+                id=row["id"],
+                name=row["name"],
+                description_plain=row["description_plain"],
+                price_amount=int(row["price_amount"]),
+                price_currency=row["price_currency"],
+              )
+            )
+        session.add_all(items)
+
+      logger.info("Clearing existing commerce category items...")
+      await session.execute(delete(CommerceCategoryItem))
+
+      logger.info("Importing Commerce Category Items from CSV...")
+      category_items_path = data_dir / "commerce_category_items.csv"
+      if category_items_path.exists():
+        category_items = []
+        with category_items_path.open() as f:
+          reader = csv.DictReader(f)
+          for row in reader:
+            category_items.append(
+              CommerceCategoryItem(
+                category_id=row["category_id"],
+                item_id=row["item_id"],
+              )
+            )
+        session.add_all(category_items)
+
+      logger.info("Clearing existing commerce modifier groups...")
+      await session.execute(delete(CommerceModifierGroup))
+
+      logger.info("Importing Commerce Modifier Groups from CSV...")
+      modifier_groups_path = data_dir / "commerce_modifier_groups.csv"
+      if modifier_groups_path.exists():
+        groups = []
+        with modifier_groups_path.open() as f:
+          reader = csv.DictReader(f)
+          for row in reader:
+            groups.append(
+              CommerceModifierGroup(
+                id=row["id"],
+                name=row["name"],
+                minimum_selections=int(row["minimum_selections"]),
+                maximum_selections=int(row["maximum_selections"]),
+              )
+            )
+        session.add_all(groups)
+
+      logger.info("Clearing existing commerce modifier items...")
+      await session.execute(delete(CommerceModifierItem))
+
+      logger.info("Importing Commerce Modifier Items from CSV...")
+      modifier_items_path = data_dir / "commerce_modifier_items.csv"
+      if modifier_items_path.exists():
+        modifier_items = []
+        with modifier_items_path.open() as f:
+          reader = csv.DictReader(f)
+          for row in reader:
+            modifier_items.append(
+              CommerceModifierItem(
+                id=row["id"],
+                title=row["title"],
+                price_amount=int(row["price_amount"]),
+                price_currency=row["price_currency"],
+              )
+            )
+        session.add_all(modifier_items)
+
+      logger.info("Clearing existing commerce item modifier groups...")
+      await session.execute(delete(CommerceItemModifierGroup))
+
+      logger.info("Importing Commerce Item Modifier Groups from CSV...")
+      item_groups_path = data_dir / "commerce_item_modifier_groups.csv"
+      if item_groups_path.exists():
+        item_groups = []
+        with item_groups_path.open() as f:
+          reader = csv.DictReader(f)
+          for row in reader:
+            item_groups.append(
+              CommerceItemModifierGroup(
+                item_id=row["item_id"],
+                modifier_group_id=row["modifier_group_id"],
+              )
+            )
+        session.add_all(item_groups)
+
+      logger.info("Clearing existing commerce modifier options...")
+      await session.execute(delete(CommerceModifierOption))
+
+      logger.info("Importing Commerce Modifier Options from CSV...")
+      options_path = data_dir / "commerce_modifier_options.csv"
+      if options_path.exists():
+        options = []
+        with options_path.open() as f:
+          reader = csv.DictReader(f)
+          for row in reader:
+            options.append(
+              CommerceModifierOption(
+                modifier_group_id=row["modifier_group_id"],
+                item_id=row["item_id"],
+              )
+            )
+        session.add_all(options)
 
       await session.commit()
 

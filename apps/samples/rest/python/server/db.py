@@ -135,6 +135,89 @@ class Promotion(ProductBase):
   description = Column(String)
 
 
+class CommerceMerchant(ProductBase):
+  """Commerce merchant database model."""
+
+  __tablename__ = "commerce_merchants"
+
+  id = Column(String, primary_key=True)
+  name = Column(String)
+  description_plain = Column(String)
+  url = Column(String)
+  category = Column(String)
+  tags = Column(JSON, nullable=True)
+
+
+class CommerceMenuCategory(ProductBase):
+  """Commerce menu category database model."""
+
+  __tablename__ = "commerce_menu_categories"
+
+  id = Column(String, primary_key=True)
+  name = Column(String)
+
+
+class CommerceMenuItem(ProductBase):
+  """Commerce menu item database model."""
+
+  __tablename__ = "commerce_menu_items"
+
+  id = Column(String, primary_key=True)
+  name = Column(String)
+  description_plain = Column(String)
+  price_amount = Column(Integer)
+  price_currency = Column(String)
+
+
+class CommerceCategoryItem(ProductBase):
+  """Commerce category-to-item mapping database model."""
+
+  __tablename__ = "commerce_category_items"
+
+  category_id = Column(String, primary_key=True)
+  item_id = Column(String, primary_key=True)
+
+
+class CommerceModifierGroup(ProductBase):
+  """Commerce modifier group database model."""
+
+  __tablename__ = "commerce_modifier_groups"
+
+  id = Column(String, primary_key=True)
+  name = Column(String)
+  minimum_selections = Column(Integer)
+  maximum_selections = Column(Integer)
+
+
+class CommerceItemModifierGroup(ProductBase):
+  """Commerce item-to-modifier group mapping database model."""
+
+  __tablename__ = "commerce_item_modifier_groups"
+
+  item_id = Column(String, primary_key=True)
+  modifier_group_id = Column(String, primary_key=True)
+
+
+class CommerceModifierOption(ProductBase):
+  """Commerce modifier option database model."""
+
+  __tablename__ = "commerce_modifier_options"
+
+  modifier_group_id = Column(String, primary_key=True)
+  item_id = Column(String, primary_key=True)
+
+
+class CommerceModifierItem(ProductBase):
+  """Commerce modifier item database model."""
+
+  __tablename__ = "commerce_modifier_items"
+
+  id = Column(String, primary_key=True)
+  title = Column(String)
+  price_amount = Column(Integer)
+  price_currency = Column(String)
+
+
 class Inventory(TransactionBase):
   """Inventory database model."""
 
@@ -319,6 +402,91 @@ async def get_active_promotions(session: AsyncSession) -> list[Promotion]:
 async def get_product(session: AsyncSession, product_id: str) -> Product | None:
   """Retrieve a product by ID."""
   return await session.get(Product, product_id)
+
+
+async def list_commerce_merchants(
+  session: AsyncSession,
+) -> list[CommerceMerchant]:
+  """Retrieve all commerce merchants."""
+  result = await session.execute(select(CommerceMerchant))
+  return list(result.scalars().all())
+
+
+async def get_commerce_merchant(
+  session: AsyncSession, merchant_id: str
+) -> CommerceMerchant | None:
+  """Retrieve a commerce merchant by ID."""
+  return await session.get(CommerceMerchant, merchant_id)
+
+
+async def list_commerce_menu_categories(
+  session: AsyncSession,
+) -> list[CommerceMenuCategory]:
+  """Retrieve all commerce menu categories."""
+  result = await session.execute(select(CommerceMenuCategory))
+  return list(result.scalars().all())
+
+
+async def list_commerce_menu_items(
+  session: AsyncSession,
+) -> list[CommerceMenuItem]:
+  """Retrieve all commerce menu items."""
+  result = await session.execute(select(CommerceMenuItem))
+  return list(result.scalars().all())
+
+
+async def get_commerce_menu_item(
+  session: AsyncSession, item_id: str
+) -> CommerceMenuItem | None:
+  """Retrieve a commerce menu item by ID."""
+  return await session.get(CommerceMenuItem, item_id)
+
+
+async def list_commerce_category_items(
+  session: AsyncSession,
+) -> list[CommerceCategoryItem]:
+  """Retrieve all commerce category-to-item mappings."""
+  result = await session.execute(select(CommerceCategoryItem))
+  return list(result.scalars().all())
+
+
+async def list_commerce_modifier_groups(
+  session: AsyncSession,
+) -> list[CommerceModifierGroup]:
+  """Retrieve all commerce modifier groups."""
+  result = await session.execute(select(CommerceModifierGroup))
+  return list(result.scalars().all())
+
+
+async def list_commerce_item_modifier_groups(
+  session: AsyncSession,
+) -> list[CommerceItemModifierGroup]:
+  """Retrieve all commerce item-to-modifier group mappings."""
+  result = await session.execute(select(CommerceItemModifierGroup))
+  return list(result.scalars().all())
+
+
+async def list_commerce_modifier_options(
+  session: AsyncSession,
+) -> list[CommerceModifierOption]:
+  """Retrieve all commerce modifier options."""
+  result = await session.execute(select(CommerceModifierOption))
+  return list(result.scalars().all())
+
+
+async def list_commerce_modifier_items(
+  session: AsyncSession,
+) -> list[CommerceModifierItem]:
+  """Retrieve all commerce modifier items."""
+  result = await session.execute(select(CommerceModifierItem))
+  return list(result.scalars().all())
+
+
+async def get_commerce_modifier_item(
+  session: AsyncSession, item_id: str
+) -> CommerceModifierItem | None:
+  """Retrieve a commerce modifier item by ID."""
+  return await session.get(CommerceModifierItem, item_id)
 
 
 async def get_inventory(session: AsyncSession, product_id: str) -> int | None:

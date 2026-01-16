@@ -109,6 +109,20 @@ The server exposes an additional endpoint for simulation and testing purposes:
     webhook notification if configured. This endpoint requires the
     `Simulation-Secret` header to match the configured `--simulation_secret`.
 
+## Commerce Endpoints (Preview)
+
+The sample server also exposes commerce discovery endpoints backed by static
+data for menu and merchant discovery:
+
+*   `POST /merchants/search`
+*   `GET /merchants/{id}`
+*   `GET /merchants/{id}/menus`
+*   `POST /menu/search`
+*   `GET /menu/items`
+*   `GET /menu/items/{id}`
+*   `GET /menu/items/{id}/modifier-groups`
+*   `GET /menu/modifiers/{id}`
+
 ## Discovery
 
 Businesses publish their capabilities in a standard JSON manifest located at

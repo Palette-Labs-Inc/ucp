@@ -20,6 +20,17 @@ function wait_for_server() {
   return 1
 }
 
+function find_free_port() {
+  python3 - <<'PY'
+import socket
+s = socket.socket()
+s.bind(("", 0))
+port = s.getsockname()[1]
+s.close()
+print(port)
+PY
+}
+
 PRODUCTS_DB="${1:?products db path}"
 TX_DB="${2:?tx db path}"
 SAMPLES_DIR="${3:?samples dir}"
@@ -27,9 +38,9 @@ CONFORMANCE_DIR="${4:?conformance dir}"
 PY_SDK_DIR="${5:?python sdk dir}"
 
 UCP_TEST_DIR="$(dirname "${PRODUCTS_DB}")"
-SERVER_URL="http://localhost:8182"
 SIMULATION_SECRET="super-secret-sim-key"
-MERCHANT_SERVER_PORT="8182"
+MERCHANT_SERVER_PORT="$(find_free_port)"
+SERVER_URL="http://localhost:${MERCHANT_SERVER_PORT}"
 CONFORMANCE_INPUT="${CONFORMANCE_DIR}/test_data/flower_shop/conformance_input.json"
 UV_BIN="$(resolve_uv)"
 
@@ -65,6 +76,10 @@ cleanup() { kill "${SERVER_PID}" 2>/dev/null || true; }
 trap cleanup EXIT
 
 wait_for_server "http://localhost:${MERCHANT_SERVER_PORT}/.well-known/ucp"
+if ! kill -0 "${SERVER_PID}" 2>/dev/null; then
+  echo "Error: sample server exited before tests started." >&2
+  exit 1
+fi
 
 # run tests (absltest based; invoke each file)
 shopt -s nullglob

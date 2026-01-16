@@ -9,6 +9,14 @@
           "schema": "https://ucp.dev/services/shopping/openapi.json",
           "endpoint": "{{ENDPOINT}}"
         }
+      },
+      "xyz.localprotocol.commerce": {
+        "version": "2026-01-11",
+        "spec": "https://localprotocol.xyz/specs/commerce",
+        "rest": {
+          "schema": "https://localprotocol.xyz/services/commerce/openapi.json",
+          "endpoint": "{{ENDPOINT}}"
+        }
       }
     },
     "capabilities": [
@@ -43,6 +51,25 @@
         "version": "2026-01-11",
         "spec": "https://ucp.dev/specification/buyer_consent",
         "schema": "https://ucp.dev/schemas/shopping/buyer_consent.json",
+        "extends": "dev.ucp.shopping.checkout"
+      },
+      {
+        "name": "xyz.localprotocol.commerce.merchant",
+        "version": "2026-01-11",
+        "spec": "https://localprotocol.xyz/specification/merchant",
+        "schema": "https://localprotocol.xyz/schemas/commerce/merchant.json"
+      },
+      {
+        "name": "xyz.localprotocol.commerce.menu",
+        "version": "2026-01-11",
+        "spec": "https://localprotocol.xyz/specification/menu",
+        "schema": "https://localprotocol.xyz/schemas/commerce/menu.json"
+      },
+      {
+        "name": "xyz.localprotocol.commerce.checkout",
+        "version": "2026-01-11",
+        "spec": "https://localprotocol.xyz/specification/checkout",
+        "schema": "https://localprotocol.xyz/schemas/commerce/checkout.json",
         "extends": "dev.ucp.shopping.checkout"
       }
     ]
