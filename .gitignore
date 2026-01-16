@@ -145,6 +145,7 @@ dmypy.json
 # User-specific files
 language/examples/prompt-design/train.csv
 README-TOC*.md
+ai_docs/*.md
 
 # Terraform
 terraform.tfstate**
