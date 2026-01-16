@@ -43,7 +43,7 @@ Businesses advertise MCP transport availability through their UCP profile at
       {
         "name": "dev.ucp.shopping.checkout",
         "version": "2026-01-11",
-        "spec": "https://ucp.dev/specification/checkout",
+        "spec": "https://ucp.dev/specification/shopping/checkout",
         "schema": "https://ucp.dev/schemas/shopping/checkout.json"
       },
       {
@@ -57,6 +57,10 @@ Businesses advertise MCP transport availability through their UCP profile at
   }
 }
 ```
+
+For menu checkout, businesses advertise the commerce service endpoint and the
+`xyz.localprotocol.commerce.checkout` capability. The MCP tool names remain the
+same, but the checkout schema includes `line_items[].modifier_selections`.
 
 ### Platform Profile Advertisement
 MCP clients **MUST** include the UCP platform profile URI with every request.
@@ -113,10 +117,11 @@ Maps to the [Create Checkout](checkout.md#create-checkout) operation.
 
 *   [Checkout](checkout.md#create-checkout) object.
     *   Extensions (Optional):
-        *   `dev.ucp.shopping.buyer_consent`: [Buyer Consent](buyer-consent.md)
-        *   `dev.ucp.shopping.fulfillment`: [Fulfillment](fulfillment.md)
-        *   `dev.ucp.shopping.discount`: [Discount](discount.md)
-        *   `dev.ucp.shopping.ap2_mandate`: [AP2 Mandates](ap2-mandates.md)
+        *   `dev.ucp.shopping.buyer_consent`: [Buyer Consent](../buyer-consent.md)
+        *   `dev.ucp.shopping.fulfillment`: [Fulfillment](../fulfillment.md)
+        *   `dev.ucp.shopping.discount`: [Discount](../discount.md)
+        *   `dev.ucp.shopping.ap2_mandate`: [AP2 Mandates](../ap2-mandates.md)
+        *   `xyz.localprotocol.commerce.checkout`: Menu modifiers on line items (`modifier_selections`).
 
 #### Output Schema
 
@@ -334,10 +339,11 @@ Maps to the [Update Checkout](checkout.md#update-checkout) operation.
 *   `id` (String): The ID of the checkout session to update.
 *   [Checkout](checkout.md#update-checkout) object.
     *   Extensions (Optional):
-        *   `dev.ucp.shopping.buyer_consent`: [Buyer Consent](buyer-consent.md)
-        *   `dev.ucp.shopping.fulfillment`: [Fulfillment](fulfillment.md)
-        *   `dev.ucp.shopping.discount`: [Discount](discount.md)
-        *   `dev.ucp.shopping.ap2_mandate`: [AP2 Mandates](ap2-mandates.md)
+        *   `dev.ucp.shopping.buyer_consent`: [Buyer Consent](../buyer-consent.md)
+        *   `dev.ucp.shopping.fulfillment`: [Fulfillment](../fulfillment.md)
+        *   `dev.ucp.shopping.discount`: [Discount](../discount.md)
+        *   `dev.ucp.shopping.ap2_mandate`: [AP2 Mandates](../ap2-mandates.md)
+        *   `xyz.localprotocol.commerce.checkout`: Menu modifiers on line items (`modifier_selections`).
 
 #### Output Schema
 
@@ -565,7 +571,7 @@ Maps to the [Cancel Checkout](checkout.md#cancel-checkout) operation.
 ## Error Handling
 
 Error responses follow JSON-RPC 2.0 format while using the UCP error structure
-defined in the [Core Specification](overview.md). The UCP error object is
+defined in the [Core Specification](../overview.md). The UCP error object is
 embedded in the JSON-RPC error's `data` field:
 
 ```json

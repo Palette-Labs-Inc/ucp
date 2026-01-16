@@ -99,14 +99,14 @@ fulfillment:
 
 ### Order
 
-{{ schema_fields('order', 'order') }}
+{{ schema_fields('order', 'shopping/order') }}
 
 ### Order Line Item
 
 Line items reflect what was purchased at checkout and their current state.
 Status and quantity counts should reflect the event logs.
 
-{{ schema_fields('order_line_item', 'order') }}
+{{ schema_fields('order_line_item', 'shopping/order') }}
 
 **Quantity Structure:**
 
@@ -131,7 +131,7 @@ Expectations are buyer-facing groupings representing when/how items will be
 delivered. They represent the current promise to the buyer and can be
 split, merged, or adjusted post-order.
 
-{{ schema_fields('expectation', 'order') }}
+{{ schema_fields('expectation', 'shopping/order') }}
 
 ### Fulfillment Event
 
@@ -139,7 +139,7 @@ Events are append-only records tracking actual shipments. The `type` field is
 an open string - businesses can use any values that make sense for their
 fulfillment process.
 
-{{ schema_fields('fulfillment_event', 'order') }}
+{{ schema_fields('fulfillment_event', 'shopping/order') }}
 
 Examples: `processing`, `shipped`, `in_transit`, `delivered`, `failed_attempt`,
 `canceled`, `undeliverable`, `returned_to_sender`, etc.
@@ -150,7 +150,7 @@ Adjustments are polymorphic events that exist independently of fulfillment.
 The `type` field is an open string - businesses can use any values that make
 sense to them.
 
-{{ schema_fields('adjustment', 'order') }}
+{{ schema_fields('adjustment', 'shopping/order') }}
 
 Examples: `refund`, `return`, `credit`, `price_adjustment`, `dispute`,
 `cancellation`, etc.
@@ -266,7 +266,7 @@ Businesses send order status changes as events after order placement.
 Businesses POST order events to a webhook URL provided by the platform
 during partner onboarding. The URL format is platform-specific.
 
-{{ method_fields('order_event_webhook', 'rest.openapi.json', 'order') }}
+{{ method_fields('order_event_webhook', 'shopping/rest.openapi.json', 'shopping/order') }}
 
 ### Webhook URL Configuration
 
@@ -274,7 +274,7 @@ The platform provides its webhook URL in the order capability's `config` field
 during capability negotiation. The business discovers this URL from the
 platform's profile and uses it to send order lifecycle events.
 
-{{ extension_schema_fields('order.json#/$defs/platform_config', 'order') }}
+{{ extension_schema_fields('order.json#/$defs/platform_config', 'shopping/order') }}
 
 **Example:**
 ```json
@@ -340,20 +340,20 @@ rotation:
 
 ### Item Response
 
-{{ schema_fields('types/item_resp', 'order') }}
+{{ schema_fields('types/item_resp', 'shopping/order') }}
 
 ### Postal Address
 
-{{ schema_fields('postal_address', 'order') }}
+{{ schema_fields('postal_address', 'shopping/order') }}
 
 ### Response
 
-{{ extension_schema_fields('capability.json#/$defs/response', 'order') }}
+{{ extension_schema_fields('capability.json#/$defs/response', 'shopping/order') }}
 
 ### Total Response
 
-{{ schema_fields('types/total_resp', 'order') }}
+{{ schema_fields('types/total_resp', 'shopping/order') }}
 
 ### UCP Response Order
 
-{{ extension_schema_fields('ucp.json#/$defs/response_order', 'order') }}
+{{ extension_schema_fields('ucp.json#/$defs/response_order', 'shopping/order') }}

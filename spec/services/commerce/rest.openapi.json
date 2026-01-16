@@ -1,9 +1,9 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "UCP Restaurant Service",
+    "title": "UCP Commerce Service",
     "version": "2026-01-11",
-    "description": "Canonical REST interface for UCP Restaurant service. Schema references are logical pointers - actual payload shape is determined by negotiated capabilities.\n\n**Endpoint Resolution:** This spec defines operations only. The base URL MUST be obtained from the merchant's discovery profile at `/.well-known/ucp` under `services[\"dev.ucp.restaurant\"].rest.endpoint`. The `{endpoint}` server variable below is a placeholder for tooling compatibility."
+    "description": "Canonical REST interface for UCP Commerce service. Schema references are logical pointers - actual payload shape is determined by negotiated capabilities.\n\n**Endpoint Resolution:** This spec defines operations only. The base URL MUST be obtained from the merchant's discovery profile at `/.well-known/ucp` under `services[\"xyz.localprotocol.commerce\"].rest.endpoint`. The `{endpoint}` server variable below is a placeholder for tooling compatibility."
   },
   "servers": [
     {
@@ -12,12 +12,347 @@
       "variables": {
         "endpoint": {
           "default": "https://merchant.example.com/ucp",
-          "description": "Obtain from /.well-known/ucp → services[\"dev.ucp.restaurant\"].rest.endpoint"
+          "description": "Obtain from /.well-known/ucp → services[\"xyz.localprotocol.commerce\"].rest.endpoint"
         }
       }
     }
   ],
   "paths": {
+    "/checkout-sessions": {
+      "post": {
+        "operationId": "create_checkout",
+        "summary": "Create Checkout",
+        "description": "Create a checkout session. Called as soon as a user adds an item to a cart.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/authorization"
+          },
+          {
+            "$ref": "#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "#/components/parameters/idempotency_key"
+          },
+          {
+            "$ref": "#/components/parameters/request_id"
+          },
+          {
+            "$ref": "#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "#/components/parameters/content_type"
+          },
+          {
+            "$ref": "#/components/parameters/accept"
+          },
+          {
+            "$ref": "#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "#/components/parameters/accept_encoding"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/checkout_create_request"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Checkout session created",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/checkout_response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/checkout-sessions/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/checkout_session_id_path"
+        }
+      ],
+      "get": {
+        "operationId": "get_checkout",
+        "summary": "Get Checkout",
+        "description": "Get the latest state of a checkout session.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/authorization"
+          },
+          {
+            "$ref": "#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "#/components/parameters/request_id"
+          },
+          {
+            "$ref": "#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "#/components/parameters/content_type"
+          },
+          {
+            "$ref": "#/components/parameters/accept"
+          },
+          {
+            "$ref": "#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "#/components/parameters/accept_encoding"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Checkout session retrieved",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/checkout_response"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "update_checkout",
+        "summary": "Update Checkout",
+        "description": "If an optional field is provided in the request body, its value is treated as a complete replacement for the corresponding data. If optional field is omitted, then current checkout session is unchanged.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/authorization"
+          },
+          {
+            "$ref": "#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "#/components/parameters/idempotency_key"
+          },
+          {
+            "$ref": "#/components/parameters/request_id"
+          },
+          {
+            "$ref": "#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "#/components/parameters/content_type"
+          },
+          {
+            "$ref": "#/components/parameters/accept"
+          },
+          {
+            "$ref": "#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "#/components/parameters/accept_encoding"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/checkout_update_request"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Checkout session updated",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/checkout_response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/checkout-sessions/{id}/complete": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/checkout_session_id_path"
+        }
+      ],
+      "post": {
+        "operationId": "complete_checkout",
+        "summary": "Complete Checkout",
+        "description": "Place the order",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/authorization"
+          },
+          {
+            "$ref": "#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "#/components/parameters/idempotency_key"
+          },
+          {
+            "$ref": "#/components/parameters/request_id"
+          },
+          {
+            "$ref": "#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "#/components/parameters/content_type"
+          },
+          {
+            "$ref": "#/components/parameters/accept"
+          },
+          {
+            "$ref": "#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "#/components/parameters/accept_encoding"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/payment_data"
+                  },
+                  {
+                    "title": "Risk Signals",
+                    "description": "Optional risk signals for fraud detection.",
+                    "type": "object",
+                    "properties": {
+                      "risk_signals": {
+                        "type": "object",
+                        "description": "Key-value pairs of risk signals."
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Checkout session completed",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/checkout_response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/checkout-sessions/{id}/cancel": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/checkout_session_id_path"
+        }
+      ],
+      "post": {
+        "operationId": "cancel_checkout",
+        "summary": "Cancel Checkout",
+        "description": "Cancel a checkout session",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/authorization"
+          },
+          {
+            "$ref": "#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "#/components/parameters/idempotency_key"
+          },
+          {
+            "$ref": "#/components/parameters/request_id"
+          },
+          {
+            "$ref": "#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "#/components/parameters/content_type"
+          },
+          {
+            "$ref": "#/components/parameters/accept"
+          },
+          {
+            "$ref": "#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "#/components/parameters/accept_encoding"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Checkout session canceled",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/checkout_response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/merchants/search": {
       "post": {
         "operationId": "search_merchants",
@@ -462,6 +797,15 @@
   },
   "components": {
     "parameters": {
+      "checkout_session_id_path": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "The unique identifier of the checkout session.",
+        "schema": {
+          "type": "string"
+        }
+      },
       "item_id_path": {
         "name": "id",
         "in": "path",
@@ -506,6 +850,16 @@
           "type": "string"
         },
         "description": "Ensure the authenticity and integrity of an HTTP message."
+      },
+      "idempotency_key": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "description": "Ensures duplicate operations don't happen during retries."
       },
       "request_id": {
         "name": "Request-Id",
@@ -582,32 +936,53 @@
       }
     },
     "schemas": {
+      "payment_data": {
+        "$ref": "https://ucp.dev/schemas/shopping/payment_data.json"
+      },
       "menu_search_response": {
-        "$ref": "https://localprotocol.xyz/schemas/menu/menu.json#/$defs/search_response"
+        "$ref": "https://localprotocol.xyz/schemas/commerce/menu.json#/$defs/search_response"
       },
       "menu_search_request": {
-        "$ref": "https://localprotocol.xyz/schemas/menu/menu.json#/$defs/search_request"
+        "$ref": "https://localprotocol.xyz/schemas/commerce/menu.json#/$defs/search_request"
       },
       "menu_get_item_response": {
-        "$ref": "https://localprotocol.xyz/schemas/menu/menu.json#/$defs/get_item_response"
+        "$ref": "https://localprotocol.xyz/schemas/commerce/menu.json#/$defs/get_item_response"
       },
       "menu_list_response": {
-        "$ref": "https://localprotocol.xyz/schemas/menu/menu.json#/$defs/list_response"
+        "$ref": "https://localprotocol.xyz/schemas/commerce/menu.json#/$defs/list_response"
       },
       "merchant_search_response": {
-        "$ref": "https://localprotocol.xyz/schemas/menu/merchant.json#/$defs/search_response"
+        "$ref": "https://localprotocol.xyz/schemas/commerce/merchant.json#/$defs/search_response"
       },
       "merchant_search_request": {
-        "$ref": "https://localprotocol.xyz/schemas/menu/merchant.json#/$defs/search_request"
+        "$ref": "https://localprotocol.xyz/schemas/commerce/merchant.json#/$defs/search_request"
       },
       "merchant_get_merchant_response": {
-        "$ref": "https://localprotocol.xyz/schemas/menu/merchant.json#/$defs/get_merchant_response"
+        "$ref": "https://localprotocol.xyz/schemas/commerce/merchant.json#/$defs/get_merchant_response"
       },
       "menu_get_item_modifier_groups_response": {
-        "$ref": "https://localprotocol.xyz/schemas/menu/menu.json#/$defs/get_item_modifier_groups_response"
+        "$ref": "https://localprotocol.xyz/schemas/commerce/menu.json#/$defs/get_item_modifier_groups_response"
       },
       "menu_get_modifier_item_response": {
-        "$ref": "https://localprotocol.xyz/schemas/menu/menu.json#/$defs/get_modifier_item_response"
+        "$ref": "https://localprotocol.xyz/schemas/commerce/menu.json#/$defs/get_modifier_item_response"
+      },
+      "checkout_response": {
+        "$ref": "https://localprotocol.xyz/schemas/commerce/checkout_resp.json"
+      },
+      "checkout_create_request": {
+        "$ref": "https://localprotocol.xyz/schemas/commerce/checkout.create_req.json"
+      },
+      "checkout_update_request": {
+        "$ref": "https://localprotocol.xyz/schemas/commerce/checkout.update_req.json"
+      },
+      "payment_response": {
+        "$ref": "https://ucp.dev/schemas/shopping/payment_resp.json"
+      },
+      "payment_create_request": {
+        "$ref": "https://ucp.dev/schemas/shopping/payment.create_req.json"
+      },
+      "payment_update_request": {
+        "$ref": "https://ucp.dev/schemas/shopping/payment.update_req.json"
       }
     }
   }

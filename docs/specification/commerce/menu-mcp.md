@@ -31,21 +31,21 @@ Businesses advertise MCP transport availability through their UCP profile at
   "ucp": {
     "version": "2026-01-11",
     "services": {
-      "dev.ucp.restaurant": {
+      "xyz.localprotocol.commerce": {
         "version": "2026-01-11",
-        "spec": "https://ucp.dev/specification/overview",
+        "spec": "https://localprotocol.xyz/specification/overview",
         "mcp": {
-          "schema": "https://ucp.dev/services/restaurant/mcp.openrpc.json",
+          "schema": "https://localprotocol.xyz/services/commerce/mcp.openrpc.json",
           "endpoint": "https://business.example.com/ucp/mcp"
         }
       }
     },
     "capabilities": [
       {
-        "name": "dev.ucp.menu",
+        "name": "xyz.localprotocol.commerce.menu",
         "version": "2026-01-11",
-        "spec": "https://ucp.dev/specification/menu",
-        "schema": "https://ucp.dev/schemas/menu/menu.json"
+        "spec": "https://localprotocol.xyz/specification/commerce/menu",
+        "schema": "https://localprotocol.xyz/schemas/menu/menu.json"
       }
     ]
   }
@@ -98,34 +98,34 @@ UCP Capabilities map 1:1 to MCP Tools.
 
 Maps to the [Search Menu](menu.md#search-menu) operation.
 
-{{ method_fields('search_menu', 'mcp.openrpc.json', 'menu-mcp') }}
+{{ method_fields('search_menu', 'commerce/rest.openapi.json', 'commerce/menu-mcp') }}
 
 ### `list_menu_items`
 
 Maps to the [List Menu Items](menu.md#list-menu-items) operation.
 
-{{ method_fields('list_menu_items', 'mcp.openrpc.json', 'menu-mcp') }}
+{{ method_fields('list_menu_items', 'commerce/rest.openapi.json', 'commerce/menu-mcp') }}
 
 ### `get_menu_item`
 
 Maps to the [Get Menu Item](menu.md#get-menu-item) operation.
 
-{{ method_fields('get_menu_item', 'mcp.openrpc.json', 'menu-mcp') }}
+{{ method_fields('get_menu_item', 'commerce/rest.openapi.json', 'commerce/menu-mcp') }}
 
 ### `get_item_modifier_groups`
 
 Maps to the [Get Item Modifier Groups](menu.md#get-item-modifier-groups) operation.
 
-{{ method_fields('get_item_modifier_groups', 'mcp.openrpc.json', 'menu-mcp') }}
+{{ method_fields('get_item_modifier_groups', 'commerce/rest.openapi.json', 'commerce/menu-mcp') }}
 
 ### `get_modifier_item`
 
 Maps to the [Get Modifier Item](menu.md#get-modifier-item) operation.
 
-{{ method_fields('get_modifier_item', 'mcp.openrpc.json', 'menu-mcp') }}
+{{ method_fields('get_modifier_item', 'commerce/rest.openapi.json', 'commerce/menu-mcp') }}
 
 ### `get_merchant_menus`
 
 Maps to the [Get Merchant Menus](menu.md#get-merchant-menus) operation.
 
-{{ method_fields('get_merchant_menus', 'mcp.openrpc.json', 'menu-mcp') }}
+{{ method_fields('get_merchant_menus', 'commerce/rest.openapi.json', 'commerce/menu-mcp') }}

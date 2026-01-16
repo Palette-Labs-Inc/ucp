@@ -16,7 +16,7 @@
 
 # Menu Capability
 
-* **Capability Name:** `dev.ucp.menu`
+* **Capability Name:** `xyz.localprotocol.commerce.menu`
 * **Version:** `DRAFT`
 
 ## Overview
@@ -108,37 +108,37 @@ The Menu capability defines the following logical operations.
 
 Searches a merchant's menu using query text and context. Supports pagination.
 
-{{ method_fields('search_menu', 'rest.openapi.json', 'menu') }}
+{{ method_fields('search_menu', 'commerce/rest.openapi.json', 'commerce/menu') }}
 
 ### List Menu Items
 
 Retrieves menu categories and nested items for a merchant context.
 
-{{ method_fields('list_menu_items', 'rest.openapi.json', 'menu') }}
+{{ method_fields('list_menu_items', 'commerce/rest.openapi.json', 'commerce/menu') }}
 
 ### Get Menu Item
 
 Retrieves a specific menu item by its Global ID (GID).
 
-{{ method_fields('get_menu_item', 'rest.openapi.json', 'menu') }}
+{{ method_fields('get_menu_item', 'commerce/rest.openapi.json', 'commerce/menu') }}
 
 ### Get Item Modifier Groups
 
 Fetches modifier groups for a menu item to enable item customization flows.
 
-{{ method_fields('get_item_modifier_groups', 'rest.openapi.json', 'menu') }}
+{{ method_fields('get_item_modifier_groups', 'commerce/rest.openapi.json', 'commerce/menu') }}
 
 ### Get Modifier Item
 
 Retrieves a modifier item by its Global ID (GID).
 
-{{ method_fields('get_modifier_item', 'rest.openapi.json', 'menu') }}
+{{ method_fields('get_modifier_item', 'commerce/rest.openapi.json', 'commerce/menu') }}
 
 ### Get Merchant Menus
 
 Retrieves menus and categories for a merchant by ID.
 
-{{ method_fields('get_merchant_menus', 'rest.openapi.json', 'menu') }}
+{{ method_fields('get_merchant_menus', 'commerce/rest.openapi.json', 'commerce/menu') }}
 
 ## Entities
 
@@ -148,35 +148,35 @@ Location and market context for menu operations. All fields are optional.
 Platforms MAY geo-detect context from request IP/headers. When context fields
 are provided, they MUST override any auto-detected values.
 
-{{ extension_schema_fields('menu.json#/$defs/context', 'menu') }}
+{{ extension_schema_fields('commerce/menu.json#/$defs/context', 'commerce/menu') }}
 
 ### Menu
 
-{{ schema_fields('types/menu', 'menu') }}
+{{ schema_fields('commerce/types/menu', 'commerce/menu') }}
 
 ### Category
 
-{{ schema_fields('types/category', 'menu') }}
+{{ schema_fields('commerce/types/category', 'commerce/menu') }}
 
 ### Item
 
-{{ schema_fields('types/item', 'menu') }}
+{{ schema_fields('commerce/types/item', 'commerce/menu') }}
 
 ### Modifier Group
 
-{{ schema_fields('types/modifier_group', 'menu') }}
+{{ schema_fields('commerce/types/modifier_group', 'commerce/menu') }}
 
 ### Modifier Option
 
-{{ schema_fields('types/modifier_option', 'menu') }}
+{{ schema_fields('commerce/types/modifier_option', 'commerce/menu') }}
 
 ### Modifier Item
 
-{{ schema_fields('types/modifier_item', 'menu') }}
+{{ schema_fields('commerce/types/modifier_item', 'commerce/menu') }}
 
 ### Modifier Selection
 
-{{ schema_fields('types/modifier_selection', 'menu') }}
+{{ schema_fields('commerce/types/modifier_selection', 'commerce/menu') }}
 
 ### Pagination
 
@@ -184,8 +184,8 @@ Cursor-based pagination for list operations.
 
 #### Pagination Request
 
-{{ extension_schema_fields('types/pagination.json#/$defs/request', 'menu') }}
+{{ extension_schema_fields('shopping/types/pagination.json#/$defs/request', 'commerce/menu') }}
 
 #### Pagination Response
 
-{{ extension_schema_fields('types/pagination.json#/$defs/response', 'menu') }}
+{{ extension_schema_fields('shopping/types/pagination.json#/$defs/response', 'commerce/menu') }}

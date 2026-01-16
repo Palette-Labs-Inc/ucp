@@ -31,21 +31,21 @@ Businesses advertise REST transport availability through their UCP profile at
   "ucp": {
     "version": "2026-01-11",
     "services": {
-      "dev.ucp.restaurant": {
+      "xyz.localprotocol.commerce": {
         "version": "2026-01-11",
-        "spec": "https://ucp.dev/specification/overview",
+        "spec": "https://localprotocol.xyz/specification/overview",
         "rest": {
-          "schema": "https://ucp.dev/services/restaurant/rest.openapi.json",
+          "schema": "https://localprotocol.xyz/services/commerce/rest.openapi.json",
           "endpoint": "https://business.example.com/ucp"
         }
       }
     },
     "capabilities": [
       {
-        "name": "dev.ucp.menu",
+        "name": "xyz.localprotocol.commerce.menu",
         "version": "2026-01-11",
-        "spec": "https://ucp.dev/specification/menu",
-        "schema": "https://ucp.dev/schemas/menu/menu.json"
+        "spec": "https://localprotocol.xyz/specification/commerce/menu",
+        "schema": "https://localprotocol.xyz/schemas/menu/menu.json"
       }
     ]
   }

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://localprotocol.xyz/schemas/menu/types/modifier_selection.json",
+  "$id": "https://localprotocol.xyz/schemas/commerce/types/modifier_selection.json",
   "title": "Menu Modifier Selection",
   "description": "Selected modifiers for a modifier group, including nested selections.",
   "type": "object",

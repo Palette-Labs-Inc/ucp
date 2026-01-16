@@ -30,29 +30,37 @@ nav:
   - Playground: playground.md
   - Specification:
     - Overview: specification/overview.md
-    - Checkout Capability:
-      - Overview: specification/checkout.md
-      - HTTP/REST Binding: specification/checkout-rest.md
-      - MCP Binding: specification/checkout-mcp.md
-      - A2A Binding: specification/checkout-a2a.md
-      - EP Binding: specification/embedded-checkout.md
-      - AP2 Mandates Extension: specification/ap2-mandates.md
-      - Buyer Consent Extension: specification/buyer-consent.md
-      - Discounts Extension: specification/discount.md
-      - Fulfillment Extension: specification/fulfillment.md
-    - Catalog Capability:
-      - Overview: specification/catalog.md
-      - HTTP/REST Binding: specification/catalog-rest.md
-      - MCP Binding: specification/catalog-mcp.md
-    - Merchant Capability:
-      - Overview: specification/merchant.md
-      - HTTP/REST Binding: specification/merchant-rest.md
-      - MCP Binding: specification/merchant-mcp.md
-    - Menu Capability:
-      - Overview: specification/menu.md
-      - HTTP/REST Binding: specification/menu-rest.md
-      - MCP Binding: specification/menu-mcp.md
-    - Order Capability: specification/order.md
+    - Shopping:
+      - Checkout Capability:
+        - Overview: specification/shopping/checkout.md
+        - HTTP/REST Binding: specification/shopping/checkout-rest.md
+        - MCP Binding: specification/shopping/checkout-mcp.md
+        - A2A Binding: specification/shopping/checkout-a2a.md
+        - EP Binding: specification/embedded-checkout.md
+        - AP2 Mandates Extension: specification/ap2-mandates.md
+        - Buyer Consent Extension: specification/buyer-consent.md
+        - Discounts Extension: specification/discount.md
+        - Fulfillment Extension: specification/fulfillment.md
+      - Catalog Capability:
+        - Overview: specification/shopping/catalog.md
+        - HTTP/REST Binding: specification/shopping/catalog-rest.md
+        - MCP Binding: specification/shopping/catalog-mcp.md
+      - Order Capability: specification/shopping/order.md
+    - Commerce:
+      - Checkout Capability:
+        - Overview: specification/commerce/checkout.md
+        - HTTP/REST Binding: specification/commerce/checkout-rest.md
+        - MCP Binding: specification/commerce/checkout-mcp.md
+        - A2A Binding: specification/commerce/checkout-a2a.md
+        - EP Binding: specification/embedded-checkout.md
+      - Merchant Capability:
+        - Overview: specification/commerce/merchant.md
+        - HTTP/REST Binding: specification/commerce/merchant-rest.md
+        - MCP Binding: specification/commerce/merchant-mcp.md
+      - Menu Capability:
+        - Overview: specification/commerce/menu.md
+        - HTTP/REST Binding: specification/commerce/menu-rest.md
+        - MCP Binding: specification/commerce/menu-mcp.md
     - Identity Linking Capability: specification/identity-linking.md
     - Payment Handlers:
       - Guide: specification/payment-handler-guide.md
@@ -199,27 +207,36 @@ plugins:
           - documentation/roadmap.md
         Specification Overview:
           - specification/overview.md
-        Checkout Capability:
-          - specification/checkout.md
-          - specification/checkout-rest.md
-          - specification/checkout-mcp.md
-          - specification/checkout-a2a.md
+        Shopping Checkout Capability:
+          - specification/shopping/checkout.md
+          - specification/shopping/checkout-rest.md
+          - specification/shopping/checkout-mcp.md
+          - specification/shopping/checkout-a2a.md
+        Commerce Checkout Capability:
+          - specification/commerce/checkout.md
+          - specification/commerce/checkout-rest.md
+          - specification/commerce/checkout-mcp.md
+          - specification/commerce/checkout-a2a.md
         Checkout Extensions:
           - specification/ap2-mandates.md
           - specification/buyer-consent.md
           - specification/discount.md
           - specification/embedded-checkout.md
           - specification/fulfillment.md
-        Catalog Capability:
-          - specification/catalog.md
-          - specification/catalog-rest.md
-          - specification/catalog-mcp.md
-        Merchant Capability:
-          - specification/merchant.md
-          - specification/merchant-rest.md
-          - specification/merchant-mcp.md
-        Order Capability:
-          - specification/order.md
+        Shopping Catalog Capability:
+          - specification/shopping/catalog.md
+          - specification/shopping/catalog-rest.md
+          - specification/shopping/catalog-mcp.md
+        Commerce Merchant Capability:
+          - specification/commerce/merchant.md
+          - specification/commerce/merchant-rest.md
+          - specification/commerce/merchant-mcp.md
+        Commerce Menu Capability:
+          - specification/commerce/menu.md
+          - specification/commerce/menu-rest.md
+          - specification/commerce/menu-mcp.md
+        Shopping Order Capability:
+          - specification/shopping/order.md
         Identity Linking Capability:
           - specification/identity-linking.md
         Payment Handlers:

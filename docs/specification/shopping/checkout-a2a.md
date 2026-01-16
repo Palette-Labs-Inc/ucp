@@ -89,6 +89,11 @@ An example:
             "version": "2026-01-11"
           },
           {
+            "name": "xyz.localprotocol.commerce.checkout",
+            "version": "2026-01-11",
+            "extends": "dev.ucp.shopping.checkout"
+          },
+          {
             "name": "dev.ucp.shopping.fulfillment",
             "version": "2026-01-11",
             "extends": "dev.ucp.shopping.checkout"
@@ -140,6 +145,10 @@ The Checkout entity must be returned by the business agent to the platform
 that activated UCP-A2A Extension in an A2A `Message`'s `DataPart`.
 The checkout object **MUST** be returned as part of a `DataPart` object with
 key `a2a.ucp.checkout`.
+
+When negotiating `xyz.localprotocol.commerce.checkout`, the checkout payload
+includes menu modifier selections on line items (`line_items[].modifier_selections`),
+using the commerce modifier selection type.
 
 **Request format:**
 Agentic applications can accept natural language input from users interacting
@@ -336,7 +345,7 @@ includes the payment mandate must be submitted as part of a `DataPart`
 with attribute name `a2a.ucp.checkout.payment_data`. Signed checkout mandate
 must be specified in the `DataPart` as `ap2.checkout_mandate`. The `token`
 attribute of `payment_data` contains the payment mandate. Refer to
-[AP2 Mandates Extension](ap2-mandates.md) documentation for more details
+[AP2 Mandates Extension](../ap2-mandates.md) documentation for more details
 about verification and processing of the mandates to complete the checkout.
 
 **Request format:**

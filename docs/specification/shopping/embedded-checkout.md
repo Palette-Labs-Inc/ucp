@@ -1238,14 +1238,14 @@ Checkout protocol and its extensions.
 The core object representing the current state of the transaction, including
 line items, totals, and buyer information.
 
-{{ schema_fields('checkout_resp', 'shopping/checkout') }}
+{{ schema_fields('checkout_resp', 'checkout') }}
 
 ### Order
 
 The object returned upon successful completion of a checkout, containing
 confirmation details.
 
-{{ schema_fields('order', 'shopping/order') }}
+{{ schema_fields('order', 'order') }}
 
 ### Payment
 

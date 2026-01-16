@@ -45,14 +45,15 @@ def define_env(env):
   # --- CONFIGURATION ---
   openapi_dirs = [
     "spec/services/shopping/",
-    "spec/services/menu/",
-    "spec/services/restaurant/",
+    "spec/services/commerce/",
   ]
   schemas_dirs = [
     "spec/handlers/google_pay/",
     "spec/schemas/",
     "spec/schemas/shopping/",
     "spec/schemas/shopping/types/",
+    "spec/schemas/commerce/",
+    "spec/schemas/commerce/types/",
   ]
 
   def _load_json_file(entity_name):
@@ -761,6 +762,11 @@ def define_env(env):
   # --- MACRO 3: For Transport Operations ---
   def _load_openapi_file(file_name):
     """Try loading an OpenAPI file from configured service directories."""
+    if "/" in file_name:
+      direct_path = Path("spec/services") / file_name
+      if direct_path.exists():
+        with direct_path.open(encoding="utf-8") as f:
+          return json.load(f)
     for openapi_dir in openapi_dirs:
       full_path = Path(openapi_dir) / file_name
       try:

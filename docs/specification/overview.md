@@ -268,7 +268,7 @@ Businesses publish their profile at `/.well-known/ucp`. An example:
       {
         "name": "dev.ucp.shopping.checkout",
         "version": "2026-01-11",
-        "spec": "https://ucp.dev/specification/checkout",
+        "spec": "https://ucp.dev/specification/shopping/checkout",
         "schema": "https://ucp.dev/schemas/shopping/checkout.json"
       },
       {
@@ -345,7 +345,7 @@ example:
       {
         "name": "dev.ucp.shopping.checkout",
         "version": "2026-01-11",
-        "spec": "https://ucp.dev/specification/checkout",
+        "spec": "https://ucp.dev/specification/shopping/checkout",
         "schema": "https://ucp.dev/schemas/shopping/checkout.json"
       },
       {
@@ -358,7 +358,7 @@ example:
       {
         "name": "dev.ucp.shopping.order",
         "version": "2026-01-11",
-        "spec": "https://ucp.dev/specification/order",
+        "spec": "https://ucp.dev/specification/shopping/order",
         "schema": "https://ucp.dev/schemas/shopping/order.json",
         "config": {
           "webhook_url": "https://platform.example.com/webhooks/ucp/orders"

@@ -49,6 +49,13 @@ All REST endpoints **MUST** be served over HTTPS with minimum TLS version
 | [Complete Checkout](checkout.md#complete-checkout) | `POST` | `/checkout-sessions/{id}/complete` | Place the order. |
 | [Cancel Checkout](checkout.md#cancel-checkout) | `POST` | `/checkout-sessions/{id}/cancel` | Cancel a checkout session. |
 
+### Menu Checkout (Commerce)
+When negotiating `xyz.localprotocol.commerce.checkout`, the checkout payload is
+the base checkout schema extended with menu modifier selections on line items:
+`line_items[].modifier_selections` using the commerce menu modifier selection
+type. The REST endpoints remain `/checkout-sessions/*` on the commerce service
+endpoint advertised in `/.well-known/ucp`.
+
 ## Examples
 
 ### Create Checkout
@@ -86,7 +93,7 @@ All REST endpoints **MUST** be served over HTTPS with minimum TLS version
         "version": "2026-01-11",
         "capabilities": [
           {
-            "name": "dev.ucp.shopping.checkout",
+            "name": "xyz.localprotocol.commerce.checkout",
             "version": "2026-01-11"
           }
         ]
@@ -227,7 +234,7 @@ so clients must include all previously set fields they wish to retain.
         "version": "2026-01-11",
         "capabilities": [
           {
-            "name": "dev.ucp.shopping.checkout",
+            "name": "xyz.localprotocol.commerce.checkout",
             "version": "2026-01-11"
           }
         ]
@@ -387,7 +394,7 @@ type & addresses.
         "version": "2026-01-11",
         "capabilities": [
           {
-            "name": "dev.ucp.shopping.checkout",
+            "name": "xyz.localprotocol.commerce.checkout",
             "version": "2026-01-11"
           }
         ],
@@ -606,7 +613,7 @@ Follow-up calls after initial `fulfillment` data to update selection.
         "version": "2026-01-11",
         "capabilities": [
           {
-            "name": "dev.ucp.shopping.checkout",
+            "name": "xyz.localprotocol.commerce.checkout",
             "version": "2026-01-11"
           }
         ],
@@ -798,7 +805,7 @@ place to set these expectations via `messages`.
         "version": "2026-01-11",
         "capabilities": [
           {
-            "name": "dev.ucp.shopping.checkout",
+            "name": "xyz.localprotocol.commerce.checkout",
             "version": "2026-01-11"
           }
         ],
@@ -966,7 +973,7 @@ place to set these expectations via `messages`.
         "version": "2026-01-11",
         "capabilities": [
           {
-            "name": "dev.ucp.shopping.checkout",
+            "name": "xyz.localprotocol.commerce.checkout",
             "version": "2026-01-11"
           }
         ],
@@ -1134,7 +1141,7 @@ place to set these expectations via `messages`.
         "version": "2026-01-11",
         "capabilities": [
           {
-            "name": "dev.ucp.shopping.checkout",
+            "name": "xyz.localprotocol.commerce.checkout",
             "version": "2026-01-11"
           }
         ],
@@ -1280,7 +1287,7 @@ place to set these expectations via `messages`.
 The following headers are defined for the HTTP binding and apply to all
 operations unless otherwise noted.
 
-{{ header_fields('create_checkout', 'rest.openapi.json') }}
+{{ header_fields('create_checkout', 'commerce/rest.openapi.json') }}
 
 ### Specific Header Requirements
 

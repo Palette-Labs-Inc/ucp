@@ -44,7 +44,7 @@ Businesses advertise MCP transport availability through their UCP profile at
       {
         "name": "dev.ucp.shopping.catalog",
         "version": "2026-01-11",
-        "spec": "https://ucp.dev/specification/catalog",
+        "spec": "https://ucp.dev/specification/shopping/catalog",
         "schema": "https://ucp.dev/schemas/shopping/catalog.json"
       }
     ]
@@ -94,7 +94,7 @@ UCP Capabilities map 1:1 to MCP Tools.
 
 Maps to the [Search Catalog](catalog.md#search-catalog) operation.
 
-{{ method_fields('search_catalog', 'rest.openapi.json', 'catalog-mcp') }}
+{{ method_fields('search_catalog', 'shopping/rest.openapi.json', 'shopping/catalog-mcp') }}
 
 #### Example
 
@@ -226,7 +226,7 @@ MUST return the parent product with full context. For product ID lookups,
 buyer context or other criteria). For variant ID lookups, `variants` MUST contain
 only the requested variant.
 
-{{ method_fields('get_catalog_item', 'rest.openapi.json', 'catalog-mcp') }}
+{{ method_fields('get_catalog_item', 'shopping/rest.openapi.json', 'shopping/catalog-mcp') }}
 
 #### Example
 

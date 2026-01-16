@@ -64,7 +64,7 @@ queries, filtering by category and price, and pagination.
 * Agent browses products in a category
 * Platform fetches featured or trending products
 
-{{ method_fields('search_catalog', 'rest.openapi.json', 'catalog') }}
+{{ method_fields('search_catalog', 'shopping/rest.openapi.json', 'shopping/catalog') }}
 
 ### Get Catalog Item
 
@@ -89,7 +89,7 @@ When the full variant set is large, a representative set MAY be returned based o
 buyer context or other criteria. This ensures agents always have product context
 for display while getting exactly what they requested.
 
-{{ method_fields('get_catalog_item', 'rest.openapi.json', 'catalog') }}
+{{ method_fields('get_catalog_item', 'shopping/rest.openapi.json', 'shopping/catalog') }}
 
 ## Entities
 
@@ -97,7 +97,7 @@ for display while getting exactly what they requested.
 
 Location and market context for catalog operations. All fields are optional. Platforms MAY geo-detect context from request IP/headers. When context fields are provided, they MUST override any auto-detected values.
 
-{{ extension_schema_fields('catalog.json#/$defs/context', 'catalog') }}
+{{ extension_schema_fields('catalog.json#/$defs/context', 'shopping/catalog') }}
 
 ### Product
 
@@ -107,7 +107,7 @@ A catalog entry representing a sellable item with one or more purchasable varian
 image and default variant as the first element. Platforms SHOULD treat the first
 element as the featured item for display.
 
-{{ schema_fields('types/product', 'catalog') }}
+{{ schema_fields('types/product', 'shopping/catalog') }}
 
 ### Variant
 
@@ -116,46 +116,46 @@ A purchasable SKU with specific option selections, price, and availability.
 `media` is an ordered array. Businesses SHOULD return the featured variant image
 as the first element. Platforms SHOULD treat the first element as featured.
 
-{{ schema_fields('types/variant', 'catalog') }}
+{{ schema_fields('types/variant', 'shopping/catalog') }}
 
 ### Price
 
-{{ schema_fields('types/price', 'catalog') }}
+{{ schema_fields('types/price', 'shopping/catalog') }}
 
 ### Price Range
 
-{{ schema_fields('types/price_range', 'catalog') }}
+{{ schema_fields('types/price_range', 'shopping/catalog') }}
 
 ### Media
 
-{{ schema_fields('types/media', 'catalog') }}
+{{ schema_fields('types/media', 'shopping/catalog') }}
 
 ### Product Option
 
-{{ schema_fields('types/product_option', 'catalog') }}
+{{ schema_fields('types/product_option', 'shopping/catalog') }}
 
 ### Option Value
 
-{{ schema_fields('types/option_value', 'catalog') }}
+{{ schema_fields('types/option_value', 'shopping/catalog') }}
 
 ### Selected Option
 
-{{ schema_fields('types/selected_option', 'catalog') }}
+{{ schema_fields('types/selected_option', 'shopping/catalog') }}
 
 ### Rating
 
-{{ schema_fields('types/rating', 'catalog') }}
+{{ schema_fields('types/rating', 'shopping/catalog') }}
 
 ### Search Filters
 
 Filter criteria for narrowing search results. Standard filters are defined below;
 merchants MAY support additional custom filters via `additionalProperties`.
 
-{{ schema_fields('types/search_filters', 'catalog') }}
+{{ schema_fields('types/search_filters', 'shopping/catalog') }}
 
 ### Price Filter
 
-{{ schema_fields('types/price_filter', 'catalog') }}
+{{ schema_fields('types/price_filter', 'shopping/catalog') }}
 
 ### Pagination
 
@@ -163,11 +163,11 @@ Cursor-based pagination for list operations.
 
 #### Pagination Request
 
-{{ extension_schema_fields('types/pagination.json#/$defs/request', 'catalog') }}
+{{ extension_schema_fields('types/pagination.json#/$defs/request', 'shopping/catalog') }}
 
 #### Pagination Response
 
-{{ extension_schema_fields('types/pagination.json#/$defs/response', 'catalog') }}
+{{ extension_schema_fields('types/pagination.json#/$defs/response', 'shopping/catalog') }}
 
 ## Messages and Error Handling
 
@@ -188,15 +188,15 @@ Messages communicate business outcomes and provide context:
 
 #### Message (Error)
 
-{{ schema_fields('types/message_error', 'catalog') }}
+{{ schema_fields('types/message_error', 'shopping/catalog') }}
 
 #### Message (Warning)
 
-{{ schema_fields('types/message_warning', 'catalog') }}
+{{ schema_fields('types/message_warning', 'shopping/catalog') }}
 
 #### Message (Info)
 
-{{ schema_fields('types/message_info', 'catalog') }}
+{{ schema_fields('types/message_info', 'shopping/catalog') }}
 
 ### Common Scenarios
 

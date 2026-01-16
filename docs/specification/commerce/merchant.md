@@ -16,7 +16,7 @@
 
 # Merchant Capability
 
-* **Capability Name:** `dev.ucp.menu.merchant`
+* **Capability Name:** `xyz.localprotocol.commerce.merchant`
 * **Version:** `DRAFT`
 
 ## Overview
@@ -54,14 +54,14 @@ queries, filtering by category, and pagination.
 * Agent browses merchants in a category
 * Platform fetches merchants near the buyer context
 
-{{ method_fields('search_merchants', 'rest.openapi.json', 'merchant') }}
+{{ method_fields('search_merchants', 'commerce/rest.openapi.json', 'commerce/merchant') }}
 
 ### Get Merchant
 
 Retrieves a specific merchant by its Global ID (GID). Use this when you already
 have an ID (e.g., from a saved list or search results).
 
-{{ method_fields('get_merchant', 'rest.openapi.json', 'merchant') }}
+{{ method_fields('get_merchant', 'commerce/rest.openapi.json', 'commerce/merchant') }}
 
 ## Entities
 
@@ -71,22 +71,22 @@ Location and market context for merchant operations. All fields are optional.
 Platforms MAY geo-detect context from request IP/headers. When context fields
 are provided, they MUST override any auto-detected values.
 
-{{ extension_schema_fields('merchant.json#/$defs/context', 'merchant') }}
+{{ extension_schema_fields('commerce/merchant.json#/$defs/context', 'commerce/merchant') }}
 
 ### Merchant
 
-{{ schema_fields('types/merchant', 'merchant') }}
+{{ schema_fields('commerce/types/merchant', 'commerce/merchant') }}
 
 ### Media
 
-{{ schema_fields('types/media', 'merchant') }}
+{{ schema_fields('shopping/types/media', 'commerce/merchant') }}
 
 ### Merchant Search Filters
 
 Filter criteria for narrowing search results. Standard filters are defined below;
 merchants MAY support additional custom filters via `additionalProperties`.
 
-{{ schema_fields('types/merchant_search_filters', 'merchant') }}
+{{ schema_fields('commerce/types/merchant_search_filters', 'commerce/merchant') }}
 
 ### Pagination
 
@@ -94,11 +94,11 @@ Cursor-based pagination for list operations.
 
 #### Pagination Request
 
-{{ extension_schema_fields('types/pagination.json#/$defs/request', 'merchant') }}
+{{ extension_schema_fields('shopping/types/pagination.json#/$defs/request', 'commerce/merchant') }}
 
 #### Pagination Response
 
-{{ extension_schema_fields('types/pagination.json#/$defs/response', 'merchant') }}
+{{ extension_schema_fields('shopping/types/pagination.json#/$defs/response', 'commerce/merchant') }}
 
 ## Messages and Error Handling
 
@@ -120,15 +120,15 @@ programmatically (retry, inform user, show alternatives).
 
 #### Message (Error)
 
-{{ schema_fields('types/message_error', 'merchant') }}
+{{ schema_fields('shopping/types/message_error', 'commerce/merchant') }}
 
 #### Message (Warning)
 
-{{ schema_fields('types/message_warning', 'merchant') }}
+{{ schema_fields('shopping/types/message_warning', 'commerce/merchant') }}
 
 #### Message (Info)
 
-{{ schema_fields('types/message_info', 'merchant') }}
+{{ schema_fields('shopping/types/message_info', 'commerce/merchant') }}
 
 ### Common Scenarios
 

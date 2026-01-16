@@ -31,21 +31,21 @@ Businesses advertise REST transport availability through their UCP profile at
   "ucp": {
     "version": "2026-01-11",
     "services": {
-      "dev.ucp.restaurant": {
+      "xyz.localprotocol.commerce": {
         "version": "2026-01-11",
-        "spec": "https://ucp.dev/specification/overview",
+        "spec": "https://localprotocol.xyz/specification/overview",
         "rest": {
-          "schema": "https://ucp.dev/services/restaurant/rest.openapi.json",
+          "schema": "https://localprotocol.xyz/services/commerce/rest.openapi.json",
           "endpoint": "https://business.example.com/ucp"
         }
       }
     },
     "capabilities": [
       {
-        "name": "dev.ucp.menu.merchant",
+        "name": "xyz.localprotocol.commerce.merchant",
         "version": "2026-01-11",
-        "spec": "https://ucp.dev/specification/merchant",
-        "schema": "https://ucp.dev/schemas/menu/merchant.json"
+        "spec": "https://localprotocol.xyz/specification/commerce/merchant",
+        "schema": "https://localprotocol.xyz/schemas/menu/merchant.json"
       }
     ]
   }
@@ -108,7 +108,7 @@ Maps to the [Search Merchants](merchant.md#search-merchants) operation.
         "version": "2026-01-11",
         "capabilities": [
           {
-            "name": "dev.ucp.menu.merchant",
+            "name": "xyz.localprotocol.commerce.merchant",
             "version": "2026-01-11"
           }
         ]
@@ -182,7 +182,7 @@ Maps to the [Get Merchant](merchant.md#get-merchant) operation.
         "version": "2026-01-11",
         "capabilities": [
           {
-            "name": "dev.ucp.menu.merchant",
+            "name": "xyz.localprotocol.commerce.merchant",
             "version": "2026-01-11"
           }
         ]
@@ -228,7 +228,7 @@ for message semantics and common scenarios.
     "version": "2026-01-11",
     "capabilities": [
       {
-        "name": "dev.ucp.menu.merchant",
+        "name": "xyz.localprotocol.commerce.merchant",
         "version": "2026-01-11"
       }
     ]

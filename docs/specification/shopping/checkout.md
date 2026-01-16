@@ -271,7 +271,7 @@ platform can prefill checkout state when initiating a buy-now flow.
 
 ## Capability Schema Definition
 
-{{ schema_fields('checkout_resp', 'checkout') }}
+{{ schema_fields('checkout_resp', 'shopping/checkout') }}
 
 ## Operations
 
@@ -294,7 +294,7 @@ To be invoked by the platform when the user has expressed purchase intent
 product data (price/title etc.) provided by the business through the feeds
 **SHOULD** match the actual attributes returned in the response.
 
-{{ method_fields('create_checkout', 'rest.openapi.json', 'checkout') }}
+{{ method_fields('create_checkout', 'shopping/rest.openapi.json', 'shopping/checkout') }}
 
 ### Get Checkout
 
@@ -307,7 +307,7 @@ checkout.
 The platform will honor the TTL provided by the business via `expires_at` at the
 time of checkout session creation.
 
-{{ method_fields('get_checkout', 'rest.openapi.json', 'checkout') }}
+{{ method_fields('get_checkout', 'shopping/rest.openapi.json', 'shopping/checkout') }}
 
 ### Update Checkout
 
@@ -316,7 +316,7 @@ The platform is **REQUIRED** to send the entire checkout resource containing any
 data updates to write-only data fields. The resource provided in the request
 will replace the existing checkout session state on the business side.
 
-{{ method_fields('update_checkout', 'rest.openapi.json', 'checkout') }}
+{{ method_fields('update_checkout', 'shopping/rest.openapi.json', 'shopping/checkout') }}
 
 ### Complete Checkout
 
@@ -332,7 +332,7 @@ to construct the order representation (i.e. information like `line_items`,
 After this call, other details will be updated through subsequent events
 as the order, and its associated items, moves through the supply chain.
 
-{{ method_fields('complete_checkout', 'rest.openapi.json', 'checkout') }}
+{{ method_fields('complete_checkout', 'shopping/rest.openapi.json', 'shopping/checkout') }}
 
 ### Cancel Checkout
 
@@ -342,7 +342,7 @@ already canceled or completed), then businesses **SHOULD** send back an error
 indicating the operation is not allowed. Any checkout session with a status
 that is not equal to `completed` or `canceled` **SHOULD** be cancelable.
 
-{{ method_fields('cancel_checkout', 'rest.openapi.json', 'checkout') }}
+{{ method_fields('cancel_checkout', 'shopping/rest.openapi.json', 'shopping/checkout') }}
 
 ## Transport Bindings
 
@@ -352,49 +352,49 @@ defined below:
 *   [REST Binding](checkout-rest.md): RESTful API mapping using standard HTTP verbs and JSON payloads.
 *   [MCP Binding](checkout-mcp.md): Model Context Protocol mapping for agentic interaction.
 *   [A2A Binding](checkout-a2a.md): Agent-to-Agent Protocol mapping for agentic interactions.
-*   [Embedded Checkout Binding](embedded-checkout.md): JSON-RPC for powering embedded checkout.
+*   [Embedded Checkout Binding](../embedded-checkout.md): JSON-RPC for powering embedded checkout.
 
 ## Entities
 
 ### Buyer
 
-{{ schema_fields('buyer', 'checkout') }}
+{{ schema_fields('buyer', 'shopping/checkout') }}
 
 ### Fulfillment Option
 
-{{ extension_schema_fields('fulfillment_resp.json#/$defs/fulfillment_option', 'checkout') }}
+{{ extension_schema_fields('fulfillment_resp.json#/$defs/fulfillment_option', 'shopping/checkout') }}
 
 ### Item
 
 #### Item Create Request
 
-{{ schema_fields('types/item.create_req', 'checkout') }}
+{{ schema_fields('types/item.create_req', 'shopping/checkout') }}
 
 #### Item Update Request
 
-{{ schema_fields('types/item.update_req', 'checkout') }}
+{{ schema_fields('types/item.update_req', 'shopping/checkout') }}
 
 #### Item Response
 
-{{ schema_fields('types/item_resp', 'checkout') }}
+{{ schema_fields('types/item_resp', 'shopping/checkout') }}
 
 ### Line Item
 
 #### Line Item Create Request
 
-{{ schema_fields('types/line_item.create_req', 'checkout') }}
+{{ schema_fields('types/line_item.create_req', 'shopping/checkout') }}
 
 #### Line Item Update Request
 
-{{ schema_fields('types/line_item.update_req', 'checkout') }}
+{{ schema_fields('types/line_item.update_req', 'shopping/checkout') }}
 
 #### Line Item Response
 
-{{ schema_fields('types/line_item_resp', 'checkout') }}
+{{ schema_fields('types/line_item_resp', 'shopping/checkout') }}
 
 ### Link
 
-{{ schema_fields('types/link', 'checkout') }}
+{{ schema_fields('types/link', 'shopping/checkout') }}
 
 #### Well-Known Link Types
 
@@ -415,76 +415,76 @@ field or omitting them.
 
 ### Message
 
-{{ schema_fields('message', 'checkout') }}
+{{ schema_fields('message', 'shopping/checkout') }}
 
 ### Message Error
 
-{{ schema_fields('types/message_error', 'checkout') }}
+{{ schema_fields('types/message_error', 'shopping/checkout') }}
 
 ### Message Info
 
-{{ schema_fields('types/message_info', 'checkout') }}
+{{ schema_fields('types/message_info', 'shopping/checkout') }}
 
 ### Message Warning
 
-{{ schema_fields('types/message_warning', 'checkout') }}
+{{ schema_fields('types/message_warning', 'shopping/checkout') }}
 
 ### Payment
 
 #### Payment Create Request
 
-{{ schema_fields('payment.create_req', 'checkout') }}
+{{ schema_fields('payment.create_req', 'shopping/checkout') }}
 
 #### Payment Update Request
 
-{{ schema_fields('payment.update_req', 'checkout') }}
+{{ schema_fields('payment.update_req', 'shopping/checkout') }}
 
 #### Payment Response
 
-{{ schema_fields('payment_resp', 'checkout') }}
+{{ schema_fields('payment_resp', 'shopping/checkout') }}
 
 ### Payment Handler Response
 
-{{ schema_fields('types/payment_handler_resp', 'checkout') }}
+{{ schema_fields('types/payment_handler_resp', 'shopping/checkout') }}
 
 ### Payment Instrument
 
-{{ schema_fields('payment_instrument', 'checkout') }}
+{{ schema_fields('payment_instrument', 'shopping/checkout') }}
 
 ### Card Payment Instrument
 
-{{ schema_fields('card_payment_instrument', 'checkout') }}
+{{ schema_fields('card_payment_instrument', 'shopping/checkout') }}
 
 ### Payment Credential
 
-{{ schema_fields('payment_credential', 'checkout') }}
+{{ schema_fields('payment_credential', 'shopping/checkout') }}
 
 ### Token Credential Response
 
-{{ schema_fields('token_credential.create_req', 'checkout') }}
+{{ schema_fields('token_credential.create_req', 'shopping/checkout') }}
 
 ### Card Credential
 
-{{ schema_fields('card_credential', 'checkout') }}
+{{ schema_fields('card_credential', 'shopping/checkout') }}
 
 ### Postal Address
 
-{{ schema_fields('postal_address', 'checkout') }}
+{{ schema_fields('postal_address', 'shopping/checkout') }}
 
 ### Response
 
-{{ extension_schema_fields('capability.json#/$defs/response', 'checkout') }}
+{{ extension_schema_fields('capability.json#/$defs/response', 'shopping/checkout') }}
 
 ### Total
 
 #### Total Response
 
-{{ schema_fields('types/total_resp', 'checkout') }}
+{{ schema_fields('types/total_resp', 'shopping/checkout') }}
 
 ### UCP Response Checkout
 
-{{ extension_schema_fields('ucp.json#/$defs/response_checkout', 'checkout') }}
+{{ extension_schema_fields('ucp.json#/$defs/response_checkout', 'shopping/checkout') }}
 
 ### Order Confirmation
 
-{{ schema_fields('order_confirmation', 'checkout') }}
+{{ schema_fields('order_confirmation', 'shopping/checkout') }}
