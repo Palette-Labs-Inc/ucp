@@ -107,7 +107,12 @@ The initial release focuses on the essential primitives for transacting:
 
 ## Keeping This Repo in Sync
 
-keeping up to date with upstream changes:
+Keeping up to date with upstream changes:
+
+Note: this spec lives inside the UCP monorepo under `spec/`. If you're syncing
+from upstream, run subtree pulls from the monorepo root (see the root README for
+the exact `git subtree` commands). The steps below still apply; just run them
+from the monorepo root.
 
 1. Add the upstream remote (one-time setup):
    `git remote add upstream https://github.com/Universal-Commerce-Protocol/ucp.git`
