@@ -48,7 +48,10 @@ VALID_REQUEST_VALUES = {"omit", "optional", "required"}
 VALID_RESPONSE_VALUES = {"omit"}
 
 # ECP constants
-ECP_SOURCE_FILE = "source/services/shopping/embedded.json"
+ECP_SOURCE_FILES = [
+  ("shopping", "source/services/shopping/embedded.json"),
+  ("commerce", "source/services/commerce/embedded.json"),
+]
 ECP_SCHEMAS_DIR = "source/schemas/shopping"
 ECP_VERSION = "2026-01-11"
 
@@ -511,8 +514,14 @@ def rewrite_refs_for_ecp(data: Any, annotated_schemas: set[str]) -> Any:
     result = {}
     for k, v in data.items():
       if k == "$ref" and isinstance(v, str) and not v.startswith("#"):
-        if "schemas/shopping/" in v:
-          parts = v.split("schemas/shopping/")
+        schema_prefixes = ["schemas/shopping/", "schemas/commerce/"]
+        matched = None
+        for prefix in schema_prefixes:
+          if prefix in v:
+            matched = prefix
+            break
+        if matched:
+          parts = v.split(matched)
           if len(parts) == 2:
             schema_path = parts[1]
             anchor_part = ""
@@ -524,7 +533,7 @@ def rewrite_refs_for_ecp(data: Any, annotated_schemas: set[str]) -> Any:
               ".json"
             ):
               schema_path = schema_path[:-5] + "_resp.json"
-            result[k] = f"../../schemas/shopping/{schema_path}{anchor_part}"
+            result[k] = f"../../{matched}{schema_path}{anchor_part}"
           else:
             result[k] = v
         else:
@@ -573,7 +582,9 @@ def transform_ecp_method(
   return openrpc_method
 
 
-def generate_ecp_spec(annotated_schemas: set[str]) -> int:
+def generate_ecp_spec(
+  annotated_schemas: set[str], source_file: str, out_path: Path
+) -> int:
   """Generate Embedded Protocol OpenRPC spec.
 
   Args:
@@ -593,8 +604,8 @@ def generate_ecp_spec(annotated_schemas: set[str]) -> int:
   ep_description = "Embedded Protocol methods for UCP capabilities."
 
   # Collect core methods from embedded.json
-  if Path(ECP_SOURCE_FILE).exists():
-    with Path(ECP_SOURCE_FILE).open(encoding="utf-8") as f:
+  if Path(source_file).exists():
+    with Path(source_file).open(encoding="utf-8") as f:
       data = json.load(f)
     ep_title = data.get("title", ep_title)
     ep_description = data.get("description", ep_description)
@@ -603,7 +614,7 @@ def generate_ecp_spec(annotated_schemas: set[str]) -> int:
         methods.append(transform_ecp_method(method, annotated_schemas))
     if "delegations" in data:
       delegations.extend(data["delegations"])
-    print(f"  From embedded.json: {len(methods)} methods")
+    print(f"  From {source_file}: {len(methods)} methods")
 
   # Collect extension methods from schema files with "embedded" blocks
   ext_count = 0
@@ -643,11 +654,10 @@ def generate_ecp_spec(annotated_schemas: set[str]) -> int:
     "methods": methods,
   }
 
-  out_path = Path(SPEC_DIR) / "services/shopping/embedded.openrpc.json"
   write_json(spec, out_path)
   print(
     f"{schema_utils.Colors.GREEN}✓{schema_utils.Colors.RESET}"
-    " services/shopping/embedded.openrpc.json"
+    f" {out_path.relative_to(Path(SPEC_DIR))}"
   )
 
   return 1
@@ -739,14 +749,30 @@ def main() -> None:
 
   # Pass 3: Generate ECP OpenRPC spec
   # Convert annotated_schemas to relative paths for ECP ref rewriting
-  schemas_base = (Path(SOURCE_DIR) / "schemas/shopping").resolve()
-  ecp_annotated = set()
-  for abs_path in annotated_schemas:
-    if Path(abs_path).is_relative_to(schemas_base):
-      rel_path = Path(abs_path).relative_to(schemas_base).as_posix()
-      ecp_annotated.add(rel_path)
-  ecp_count = generate_ecp_spec(ecp_annotated)
-  generated_count += ecp_count
+  def _build_ecp_annotated(base_dir: str) -> set[str]:
+    schemas_base = (Path(SOURCE_DIR) / base_dir).resolve()
+    rel_paths = set()
+    for abs_path in annotated_schemas:
+      if Path(abs_path).is_relative_to(schemas_base):
+        rel_path = Path(abs_path).relative_to(schemas_base).as_posix()
+        rel_paths.add(rel_path)
+    return rel_paths
+
+  shopping_ecp_annotated = _build_ecp_annotated("schemas/shopping")
+  commerce_ecp_annotated = _build_ecp_annotated("schemas/commerce")
+  ecp_annotated_by_service = {
+    "shopping": shopping_ecp_annotated,
+    "commerce": shopping_ecp_annotated | commerce_ecp_annotated,
+  }
+
+  for service_name, source_file in ECP_SOURCE_FILES:
+    out_path = Path(SPEC_DIR) / f"services/{service_name}/embedded.openrpc.json"
+    ecp_count = generate_ecp_spec(
+      ecp_annotated_by_service.get(service_name, set()),
+      source_file,
+      out_path,
+    )
+    generated_count += ecp_count
 
   # Mirror shopping service specs into services/menu to avoid destructive moves.
   service_src_dir = Path(SPEC_DIR) / "services/shopping"
