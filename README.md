@@ -58,6 +58,37 @@ Common flows:
 - Run conformance tests against the sample server:
   - `make test-conformance`
 
+## Contracts
+
+This repo vendors the ERC-8004 reference implementation as a git subtree at
+`contracts/erc8004`. The subtree includes a Foundry submodule (`forge-std`),
+which must be initialized after cloning:
+
+```
+git submodule update --init --recursive contracts/erc8004/lib/forge-std
+```
+
+Start a local Anvil node via Docker:
+
+```
+make anvil
+```
+
+Foreground mode and logs:
+
+```
+make anvil-fg
+make anvil-logs
+```
+
+Run ERC-8004 tests or deploy to Anvil:
+
+```
+make test-erc8004
+make deploy-erc8004
+make seed-erc8004
+```
+
 Install dependencies with:
 
 ```

@@ -1,0 +1,38 @@
+services:
+  anvil:
+    image: ghcr.io/foundry-rs/foundry:stable
+    container_name: anvil
+    ports:
+      - "8545:8545"
+    entrypoint: ["anvil"]
+    command:
+      - --host
+      - "0.0.0.0"
+      - --port
+      - "8545"
+      - --chain-id
+      - "31337"
+      - --mnemonic
+      - "test test test test test test test test test test test junk"
+      - --balance
+      - "1000000"
+      - --block-time
+      - "1"
+      - --gas-limit
+      - "30000000"
+    healthcheck:
+      test: ["CMD", "cast", "block-number", "--rpc-url", "http://127.0.0.1:8545"]
+      interval: 1s
+      timeout: 1s
+      retries: 30
+  foundry:
+    image: ghcr.io/foundry-rs/foundry:stable
+    container_name: foundry
+    working_dir: /repo/contracts
+    volumes:
+      - ..:/repo
+    entrypoint: ["bash", "-lc"]
+    command: "sleep infinity"
+    depends_on:
+      anvil:
+        condition: service_healthy

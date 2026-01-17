@@ -49,6 +49,7 @@ def define_env(env):
   ]
   schemas_dirs = [
     "spec/handlers/google_pay/",
+    "spec/handlers/coinbase_commerce_auth_capture/",
     "spec/schemas/",
     "spec/schemas/shopping/",
     "spec/schemas/shopping/types/",
