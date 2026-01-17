@@ -3,12 +3,12 @@
 This is a reference implementation for [ERC-8004: Trustless Agents](https://eips.ethereum.org/EIPS/eip-8004) - a trust layer that allows participants to discover, choose, and interact with agents across organizational boundaries without pre‑existing trust.
 
 ## Overview
-This repository provides a reference implementation for all three registries as defined in the ERC-8004 specification.
+This repository provides a reference implementation for all three registries as defined in the ERC-8004 specification (Jan 2026 update).
 
 The three implemented registries are:
 - **Identity Registry**: Central identity management registry
-- **Reputation Registry**: Feedback authorization registry
-- **Validation Registry**: Work validation with time bounds
+- **Reputation Registry**: Direct feedback registry
+- **Validation Registry**: Validator responses for agent work
 
 ## Project Structure
 ```ml
@@ -17,8 +17,6 @@ src
 ├  ├─ IIdentityRegistry.sol
 ├  ├─ IReputationRegistry.sol
 ├  ├─ IValidationRegistry.sol
-├─ libraries
-├  ├─ Constants.sol
 ├─ IdentityRegistry.sol
 ├─ ReputationRegistry.sol
 ├─ ValidationRegistry.sol
@@ -45,6 +43,15 @@ forge build
 
 # Test contracts
 forge test
+```
+
+### Local infra (repo root)
+```bash
+make test-erc8004
+make deploy-identity
+make deploy-reputation
+make deploy-validation
+make seed-erc8004
 ```
 
 ## Safety

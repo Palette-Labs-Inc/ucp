@@ -1,29 +1,24 @@
 import { AgentUriSchema } from "./agent-uri.js";
+import { UcpDiscoveryProfileSchema } from "@ucp-js/sdk";
 import type { IndexerEnv } from "./env.js";
-import type { ShovelIdentityEvent } from "./idx.js";
-import type { QueryBuilder } from "idxs";
+import {
+  fetchIdentityEvents,
+  type IdentityEventRow,
+  type IndexerCursor,
+} from "./db.js";
+import type { Kysely } from "kysely";
+import type { DB } from "./db.js";
+import type { IndexedAgent, IndexerStore } from "./store.js";
+import { readFile, writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
 
-export interface IndexedAgent {
-  chainId: number;
-  agentId: number;
-  agentUri: string;
-  owner: string | null;
-  registry: string;
-  domain: string | null;
-  ucpProfileUrl: string | null;
-  discoveryJson: unknown | null;
-  fetchedAt: Date | null;
-  sourceBlockNum: number;
-  sourceLogIdx: number;
-  sourceTxHash: string;
-}
+const DEFAULT_CURSOR: IndexerCursor = {
+  lastBlockNum: "0",
+  lastLogIdx: "0"
+};
 
-interface IndexerCursor {
-  lastBlockNum: number;
-  lastLogIdx: number;
-}
-
-const DEFAULT_CURSOR: IndexerCursor = { lastBlockNum: 0, lastLogIdx: 0 };
+const ACTIVE_DELAY_MS = 250;
+const CURSOR_FILE = "identity-indexer.cursor.json";
 
 async function fetchJson(url: string, timeoutMs: number): Promise<unknown> {
   const controller = new AbortController();
@@ -46,11 +41,12 @@ async function resolveAgentUri(agentUri: string, timeoutMs: number) {
 }
 
 async function resolveUcpProfile(ucpProfileUrl: string, timeoutMs: number) {
-  return await fetchJson(ucpProfileUrl, timeoutMs);
+  const payload = await fetchJson(ucpProfileUrl, timeoutMs);
+  return UcpDiscoveryProfileSchema.parse(payload);
 }
 
 function buildIndexedAgent(
-  row: ShovelIdentityEvent,
+  row: IdentityEventRow,
   resolved: {
     domain: string | null;
     ucpProfileUrl: string | null;
@@ -75,7 +71,7 @@ function buildIndexedAgent(
 }
 
 async function handleRow(
-  row: ShovelIdentityEvent,
+  row: IdentityEventRow,
   env: IndexerEnv
 ): Promise<IndexedAgent> {
   if (!row.agent_uri) {
@@ -109,75 +105,71 @@ async function handleRow(
   }
 }
 
-async function fetchIdentityEvents(
-  qb: QueryBuilder<any>,
-  cursor: IndexerCursor,
-  limit: number
-): Promise<ShovelIdentityEvent[]> {
-  return await qb
-    .selectFrom("erc8004_identity_events")
-    .select([
-      "chain_id",
-      "block_num",
-      "log_idx",
-      "tx_hash",
-      "registry",
-      "agent_id",
-      "agent_uri",
-      "owner"
-    ])
-    .where((eb: any) =>
-      eb.or([
-        eb("block_num", ">", cursor.lastBlockNum),
-        eb.and([
-          eb("block_num", "=", cursor.lastBlockNum),
-          eb("log_idx", ">", cursor.lastLogIdx)
-        ])
-      ])
-    )
-    .orderBy("block_num", "asc")
-    .orderBy("log_idx", "asc")
-    .limit(limit)
-    .execute();
+function getCursorPath(): string {
+  return resolve(process.cwd(), CURSOR_FILE);
+}
+
+async function loadCursor(): Promise<IndexerCursor> {
+  try {
+    const payload = await readFile(getCursorPath(), "utf8");
+    const parsed = JSON.parse(payload) as IndexerCursor;
+    if (!parsed.lastBlockNum || !parsed.lastLogIdx) return DEFAULT_CURSOR;
+    return parsed;
+  } catch {
+    return DEFAULT_CURSOR;
+  }
+}
+
+async function saveCursor(cursor: IndexerCursor): Promise<void> {
+  const payload = JSON.stringify(cursor);
+  await writeFile(getCursorPath(), payload, "utf8");
 }
 
 async function processBatch(
-  qb: QueryBuilder<any>,
+  db: Kysely<DB>,
   env: IndexerEnv,
   cursor: IndexerCursor,
-  onIndexed: (agent: IndexedAgent) => void
-): Promise<IndexerCursor> {
-  const rows = await fetchIdentityEvents(qb, cursor, env.INDEXER_BATCH_SIZE);
-  if (rows.length === 0) return cursor;
+  store: IndexerStore
+): Promise<{ cursor: IndexerCursor; processed: number }> {
+  const rows = await fetchIdentityEvents(db, cursor, env.INDEXER_BATCH_SIZE);
+  if (rows.length === 0) return { cursor, processed: 0 };
 
   let nextCursor = cursor;
   for (const row of rows) {
     const indexed = await handleRow(row, env);
-    onIndexed(indexed);
+    store.upsert(indexed);
     nextCursor = { lastBlockNum: row.block_num, lastLogIdx: row.log_idx };
   }
 
-  return nextCursor;
+  return { cursor: nextCursor, processed: rows.length };
 }
 
 export async function startIndexer(
-  qb: QueryBuilder<any>,
+  db: Kysely<DB>,
   env: IndexerEnv,
-  onIndexed: (agent: IndexedAgent) => void
+  store: IndexerStore
 ): Promise<{ stop: () => void }> {
-  let cursor = DEFAULT_CURSOR;
+  let cursor = await loadCursor();
   let isRunning = true;
   let isProcessing = false;
+  let lastProcessed = 0;
 
   const tick = async () => {
     if (!isRunning || isProcessing) return;
     isProcessing = true;
     try {
-      cursor = await processBatch(qb, env, cursor, onIndexed);
+      const result = await processBatch(db, env, cursor, store);
+      cursor = result.cursor;
+      lastProcessed = result.processed;
+      if (result.processed > 0) {
+        await saveCursor(cursor);
+      }
     } finally {
       isProcessing = false;
       if (isRunning) {
-        setTimeout(tick, env.INDEXER_POLL_INTERVAL_MS);
+        const delay =
+          lastProcessed > 0 ? ACTIVE_DELAY_MS : env.INDEXER_POLL_INTERVAL_MS;
+        setTimeout(tick, delay);
       }
     }
   };

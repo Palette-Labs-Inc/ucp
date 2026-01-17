@@ -1,22 +1,29 @@
 # Identity Indexer
 
-Indexes ERC-8004 registrations from the Shovel tables via `idxs`, resolves each
-`agentURI`, fetches the referenced UCP discovery profile (`/.well-known/ucp`),
-and exposes a small HTTP API for domain-based lookups.
+Reads ERC-8004 registrations from Shovel tables (Postgres + Kysely), resolves each
+`agentURI` (from the registry ABI), fetches the referenced UCP discovery profile (`/.well-known/ucp`),
+and serves results from an in-memory cache.
 
 ## Prerequisites
 
 - Shovel is running and writing to Postgres.
-- An Index Supply-compatible API is available for `idxs` to query (local or remote).
 - `infra/shovel/contracts.json` includes the ERC-8004 `Registered` event with
   `agentURI` stored as `agent_uri`.
-- `IDXS_URL` (and `IDXS_API_KEY` if needed) are set in your environment.
+- `SHOVEL_PG_URL` is set in your environment (see `.env.template`).
 
 ## Development
 
 ```bash
 pnpm -C apps/identity-indexer install
 pnpm -C apps/identity-indexer dev
+```
+
+## Type generation (optional)
+
+Generate Kysely types from the live Shovel database:
+
+```bash
+pnpm -C apps/identity-indexer generate:db-types
 ```
 
 ## API
@@ -27,7 +34,9 @@ pnpm -C apps/identity-indexer dev
 
 ## Notes
 
-- The indexer polls the Shovel table `erc8004_identity_events` via `idxs` and
-  keeps an in-memory cache for domain lookups.
+- The indexer polls the Shovel table `erc8004_identity_events` (decoded via ABI) and keeps an
+  in-memory cache of resolved agents (recomputed on restart).
+- The poller persists its cursor to `identity-indexer.cursor.json` in the
+  working directory for fast resume.
 - If `agentURI` is unreachable or invalid, the record is skipped and retried on
   the next poll.

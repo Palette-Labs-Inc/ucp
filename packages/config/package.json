@@ -14,8 +14,8 @@
   ],
   "scripts": {
     "check": "tsc -p tsconfig.json --noEmit",
-    "generate-shovel-config": "node --import tsx src/infra/shovel-config.ts",
-    "shovel-abi-check": "node --import tsx src/infra/shovel-abi-check.ts"
+    "generate-shovel-config": "TSX_DISABLE_CACHE=1 node --import tsx src/infra/shovel-config.ts",
+    "shovel-abi-check": "TSX_DISABLE_CACHE=1 node --import tsx src/infra/shovel-abi-check.ts"
   },
   "dependencies": {
     "@indexsupply/shovel-config": "catalog:",

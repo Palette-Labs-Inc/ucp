@@ -57,6 +57,7 @@ services:
     restart: unless-stopped
 
     
+    
   foundry:
     image: ${FOUNDRY_IMAGE}
     working_dir: /repo/contracts

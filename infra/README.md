@@ -36,9 +36,10 @@ make infra-check
 The Shovel config generator lives in `packages/config` under the infra namespace
 (`src/infra/shovel-config.ts`), uses `@indexsupply/shovel-config`, and validates
 env via `@ucp/config/env`. Contract addresses are resolved from Foundry broadcast
-artifacts (the `run-latest.json` under the `deploy.broadcast_path` in
-`infra/shovel/contracts.json`), so deploy the contracts first if you’re starting
-from a clean checkout.
+artifacts under the `deploy.broadcast_path` in `infra/shovel/contracts.json`.
+For ERC-8004, the deploy scripts also write small JSON address files in
+`contracts/erc8004/broadcast/*.json`, which are used as fallbacks when
+`run-latest.json` is absent.
 
 All Shovel contract indexing share the same `SHOVEL_START_BLOCK`.
 
@@ -46,11 +47,22 @@ All Shovel contract indexing share the same `SHOVEL_START_BLOCK`.
 pnpm install
 ```
 
+## Indexer DB types (optional)
+
+If you're using the identity indexer, generate Kysely types from Postgres:
+
+```
+make indexer-db-types
+```
+
 ## Bring up infra
 
 ```
 make infra-up
 ```
+
+This boots Postgres + Anvil, deploys all ERC-8004 registries, deploys the
+payments escrow, generates the Shovel config, and starts Shovel.
 
 ## Logs
 ```
@@ -62,6 +74,23 @@ make shovel-logs
 
 ```
 make register-agent
+```
+
+## Deploy registries only
+
+```
+make deploy-identity
+make deploy-reputation
+make deploy-validation
+make deploy-registries
+```
+
+## Seed reputation + validation
+
+```
+make seed-reputation
+make seed-validation
+make seed-erc8004
 ```
 
 ## Tear down

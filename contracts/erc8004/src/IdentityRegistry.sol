@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.30;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
-import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import "./interfaces/IIdentityRegistry.sol";
+import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {ERC721URIStorage} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import {IIdentityRegistry} from "./interfaces/IIdentityRegistry.sol";
 
 contract IdentityRegistry is ERC721URIStorage, ReentrancyGuard, IIdentityRegistry {
     uint256 private _nextAgentId = 1;
@@ -53,7 +54,7 @@ contract IdentityRegistry is ERC721URIStorage, ReentrancyGuard, IIdentityRegistr
 
     function register(string calldata agentURI) external nonReentrant returns (uint256 agentId) {
         agentId = _mintAgent(msg.sender, agentURI);
-    }
+        }
 
     function register() external nonReentrant returns (uint256 agentId) {
         agentId = _mintAgent(msg.sender, "");
@@ -99,20 +100,18 @@ contract IdentityRegistry is ERC721URIStorage, ReentrancyGuard, IIdentityRegistr
         require(newWallet != address(0), "Invalid wallet address");
         require(block.timestamp <= deadline, "Signature expired");
 
-        bytes32 structHash = keccak256(
-            abi.encode(_SET_AGENT_WALLET_TYPEHASH, agentId, newWallet, deadline)
-        );
-        bytes32 digest = keccak256(abi.encodePacked("\x19\x01", _DOMAIN_SEPARATOR, structHash));
+        bytes32 structHash = _hashSetAgentWallet(agentId, newWallet, deadline);
+        bytes32 digest = _hashTypedData(structHash);
         require(SignatureChecker.isValidSignatureNow(newWallet, digest, signature), "Invalid signature");
 
         _agentWallet[agentId] = newWallet;
         emit AgentWalletSet(agentId, newWallet, msg.sender);
-    }
+        }
 
     function getAgentWallet(uint256 agentId) external view returns (address wallet) {
         _requireOwned(agentId);
         return _agentWallet[agentId];
-    }
+        }
 
     function totalAgents() external view returns (uint256 count) {
         return _nextAgentId - 1;
@@ -165,4 +164,31 @@ contract IdentityRegistry is ERC721URIStorage, ReentrancyGuard, IIdentityRegistr
         }
         return from;
     }
+
+    function _hashSetAgentWallet(uint256 agentId, address newWallet, uint256 deadline)
+        internal
+        pure
+        returns (bytes32 result)
+    {
+        bytes32 typehash = _SET_AGENT_WALLET_TYPEHASH;
+        assembly ("memory-safe") {
+            let ptr := mload(0x40)
+            mstore(ptr, typehash)
+            mstore(add(ptr, 0x20), agentId)
+            mstore(add(ptr, 0x40), newWallet)
+            mstore(add(ptr, 0x60), deadline)
+            result := keccak256(ptr, 0x80)
+        }
+    }
+
+    function _hashTypedData(bytes32 structHash) internal view returns (bytes32 result) {
+        bytes32 domainSeparator = _DOMAIN_SEPARATOR;
+        assembly ("memory-safe") {
+            let ptr := mload(0x40)
+            mstore(ptr, 0x1901)
+            mstore(add(ptr, 0x20), domainSeparator)
+            mstore(add(ptr, 0x40), structHash)
+            result := keccak256(add(ptr, 0x1e), 0x42)
+    }
+}
 }

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.30;
 
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 
 /// @title IIdentityRegistry
 /// @notice ERC-8004 Identity Registry interface (Jan 2026 update)
@@ -18,7 +18,7 @@ interface IIdentityRegistry is IERC721, IERC721Metadata {
 
     /// @notice Emitted when metadata is set for an agent
     event MetadataSet(
-        uint256 indexed agentId, 
+        uint256 indexed agentId,
         string indexed indexedMetadataKey, 
         string metadataKey, 
         bytes metadataValue

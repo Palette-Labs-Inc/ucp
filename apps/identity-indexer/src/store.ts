@@ -1,4 +1,19 @@
-import type { IndexedAgent } from "./indexer.js";
+import type { IdentityEventRow } from "./db.generated.js";
+
+export interface IndexedAgent {
+  chainId: IdentityEventRow["chain_id"];
+  agentId: IdentityEventRow["agent_id"];
+  agentUri: string;
+  owner: IdentityEventRow["owner"];
+  registry: IdentityEventRow["registry"];
+  domain: string | null;
+  ucpProfileUrl: string | null;
+  discoveryJson: unknown | null;
+  fetchedAt: Date | null;
+  sourceBlockNum: IdentityEventRow["block_num"];
+  sourceLogIdx: IdentityEventRow["log_idx"];
+  sourceTxHash: IdentityEventRow["tx_hash"];
+}
 
 export interface IndexerStore {
   upsert(agent: IndexedAgent): void;
@@ -6,13 +21,13 @@ export interface IndexerStore {
   getByDomain(domain: string): IndexedAgent | undefined;
 }
 
+function normalize(domain: string): string {
+  return domain.trim().toLowerCase();
+}
+
 export function createStore(): IndexerStore {
   const byDomain = new Map<string, IndexedAgent>();
   const byUpdated: IndexedAgent[] = [];
-
-  function normalize(domain: string): string {
-    return domain.trim().toLowerCase();
-  }
 
   return {
     upsert(agent) {

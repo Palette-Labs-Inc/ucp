@@ -58,10 +58,17 @@ help:
 	@echo "  make infra-clean           - remove .env + generated shovel config"
 	@echo "  make env-init              - create .env from .env.template if missing"
 	@echo "  make test-erc8004          - run ERC-8004 Foundry tests"
-	@echo "  make deploy-erc8004        - deploy ERC-8004 to Anvil"
+	@echo "  make deploy-identity       - deploy Identity Registry to Anvil"
+	@echo "  make deploy-reputation     - deploy Reputation Registry to Anvil"
+	@echo "  make deploy-validation     - deploy Validation Registry to Anvil"
+	@echo "  make deploy-registries     - deploy all ERC-8004 registries"
 	@echo "  make register-agent        - register a sample agent"
+	@echo "  make seed-reputation       - write a sample feedback entry"
+	@echo "  make seed-validation       - write a sample validation entry"
+	@echo "  make seed-erc8004          - register + seed feedback + validation"
 	@echo "  make deploy-commerce-payments - deploy payments escrow to Anvil"
 	@echo "  make infra-check           - build ABIs + validate + config JSON"
+	@echo "  make indexer-db-types      - generate Kysely DB types for indexer"
 	@echo "  make fmt                   - run formatting across TS + Python (if present)"
 	@echo "  make test                  - run all tests (ts + conformance)"
 
@@ -172,13 +179,42 @@ test-erc8004: check-docker anvil-wait
 	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" run --rm foundry \
 	  "cd /repo/contracts/erc8004 && forge test"
 
-.PHONY: deploy-erc8004
-deploy-erc8004: check-docker env-init anvil-wait
+.PHONY: deploy-identity
+deploy-identity: check-docker env-init anvil-wait
 	@mkdir -p "$(ERC8004_DIR)/broadcast"
 	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" run --rm \
 	  -e DEPLOYER_PRIVATE_KEY="$(ANVIL_DEPLOYER_KEY)" \
 	  foundry "cd /repo/contracts/erc8004 && forge script script/DeployIdentityRegistry.s.sol:DeployIdentityRegistry \
 	  --rpc-url $(ANVIL_DOCKER_URL) --broadcast"
+
+.PHONY: deploy-reputation
+deploy-reputation: check-docker env-init anvil-wait
+	@mkdir -p "$(ERC8004_DIR)/broadcast"
+	registry_address=$$(python3 -c 'import json, os, sys; \
+path=os.path.join("$(ERC8004_DIR)","broadcast","identity-registry.json"); \
+data=json.load(open(path)); \
+value=data.get("deployment", {}).get("identityRegistry"); \
+print(value) if value else (print(f"Missing identity registry address in {path}", file=sys.stderr) or sys.exit(1))'); \
+	docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" run --rm \
+	  -e DEPLOYER_PRIVATE_KEY="$(ANVIL_DEPLOYER_KEY)" \
+	  foundry "cd /repo/contracts/erc8004 && forge script script/DeployReputationRegistry.s.sol:DeployReputationRegistry \
+	  --rpc-url $(ANVIL_DOCKER_URL) --broadcast --sig 'run(address)' -- $$registry_address"
+
+.PHONY: deploy-validation
+deploy-validation: check-docker env-init anvil-wait
+	@mkdir -p "$(ERC8004_DIR)/broadcast"
+	registry_address=$$(python3 -c 'import json, os, sys; \
+path=os.path.join("$(ERC8004_DIR)","broadcast","identity-registry.json"); \
+data=json.load(open(path)); \
+value=data.get("deployment", {}).get("identityRegistry"); \
+print(value) if value else (print(f"Missing identity registry address in {path}", file=sys.stderr) or sys.exit(1))'); \
+	docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" run --rm \
+	  -e DEPLOYER_PRIVATE_KEY="$(ANVIL_DEPLOYER_KEY)" \
+	  foundry "cd /repo/contracts/erc8004 && forge script script/DeployValidationRegistry.s.sol:DeployValidationRegistry \
+	  --rpc-url $(ANVIL_DOCKER_URL) --broadcast --sig 'run(address)' -- $$registry_address"
+
+.PHONY: deploy-registries
+deploy-registries: deploy-identity deploy-reputation deploy-validation
 
 .PHONY: deploy-commerce-payments
 deploy-commerce-payments: check-docker env-init anvil-wait
@@ -204,7 +240,7 @@ infra-check: check-docker env-init
 	@echo "OK: valid JSON"
 
 .PHONY: infra-up
-infra-up: env-init anvil deploy-erc8004 deploy-commerce-payments shovel-up
+infra-up: env-init anvil deploy-registries deploy-commerce-payments shovel-up
 
 .PHONY: infra-down
 infra-down: check-docker env-init
@@ -218,14 +254,53 @@ infra-clean:
 register-agent: check-docker env-init anvil-wait
 	@mkdir -p "$(ERC8004_DIR)/broadcast"
 	registry_address=$$(python3 -c 'import json, os, sys; \
-path=os.path.join("$(ERC8004_DIR)","broadcast","DeployIdentityRegistry.s.sol","$(CHAIN_ID)","run-latest.json"); \
+path=os.path.join("$(ERC8004_DIR)","broadcast","identity-registry.json"); \
 data=json.load(open(path)); \
-value=data.get("returns", {}).get("registry", {}).get("value"); \
-print(value) if value else (print(f"Missing registry address in {path}", file=sys.stderr) or sys.exit(1))'); \
+value=data.get("deployment", {}).get("identityRegistry"); \
+print(value) if value else (print(f"Missing identity registry address in {path}", file=sys.stderr) or sys.exit(1))'); \
 	docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" run --rm \
 	  -e ANVIL_DEPLOYER_KEY="$(ANVIL_DEPLOYER_KEY)" \
 	  foundry "cd /repo/contracts/erc8004 && forge script script/SeedAgent.s.sol:SeedAgent \
 	  --rpc-url $(ANVIL_DOCKER_URL) --broadcast --sig 'run(address)' -- $$registry_address"
+
+.PHONY: seed-reputation
+seed-reputation: check-docker env-init anvil-wait
+	@mkdir -p "$(ERC8004_DIR)/broadcast"
+	identity_address=$$(python3 -c 'import json, os, sys; \
+path=os.path.join("$(ERC8004_DIR)","broadcast","identity-registry.json"); \
+data=json.load(open(path)); \
+value=data.get("deployment", {}).get("identityRegistry"); \
+print(value) if value else (print(f"Missing identity registry address in {path}", file=sys.stderr) or sys.exit(1))'); \
+	reputation_address=$$(python3 -c 'import json, os, sys; \
+path=os.path.join("$(ERC8004_DIR)","broadcast","reputation-registry.json"); \
+data=json.load(open(path)); \
+value=data.get("deployment", {}).get("reputationRegistry"); \
+print(value) if value else (print(f"Missing reputation registry address in {path}", file=sys.stderr) or sys.exit(1))'); \
+	docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" run --rm \
+	  -e ANVIL_DEPLOYER_KEY="$(ANVIL_DEPLOYER_KEY)" \
+	  foundry "cd /repo/contracts/erc8004 && forge script script/SeedReputation.s.sol:SeedReputation \
+	  --rpc-url $(ANVIL_DOCKER_URL) --broadcast --sig 'run(address,address)' -- $$identity_address $$reputation_address"
+
+.PHONY: seed-validation
+seed-validation: check-docker env-init anvil-wait
+	@mkdir -p "$(ERC8004_DIR)/broadcast"
+	identity_address=$$(python3 -c 'import json, os, sys; \
+path=os.path.join("$(ERC8004_DIR)","broadcast","identity-registry.json"); \
+data=json.load(open(path)); \
+value=data.get("deployment", {}).get("identityRegistry"); \
+print(value) if value else (print(f"Missing identity registry address in {path}", file=sys.stderr) or sys.exit(1))'); \
+	validation_address=$$(python3 -c 'import json, os, sys; \
+path=os.path.join("$(ERC8004_DIR)","broadcast","validation-registry.json"); \
+data=json.load(open(path)); \
+value=data.get("deployment", {}).get("validationRegistry"); \
+print(value) if value else (print(f"Missing validation registry address in {path}", file=sys.stderr) or sys.exit(1))'); \
+	docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" run --rm \
+	  -e ANVIL_DEPLOYER_KEY="$(ANVIL_DEPLOYER_KEY)" \
+	  foundry "cd /repo/contracts/erc8004 && forge script script/SeedValidation.s.sol:SeedValidation \
+	  --rpc-url $(ANVIL_DOCKER_URL) --broadcast --sig 'run(address,address)' -- $$identity_address $$validation_address"
+
+.PHONY: seed-erc8004
+seed-erc8004: register-agent seed-reputation seed-validation
 
 # --- conformance ---
 .PHONY: test-conformance
@@ -246,3 +321,7 @@ fmt:
 	@pnpm -r lint
 	@pnpm -r format
 	@./scripts/python_fmt.sh
+
+.PHONY: indexer-db-types
+indexer-db-types:
+	@pnpm -C apps/identity-indexer generate:db-types

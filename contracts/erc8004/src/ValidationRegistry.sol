@@ -5,7 +5,7 @@ import {IValidationRegistry} from "./interfaces/IValidationRegistry.sol";
 import {IIdentityRegistry} from "./interfaces/IIdentityRegistry.sol";
 
 contract ValidationRegistry is IValidationRegistry {
-    IIdentityRegistry public immutable identityRegistry;
+    IIdentityRegistry public immutable IDENTITY_REGISTRY;
 
     struct Request {
         address validatorAddress;
@@ -32,7 +32,7 @@ contract ValidationRegistry is IValidationRegistry {
         if (identityRegistryAddress == address(0)) {
             revert InvalidIdentityRegistryAddress();
         }
-        identityRegistry = IIdentityRegistry(identityRegistryAddress);
+        IDENTITY_REGISTRY = IIdentityRegistry(identityRegistryAddress);
     }
 
     function validationRequest(
@@ -43,10 +43,10 @@ contract ValidationRegistry is IValidationRegistry {
     ) external {
         require(bytes(requestURI).length > 0, "Empty requestURI");
         require(requestHash != bytes32(0), "Empty requestHash");
-        if (!identityRegistry.agentExists(agentId)) {
+        if (!IDENTITY_REGISTRY.agentExists(agentId)) {
             revert AgentNotFound(agentId);
         }
-        address owner = identityRegistry.ownerOf(agentId);
+        address owner = IDENTITY_REGISTRY.ownerOf(agentId);
         if (!_isAuthorized(owner, msg.sender, agentId)) {
             revert Unauthorized(msg.sender, owner);
         }
@@ -64,7 +64,7 @@ contract ValidationRegistry is IValidationRegistry {
         _validatorRequests[validatorAddress].push(requestHash);
 
         emit ValidationRequest(validatorAddress, agentId, requestURI, requestHash);
-    }
+        }
 
     function validationResponse(
         bytes32 requestHash,
@@ -145,12 +145,12 @@ contract ValidationRegistry is IValidationRegistry {
             count += 1;
         }
 
-        averageResponse = count > 0 ? uint8(total / count) : 0;
+        averageResponse = count > 0 ? _toUint8(total / count) : 0;
     }
 
     function getAgentValidations(uint256 agentId) external view returns (bytes32[] memory requestHashes) {
         return _agentRequests[agentId];
-    }
+        }
 
     function getValidatorRequests(address validatorAddress)
         external
@@ -162,7 +162,7 @@ contract ValidationRegistry is IValidationRegistry {
 
     function requestExists(bytes32 requestHash) external view returns (bool exists) {
         return _requestExists[requestHash];
-    }
+        }
 
     function getRequest(bytes32 requestHash)
         external
@@ -174,16 +174,16 @@ contract ValidationRegistry is IValidationRegistry {
         }
         Request storage request = _requests[requestHash];
         return (request.validatorAddress, request.agentId, request.requestURI, request.timestamp);
-    }
+        }
 
     function getIdentityRegistry() external view returns (address registry) {
-        return address(identityRegistry);
+        return address(IDENTITY_REGISTRY);
     }
 
     function _isAuthorized(address owner, address spender, uint256 tokenId) internal view returns (bool) {
         return spender == owner
-            || identityRegistry.getApproved(tokenId) == spender
-            || identityRegistry.isApprovedForAll(owner, spender);
+            || IDENTITY_REGISTRY.getApproved(tokenId) == spender
+            || IDENTITY_REGISTRY.isApprovedForAll(owner, spender);
     }
 
     function _containsValidator(address[] calldata validators, address validator)
@@ -195,5 +195,12 @@ contract ValidationRegistry is IValidationRegistry {
             if (validators[i] == validator) return true;
         }
         return false;
+    }
+
+    function _toUint8(uint256 value) internal pure returns (uint8 result) {
+        require(value <= type(uint8).max, "Value exceeds uint8");
+        assembly ("memory-safe") {
+            result := value
+        }
     }
 }
