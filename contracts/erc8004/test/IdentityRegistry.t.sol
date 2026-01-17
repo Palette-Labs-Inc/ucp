@@ -58,6 +58,15 @@ contract IdentityRegistryTest is Test {
         assertEq(identityRegistry.tokenURI(agentId), newUri);
     }
 
+    function test_SetAgentURI_Unauthorized() public {
+        vm.prank(alice);
+        uint256 agentId = identityRegistry.register(aliceUri);
+
+        vm.prank(bob);
+        vm.expectRevert(bytes("Not authorized"));
+        identityRegistry.setAgentURI(agentId, "https://example.com/blocked.json");
+    }
+
     function test_SetMetadata_ReservedKey() public {
         vm.prank(alice);
         uint256 agentId = identityRegistry.register(aliceUri);
@@ -65,6 +74,15 @@ contract IdentityRegistryTest is Test {
         vm.prank(alice);
         vm.expectRevert(bytes("Cannot set agentWallet via setMetadata"));
         identityRegistry.setMetadata(agentId, "agentWallet", bytes("0x00"));
+    }
+
+    function test_SetMetadata_Unauthorized() public {
+        vm.prank(alice);
+        uint256 agentId = identityRegistry.register(aliceUri);
+
+        vm.prank(bob);
+        vm.expectRevert(bytes("Not authorized"));
+        identityRegistry.setMetadata(agentId, "foo", bytes("bar"));
     }
 
     function test_SetAgentWallet() public {
@@ -137,5 +155,9 @@ contract IdentityRegistryTest is Test {
         vm.prank(alice);
         identityRegistry.transferFrom(alice, bob, agentId);
         assertEq(identityRegistry.getAgentWallet(agentId), address(0));
+    }
+
+    function test_AgentExists_False() public view {
+        assertFalse(identityRegistry.agentExists(1));
     }
 }

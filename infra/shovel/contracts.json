@@ -24,6 +24,79 @@
     }
   },
   {
+    "name": "erc8004_identity_uri_updates",
+    "forge_dir": "contracts/erc8004",
+    "abi": "contracts/erc8004/out/IdentityRegistry.sol/IdentityRegistry.json",
+    "table": {
+      "name": "erc8004_identity_uri_updates",
+      "address_column": "registry"
+    },
+    "env": {
+      "start_block": "SHOVEL_START_BLOCK"
+    },
+    "deploy": {
+      "broadcast_path": "contracts/erc8004/broadcast/DeployIdentityRegistry.s.sol",
+      "contract_name": "IdentityRegistry"
+    },
+    "event": {
+      "name": "URIUpdated",
+      "store": {
+        "agentId": "agent_id",
+        "newURI": "new_uri",
+        "updatedBy": "updated_by"
+      }
+    }
+  },
+  {
+    "name": "erc8004_identity_metadata_set",
+    "forge_dir": "contracts/erc8004",
+    "abi": "contracts/erc8004/out/IdentityRegistry.sol/IdentityRegistry.json",
+    "table": {
+      "name": "erc8004_identity_metadata_set",
+      "address_column": "registry"
+    },
+    "env": {
+      "start_block": "SHOVEL_START_BLOCK"
+    },
+    "deploy": {
+      "broadcast_path": "contracts/erc8004/broadcast/DeployIdentityRegistry.s.sol",
+      "contract_name": "IdentityRegistry"
+    },
+    "event": {
+      "name": "MetadataSet",
+      "store": {
+        "agentId": "agent_id",
+        "indexedMetadataKey": "indexed_metadata_key",
+        "metadataKey": "metadata_key",
+        "metadataValue": "metadata_value"
+      }
+    }
+  },
+  {
+    "name": "erc8004_identity_wallet_set",
+    "forge_dir": "contracts/erc8004",
+    "abi": "contracts/erc8004/out/IdentityRegistry.sol/IdentityRegistry.json",
+    "table": {
+      "name": "erc8004_identity_wallet_set",
+      "address_column": "registry"
+    },
+    "env": {
+      "start_block": "SHOVEL_START_BLOCK"
+    },
+    "deploy": {
+      "broadcast_path": "contracts/erc8004/broadcast/DeployIdentityRegistry.s.sol",
+      "contract_name": "IdentityRegistry"
+    },
+    "event": {
+      "name": "AgentWalletSet",
+      "store": {
+        "agentId": "agent_id",
+        "newWallet": "new_wallet",
+        "setBy": "set_by"
+      }
+    }
+  },
+  {
     "name": "commerce_payments_auth_capture_escrow",
     "forge_dir": "contracts/vendor/commerce-payments",
     "abi": "contracts/vendor/commerce-payments/out/AuthCaptureEscrow.sol/AuthCaptureEscrow.json",

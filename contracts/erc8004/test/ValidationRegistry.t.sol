@@ -106,6 +106,25 @@ contract ValidationRegistryTest is Test {
         validationRegistry.validationResponse(requestHash, 200, "", bytes32(0), "");
     }
 
+    function test_ValidationRequest_EmptyRequestUri() public {
+        vm.prank(alice);
+        uint256 agentId = identityRegistry.register(aliceUri);
+
+        bytes32 requestHash = keccak256("request");
+        vm.prank(alice);
+        vm.expectRevert(bytes("Empty requestURI"));
+        validationRegistry.validationRequest(bob, agentId, "", requestHash);
+    }
+
+    function test_ValidationRequest_EmptyRequestHash() public {
+        vm.prank(alice);
+        uint256 agentId = identityRegistry.register(aliceUri);
+
+        vm.prank(alice);
+        vm.expectRevert(bytes("Empty requestHash"));
+        validationRegistry.validationRequest(bob, agentId, "ipfs://request", bytes32(0));
+    }
+
     function test_GetValidationStatus() public {
         vm.prank(alice);
         uint256 agentId = identityRegistry.register(aliceUri);
@@ -124,5 +143,57 @@ contract ValidationRegistryTest is Test {
         assertEq(response, 90);
         assertEq(tag, "soft");
         assertTrue(lastUpdate > 0);
+    }
+
+    function test_RequestExistsAndGetRequest() public {
+        vm.prank(alice);
+        uint256 agentId = identityRegistry.register(aliceUri);
+
+        bytes32 requestHash = keccak256("request");
+        vm.prank(alice);
+        validationRegistry.validationRequest(bob, agentId, "ipfs://request", requestHash);
+
+        assertTrue(validationRegistry.requestExists(requestHash));
+        (address validatorAddress, uint256 storedAgentId, string memory requestURI, uint256 timestamp) =
+            validationRegistry.getRequest(requestHash);
+        assertEq(validatorAddress, bob);
+        assertEq(storedAgentId, agentId);
+        assertEq(requestURI, "ipfs://request");
+        assertTrue(timestamp > 0);
+    }
+
+    function test_GetAgentAndValidatorRequests() public {
+        vm.prank(alice);
+        uint256 agentId = identityRegistry.register(aliceUri);
+
+        bytes32 requestHash = keccak256("request");
+        vm.prank(alice);
+        validationRegistry.validationRequest(bob, agentId, "ipfs://request", requestHash);
+
+        bytes32[] memory agentRequests = validationRegistry.getAgentValidations(agentId);
+        assertEq(agentRequests.length, 1);
+        assertEq(agentRequests[0], requestHash);
+
+        bytes32[] memory validatorRequests = validationRegistry.getValidatorRequests(bob);
+        assertEq(validatorRequests.length, 1);
+        assertEq(validatorRequests[0], requestHash);
+    }
+
+    function test_GetSummary_Filtered() public {
+        vm.prank(alice);
+        uint256 agentId = identityRegistry.register(aliceUri);
+
+        bytes32 requestHash = keccak256("request");
+        vm.prank(alice);
+        validationRegistry.validationRequest(bob, agentId, "ipfs://request", requestHash);
+
+        vm.prank(bob);
+        validationRegistry.validationResponse(requestHash, 90, "ipfs://resp", bytes32(0), "soft");
+
+        address[] memory validators = new address[](1);
+        validators[0] = bob;
+        (uint64 count, uint8 average) = validationRegistry.getSummary(agentId, validators, "soft");
+        assertEq(count, 1);
+        assertEq(average, 90);
     }
 }
