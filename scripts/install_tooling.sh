@@ -6,7 +6,7 @@ source "${SCRIPT_DIR}/lib/uv.sh"
 
 echo "[tooling] installing js-sdk deps (npm)"
 if [ -d packages/js-sdk ]; then
-  (cd packages/js-sdk && npm ci) || true
+  (cd packages/js-sdk && npm ci)
 fi
 
 UV_BIN="$(resolve_uv_optional)"

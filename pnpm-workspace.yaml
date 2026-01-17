@@ -2,3 +2,16 @@ packages:
   - "apps/*"
   - "packages/*"
   - "spec"
+
+catalog:
+  ox: 0.11.3
+  "@indexsupply/indexsupply.js": 2.0.3
+  "@indexsupply/shovel-config": 0.0.18
+  abitype: 1.2.3
+  idxs: 0.0.6
+
+  zod: 4.3.5
+  dotenv: 17.2.3
+  "@types/node": 25.0.9
+  tsx: 4.21.0
+  typescript: 5.9.3

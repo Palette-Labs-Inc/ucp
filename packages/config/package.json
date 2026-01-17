@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./env": "./src/env.ts",
+    "./infra/shovel-config": "./src/infra/shovel-config.ts",
     ".": "./src/index.ts"
   },
   "types": "./src/index.ts",
@@ -12,14 +13,20 @@
     "src"
   ],
   "scripts": {
-    "check": "tsc -p tsconfig.json --noEmit"
+    "check": "tsc -p tsconfig.json --noEmit",
+    "generate-shovel-config": "node --import tsx src/infra/shovel-config.ts",
+    "shovel-abi-check": "node --import tsx src/infra/shovel-abi-check.ts"
   },
   "dependencies": {
-    "ox": "0.11.1",
-    "zod": "^3.23.8"
+    "@indexsupply/shovel-config": "catalog:",
+    "abitype": "catalog:",
+    "dotenv": "catalog:",
+    "ox": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "^20.12.7",
-    "typescript": "^5.4.5"
+    "@types/node": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
   }
 }

@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.30;
 
-import "forge-std/Script.sol";
-import "forge-std/StdJson.sol";
+import {Script} from "forge-std/Script.sol";
+import {stdJson} from "forge-std/StdJson.sol";
 
-import "../src/IdentityRegistry.sol";
+import {IdentityRegistry} from "../src/IdentityRegistry.sol";
 
 contract DeployIdentityRegistry is Script {
     using stdJson for string;

@@ -82,8 +82,8 @@ Copy the repo root template and edit as needed:
 cp .env.template .env
 ```
 
-This `.env` is used by `make` targets (deploy/seed/shovel-config) and the
-Shovel config template in `infra/shovel/`.
+This `.env` is used by `make` targets (deploy/seed/shovel-config) and
+`infra/shovel/contracts.json` (the Shovel config source of truth).
 
 Foreground mode and logs:
 
@@ -91,6 +91,8 @@ Foreground mode and logs:
 make anvil-fg
 make anvil-logs
 ```
+
+For the streamlined infra flow (Anvil + Shovel + ABI), see `docs/infra.md`.
 
 Run ERC-8004 tests or deploy to Anvil:
 

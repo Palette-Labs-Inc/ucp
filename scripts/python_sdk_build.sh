@@ -22,5 +22,5 @@ import importlib.util
 raise SystemExit(0 if importlib.util.find_spec("pytest") else 1)
 PY
 then
-  "${UV_BIN}" run pytest -q || true
+  "${UV_BIN}" run pytest -q
 fi

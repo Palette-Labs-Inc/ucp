@@ -28,24 +28,16 @@ ANVIL_AGENT_KEY ?= 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b7
 AGENT_DOMAIN ?= agent.local
 SHOVEL_CONFIG_DIR := $(CURDIR)/infra/shovel
 SHOVEL_OUTPUT_DIR := $(SHOVEL_CONFIG_DIR)/generated
-SHOVEL_TEMPLATE := $(SHOVEL_CONFIG_DIR)/ucp.local.template.json
 SHOVEL_CONFIG := $(SHOVEL_OUTPUT_DIR)/ucp.local.json
-SHOVEL_ABI_FILE := $(ERC8004_DIR)/out/IdentityRegistry.sol/IdentityRegistry.json
-COMMERCE_PAYMENTS_DIR := $(CURDIR)/contracts/vendor/commerce-payments
-PAYMENTS_ESCROW_ABI_FILE := $(COMMERCE_PAYMENTS_DIR)/out/AuthCaptureEscrow.sol/AuthCaptureEscrow.json
-ENV_SUBST ?= envsubst
+SHOVEL_CONTRACTS_CONFIG := $(SHOVEL_CONFIG_DIR)/contracts.json
 
 SHOVEL_PG_URL ?= postgres://postgres:postgres@postgres:5432/shovel
 ETH_RPC_URL ?= $(ANVIL_DOCKER_URL)
 SHOVEL_START_BLOCK ?= 0
-IDENTITY_REGISTRY_ADDRESS ?= 0x0000000000000000000000000000000000000000
-EVENT_NAME ?= AgentRegistered
 PAYMENTS_START_BLOCK ?= 0
-PAYMENTS_ESCROW_ADDRESS ?= 0x0000000000000000000000000000000000000000
-PAYMENTS_EVENT_NAME ?= PaymentCaptured
 
-export SHOVEL_PG_URL CHAIN_ID ETH_RPC_URL SHOVEL_START_BLOCK IDENTITY_REGISTRY_ADDRESS EVENT_NAME
-export PAYMENTS_START_BLOCK PAYMENTS_ESCROW_ADDRESS PAYMENTS_EVENT_NAME
+export SHOVEL_PG_URL CHAIN_ID ETH_RPC_URL SHOVEL_START_BLOCK
+export PAYMENTS_START_BLOCK
 
 .PHONY: help
 help:
@@ -66,14 +58,17 @@ help:
 	@echo "  make shovel-logs           - tail Shovel logs"
 	@echo "  make infra-up              - boot anvil + deploy + shovel"
 	@echo "  make infra-down            - stop all infra services"
+	@echo "  make infra-clean           - remove .env + generated shovel config"
 	@echo "  make env-init              - create .env from .env.template if missing"
 	@echo "  make test-erc8004          - run ERC-8004 Foundry tests"
 	@echo "  make deploy-erc8004        - deploy ERC-8004 to Anvil"
 	@echo "  make seed-erc8004          - register a sample agent"
-	@echo "  make shovel-config         - generate Shovel config from template"
+	@echo "  make shovel-config         - generate Shovel config from contracts.json"
 	@echo "  make shovel-config-check   - validate generated Shovel JSON"
-	@echo "  make shovel-abi-check      - verify event exists in ABI"
+	@echo "  make shovel-abi-check      - validate ABI event schemas"
 	@echo "  make deploy-commerce-payments     - deploy payments escrow to Anvil"
+	@echo "  make abi-build            - compile ABIs for shovel contracts"
+	@echo "  make shovel-abi-refresh   - build ABIs + validate + regen config"
 	@echo "  make fmt                   - run formatting across TS + Python (if present)"
 	@echo "  make test                  - run all tests (ts + conformance)"
 
@@ -137,7 +132,7 @@ env-init:
 
 .PHONY: anvil
 anvil: check-docker env-init
-	@./scripts/anvil_up.sh "$(ANVIL_COMPOSE_FILE)" detached "$(ENV_FILE)" postgres anvil
+	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" up -d postgres anvil
 
 .PHONY: anvil-wait
 anvil-wait: check-docker env-init
@@ -150,20 +145,19 @@ anvil-wait: check-docker env-init
 
 .PHONY: anvil-fg
 anvil-fg: check-docker env-init
-	@./scripts/anvil_up.sh "$(ANVIL_COMPOSE_FILE)" foreground "$(ENV_FILE)" postgres anvil
+	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" up postgres anvil
 
 .PHONY: anvil-down
 anvil-down: check-docker env-init
-	@./scripts/anvil_down.sh "$(ANVIL_COMPOSE_FILE)" "$(ENV_FILE)"
-	@rm -f "$(ENV_FILE)" "$(SHOVEL_CONFIG)"
+	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" down
 
 .PHONY: anvil-logs
 anvil-logs: check-docker env-init
-	@./scripts/anvil_logs.sh "$(ANVIL_COMPOSE_FILE)" "$(ENV_FILE)"
+	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" logs -f anvil
 
 # --- shovel (docker) ---
 .PHONY: shovel-up
-shovel-up: check-docker env-init
+shovel-up: check-docker env-init shovel-config
 	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" up -d shovel
 
 .PHONY: shovel-logs
@@ -172,15 +166,11 @@ shovel-logs: check-docker env-init
 
 # --- shovel (index supply) ---
 .PHONY: shovel-config
-shovel-config: env-init $(SHOVEL_TEMPLATE)
-	@./scripts/generate_shovel_config.sh \
+shovel-config: env-init $(SHOVEL_CONTRACTS_CONFIG)
+	@pnpm -C packages/config run generate-shovel-config -- \
 		"$(ENV_FILE)" \
-		"$(SHOVEL_TEMPLATE)" \
-		"$(SHOVEL_CONFIG)" \
-		"$(SHOVEL_ABI_FILE)" \
-		"$(EVENT_NAME)" \
-		"$(PAYMENTS_ESCROW_ABI_FILE)" \
-		"$(PAYMENTS_EVENT_NAME)"
+		"$(SHOVEL_CONTRACTS_CONFIG)" \
+		"$(SHOVEL_CONFIG)"
 
 .PHONY: shovel-config-check
 shovel-config-check: shovel-config
@@ -189,11 +179,8 @@ shovel-config-check: shovel-config
 
 .PHONY: shovel-abi-check
 shovel-abi-check: env-init
-	@./scripts/check_shovel_abi.sh \
-		"$(SHOVEL_ABI_FILE)" \
-		"$(EVENT_NAME)" \
-		"$(PAYMENTS_ESCROW_ABI_FILE)" \
-		"$(PAYMENTS_EVENT_NAME)"
+	@pnpm -C packages/config run shovel-abi-check -- \
+		"$(SHOVEL_CONTRACTS_CONFIG)"
 
 
 
@@ -211,7 +198,6 @@ deploy-erc8004: check-docker env-init anvil-wait
 	  -e DEPLOYER_PRIVATE_KEY="$(ANVIL_DEPLOYER_KEY)" \
 	  foundry "cd /repo/contracts/erc8004 && forge script script/DeployIdentityRegistry.s.sol:DeployIdentityRegistry \
 	  --rpc-url $(ANVIL_DOCKER_URL) --broadcast"
-	@./scripts/update_identity_registry_env.sh "$(ENV_FILE)" "$(ERC8004_DIR)" "$(CHAIN_ID)"
 
 .PHONY: deploy-commerce-payments
 deploy-commerce-payments: check-docker env-init anvil-wait
@@ -219,15 +205,26 @@ deploy-commerce-payments: check-docker env-init anvil-wait
 		"$(ANVIL_COMPOSE_FILE)" \
 		"$(ENV_FILE)" \
 		"$(ANVIL_DOCKER_URL)" \
-		"$(ANVIL_DEPLOYER_KEY)" \
-		"$(COMMERCE_PAYMENTS_DIR)" \
-		"$(CHAIN_ID)"
+		"$(ANVIL_DEPLOYER_KEY)"
+
+.PHONY: abi-build
+abi-build: check-docker env-init
+	@./scripts/build_contract_abis.sh \
+		"$(ANVIL_COMPOSE_FILE)" \
+		"$(ENV_FILE)" \
+		"$(SHOVEL_CONTRACTS_CONFIG)"
+
+.PHONY: shovel-abi-refresh
+shovel-abi-refresh: abi-build shovel-abi-check shovel-config
 
 .PHONY: infra-up
 infra-up: env-init anvil deploy-erc8004 deploy-commerce-payments shovel-config shovel-up
 
 .PHONY: infra-down
 infra-down: env-init anvil-down
+
+.PHONY: infra-clean
+infra-clean:
 	@rm -f "$(ENV_FILE)" "$(SHOVEL_CONFIG)"
 
 .PHONY: seed-erc8004
@@ -255,6 +252,6 @@ test: test-ts test-conformance
 
 .PHONY: fmt
 fmt:
-	@pnpm -r lint || true
-	@pnpm -r format || true
-	@./scripts/python_fmt.sh || true
+	@pnpm -r lint
+	@pnpm -r format
+	@./scripts/python_fmt.sh

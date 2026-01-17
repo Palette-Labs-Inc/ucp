@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.30;
 
-import "forge-std/Script.sol";
-import "forge-std/StdJson.sol";
+import {Script} from "forge-std/Script.sol";
+import {stdJson} from "forge-std/StdJson.sol";
 
-import "../src/IdentityRegistry.sol";
+import {IdentityRegistry} from "../src/IdentityRegistry.sol";
 
 contract SeedAgent is Script {
     using stdJson for string;
@@ -22,13 +22,9 @@ contract SeedAgent is Script {
     }
 
     function _resolveRegistry() private view returns (address registry) {
-        if (vm.envOr("IDENTITY_REGISTRY", address(0)) != address(0)) {
-            return vm.envAddress("IDENTITY_REGISTRY");
+        registry = vm.envAddress("IDENTITY_REGISTRY");
+        if (registry == address(0)) {
+            revert("IDENTITY_REGISTRY is required");
         }
-
-        string memory root = vm.projectRoot();
-        string memory outFile = string.concat(root, "/broadcast/identity-registry.json");
-        string memory json = vm.readFile(outFile);
-        registry = json.readAddress(".identityRegistry");
     }
 }

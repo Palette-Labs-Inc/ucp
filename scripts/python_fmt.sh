@@ -2,5 +2,5 @@
 set -euo pipefail
 
 if [ -d py ]; then
-  (cd py && ruff check . && ruff format .) || true
+  (cd py && ruff check . && ruff format .)
 fi

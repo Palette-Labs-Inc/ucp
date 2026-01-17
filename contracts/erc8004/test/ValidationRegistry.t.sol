@@ -4,7 +4,6 @@ pragma solidity ^0.8.30;
 import {Test} from "forge-std/Test.sol";
 import {ValidationRegistry} from "../src/ValidationRegistry.sol";
 import {IdentityRegistry} from "../src/IdentityRegistry.sol";
-import {Constants} from "../src/libraries/Constants.sol";
 
 contract ValidationRegistryTest is Test {
     IdentityRegistry identityRegistry;

@@ -2,6 +2,12 @@
   "name": "ucp-monorepo",
   "private": true,
   "packageManager": "pnpm@9.12.2",
+  "devDependencies": {
+    "@indexsupply/shovel-config": "0.0.18",
+    "@types/node": "25.0.9",
+    "tsx": "4.21.0",
+    "typescript": "5.9.3"
+  },
   "scripts": {
     "generate:ts": "node spec/generate_ts_schema_types.js"
   }

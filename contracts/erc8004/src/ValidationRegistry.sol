@@ -6,7 +6,7 @@ import {IIdentityRegistry} from "./interfaces/IIdentityRegistry.sol";
 import {Constants} from "./libraries/Constants.sol";
 
 contract ValidationRegistry is IValidationRegistry {
-    IIdentityRegistry public immutable identityRegistry;
+    IIdentityRegistry private immutable IDENTITY_REGISTRY;
 
     uint256 public ttl;
     mapping(bytes32 dataHash => Request request) private _requests;
@@ -19,8 +19,12 @@ contract ValidationRegistry is IValidationRegistry {
             revert InvalidIdentityRegistryAddress();
         }
 
-        identityRegistry = IIdentityRegistry(identityRegistryAddress);
+        IDENTITY_REGISTRY = IIdentityRegistry(identityRegistryAddress);
         ttl = requestTtl;
+    }
+
+    function identityRegistry() public view returns (IIdentityRegistry) {
+        return IDENTITY_REGISTRY;
     }
 
     /// @inheritdoc IValidationRegistry
@@ -31,12 +35,12 @@ contract ValidationRegistry is IValidationRegistry {
             revert AlreadyRequested(request.agentValidatorId, request.agentServerId, dataHash);
         }
 
-        (,, address validatorAddress) = identityRegistry.getAgent(agentValidatorId);
+        (,, address validatorAddress) = IDENTITY_REGISTRY.getAgent(agentValidatorId);
         if (validatorAddress == Constants.AGENT_ADDRESS_NONE) {
             revert AgentNotFound(agentValidatorId);
         }
 
-        (,, address serverAddress) = identityRegistry.getAgent(agentServerId);
+        (,, address serverAddress) = IDENTITY_REGISTRY.getAgent(agentServerId);
         if (serverAddress == Constants.AGENT_ADDRESS_NONE) {
             revert AgentNotFound(agentServerId);
         }
@@ -63,7 +67,7 @@ contract ValidationRegistry is IValidationRegistry {
             revert AlreadyResponded(request.agentValidatorId, request.agentServerId, dataHash);
         }
 
-        (,, address validatorAddress) = identityRegistry.getAgent(request.agentValidatorId);
+        (,, address validatorAddress) = IDENTITY_REGISTRY.getAgent(request.agentValidatorId);
         if (validatorAddress == Constants.AGENT_ADDRESS_NONE) {
             revert AgentNotFound(request.agentValidatorId);
         }

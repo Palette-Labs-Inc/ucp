@@ -6,7 +6,7 @@ import {IIdentityRegistry} from "./interfaces/IIdentityRegistry.sol";
 import {Constants} from "./libraries/Constants.sol";
 
 contract ReputationRegistry is IReputationRegistry {
-    IIdentityRegistry public immutable identityRegistry;
+    IIdentityRegistry private immutable IDENTITY_REGISTRY;
 
     uint256 private _feedbackCount;
 
@@ -18,17 +18,21 @@ contract ReputationRegistry is IReputationRegistry {
         }
 
         _feedbackCount = 0;
-        identityRegistry = IIdentityRegistry(identityRegistryAddress);
+        IDENTITY_REGISTRY = IIdentityRegistry(identityRegistryAddress);
+    }
+
+    function identityRegistry() public view returns (IIdentityRegistry) {
+        return IDENTITY_REGISTRY;
     }
 
     /// @inheritdoc IReputationRegistry
     function acceptFeedback(uint256 agentClientId, uint256 agentServerId) external {
-        (,, address agentClientAddress) = identityRegistry.getAgent(agentClientId);
+        (,, address agentClientAddress) = IDENTITY_REGISTRY.getAgent(agentClientId);
         if (agentClientAddress == Constants.AGENT_ADDRESS_NONE) {
             revert AgentNotFound(agentClientId);
         }
 
-        (,, address agentServerAddress) = identityRegistry.getAgent(agentServerId);
+        (,, address agentServerAddress) = IDENTITY_REGISTRY.getAgent(agentServerId);
         if (agentServerAddress == Constants.AGENT_ADDRESS_NONE) {
             revert AgentNotFound(agentServerId);
         }

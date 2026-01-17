@@ -1,0 +1,51 @@
+[
+  {
+    "name": "erc8004_identity_registry",
+    "forge_dir": "contracts/erc8004",
+    "abi": "contracts/erc8004/out/IdentityRegistry.sol/IdentityRegistry.json",
+    "table": {
+      "name": "erc8004_identity_events",
+      "address_column": "registry"
+    },
+    "env": {
+      "start_block": "SHOVEL_START_BLOCK"
+    },
+    "deploy": {
+      "broadcast_path": "contracts/erc8004/broadcast/DeployIdentityRegistry.s.sol",
+      "contract_name": "IdentityRegistry"
+    },
+    "event": {
+      "name": "AgentRegistered",
+      "store": {
+        "agentId": "agent_id",
+        "agentDomain": "agent_domain",
+        "agentAddress": "agent_address"
+      }
+    }
+  },
+  {
+    "name": "commerce_payments_auth_capture_escrow",
+    "forge_dir": "contracts/vendor/commerce-payments",
+    "abi": "contracts/vendor/commerce-payments/out/AuthCaptureEscrow.sol/AuthCaptureEscrow.json",
+    "table": {
+      "name": "commerce_payments_captures",
+      "address_column": "escrow"
+    },
+    "env": {
+      "start_block": "PAYMENTS_START_BLOCK"
+    },
+    "deploy": {
+      "broadcast_path": "contracts/vendor/commerce-payments/broadcast/Deploy.s.sol",
+      "contract_name": "AuthCaptureEscrow"
+    },
+    "event": {
+      "name": "PaymentCaptured",
+      "store": {
+        "paymentInfoHash": "payment_info_hash",
+        "amount": "amount",
+        "feeBps": "fee_bps",
+        "feeReceiver": "fee_receiver"
+      }
+    }
+  }
+]

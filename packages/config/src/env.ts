@@ -1,4 +1,4 @@
-import { Address, Hex } from "ox";
+import { Hex } from "ox";
 import { z } from "zod";
 
 function isHttpUrl(url: string): boolean {
@@ -20,42 +20,23 @@ function toHex(value: string): Hex.Hex {
   return Hex.fromString(value);
 }
 
-function isAddress(value: string): boolean {
-  return Address.validate(value);
-}
-
-function toAddress(value: string): Address.Address {
-  return Address.from(value);
-}
-
 const hexSchema = z.string().refine(isHex, "Expected 0x-prefixed hex string").transform(toHex);
-const addressSchema = z
-  .string()
-  .refine(isAddress, "Expected 0x-prefixed 20-byte hex address")
-  .transform(toAddress);
-
 export const EnvSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 
   // infra
   ANVIL_RPC_URL: httpUrl.default("http://127.0.0.1:8545"),
+  ETH_RPC_URL: httpUrl.optional(),
   CHAIN_ID: z.coerce.number().int().positive().default(31337),
-
-  // postgres
-  DATABASE_URL: z.string().min(1),
-
-  // contracts
-  IDENTITY_REGISTRY_ADDRESS: z.preprocess(normalizeOptionalString, addressSchema).optional(),
-  ESCROW_ADDRESS: z.preprocess(normalizeOptionalString, addressSchema).optional(),
-  REWARDS_TOKEN_ADDRESS: z.preprocess(normalizeOptionalString, addressSchema).optional(),
 
   // anvil keys
   ANVIL_DEPLOYER_KEY: z.preprocess(normalizeOptionalString, hexSchema).optional(),
   ANVIL_AGENT_KEY: z.preprocess(normalizeOptionalString, hexSchema).optional(),
 
   // shovel
-  SHOVEL_PG_URL: z.string().min(1).optional(),
-  SHOVEL_START_BLOCK: z.coerce.number().int().min(0).default(0)
+  SHOVEL_PG_URL: z.string().min(1),
+  SHOVEL_START_BLOCK: z.coerce.number().int().min(0).default(0),
+  PAYMENTS_START_BLOCK: z.coerce.number().int().min(0).default(0)
 });
 
 export interface Env extends z.infer<typeof EnvSchema> {}
