@@ -19,18 +19,18 @@ You can pin Docker images by setting these in `.env`:
 - `FOUNDRY_IMAGE` (Foundry/Anvil/Forge)
 - `SHOVEL_IMAGE` (Shovel)
 
-## Build ABIs + generate Shovel config
+## Validate + generate (recommended)
 
 ```
-make abi-build
-make shovel-abi-check
-make shovel-config
+make infra-check
 ```
 
-Or use the combined target:
+This runs ABI build, ABI checks, Shovel config generation, and JSON validation.
+
+Or run the full infra validation pipeline:
 
 ```
-make shovel-abi-refresh
+make infra-check
 ```
 
 The Shovel config generator lives in `packages/config` under the infra namespace
@@ -59,7 +59,7 @@ make shovel-logs
 ## Seed an agent (requires IDENTITY_REGISTRY)
 
 ```
-IDENTITY_REGISTRY=0x... make seed-erc8004
+make seed-erc8004
 ```
 
 ## Tear down
