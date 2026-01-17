@@ -31,7 +31,6 @@ export const EnvSchema = z.object({
 
   // anvil keys
   ANVIL_DEPLOYER_KEY: z.preprocess(normalizeOptionalString, hexSchema).optional(),
-  ANVIL_AGENT_KEY: z.preprocess(normalizeOptionalString, hexSchema).optional(),
 
   // shovel
   SHOVEL_PG_URL: z.string().min(1),

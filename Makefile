@@ -24,8 +24,6 @@ ANVIL_PORT ?= 8545
 ANVIL_DOCKER_URL ?= http://anvil:$(ANVIL_PORT)
 CHAIN_ID ?= 31337
 ANVIL_DEPLOYER_KEY ?= 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-ANVIL_AGENT_KEY ?= 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
-AGENT_DOMAIN ?= agent.local
 SHOVEL_CONFIG_DIR := $(CURDIR)/infra/shovel
 SHOVEL_OUTPUT_DIR := $(SHOVEL_CONFIG_DIR)/generated
 SHOVEL_CONFIG := $(SHOVEL_OUTPUT_DIR)/ucp.local.json
@@ -225,8 +223,7 @@ data=json.load(open(path)); \
 value=data.get("returns", {}).get("registry", {}).get("value"); \
 print(value) if value else (print(f"Missing registry address in {path}", file=sys.stderr) or sys.exit(1))'); \
 	docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" run --rm \
-	  -e AGENT_PRIVATE_KEY="$(ANVIL_AGENT_KEY)" \
-	  -e AGENT_DOMAIN="$(AGENT_DOMAIN)" \
+	  -e ANVIL_DEPLOYER_KEY="$(ANVIL_DEPLOYER_KEY)" \
 	  foundry "cd /repo/contracts/erc8004 && forge script script/SeedAgent.s.sol:SeedAgent \
 	  --rpc-url $(ANVIL_DOCKER_URL) --broadcast --sig 'run(address)' -- $$registry_address"
 
