@@ -173,24 +173,14 @@ shovel-logs: check-docker env-init
 # --- shovel (index supply) ---
 .PHONY: shovel-config
 shovel-config: env-init $(SHOVEL_TEMPLATE)
-	@mkdir -p "$(SHOVEL_OUTPUT_DIR)"
-	@jq -e '.abi[] | select(.type=="event" and .name=="$(EVENT_NAME)")' \
-		"$(SHOVEL_ABI_FILE)" >/dev/null || { \
-		echo "Event $(EVENT_NAME) not found in $(SHOVEL_ABI_FILE)"; \
-		exit 1; \
-	}
-	@jq -e '.abi[] | select(.type=="event" and .name=="$(PAYMENTS_EVENT_NAME)")' \
-		"$(PAYMENTS_ESCROW_ABI_FILE)" >/dev/null || { \
-		echo "Event $(PAYMENTS_EVENT_NAME) not found in $(PAYMENTS_ESCROW_ABI_FILE)"; \
-		exit 1; \
-	}
-	@echo "Generating $(SHOVEL_CONFIG) from $(SHOVEL_TEMPLATE)..."
-	@bash -c 'set -a; . "$(ENV_FILE)"; set +a; \
-		$(ENV_SUBST) < "$(SHOVEL_TEMPLATE)" | \
-		jq '"'"'.eth_sources[0].chain_id |= tonumber \
-			| .integrations[0].sources[0].start |= tonumber \
-			| .integrations[1].sources[0].start |= tonumber'"'"' \
-		> "$(SHOVEL_CONFIG)"'
+	@./scripts/generate_shovel_config.sh \
+		"$(ENV_FILE)" \
+		"$(SHOVEL_TEMPLATE)" \
+		"$(SHOVEL_CONFIG)" \
+		"$(SHOVEL_ABI_FILE)" \
+		"$(EVENT_NAME)" \
+		"$(PAYMENTS_ESCROW_ABI_FILE)" \
+		"$(PAYMENTS_EVENT_NAME)"
 
 .PHONY: shovel-config-check
 shovel-config-check: shovel-config
@@ -199,11 +189,11 @@ shovel-config-check: shovel-config
 
 .PHONY: shovel-abi-check
 shovel-abi-check: env-init
-	@jq -e '.abi[] | select(.type=="event" and .name=="$(EVENT_NAME)")' \
-		"$(SHOVEL_ABI_FILE)" >/dev/null
-	@jq -e '.abi[] | select(.type=="event" and .name=="$(PAYMENTS_EVENT_NAME)")' \
-		"$(PAYMENTS_ESCROW_ABI_FILE)" >/dev/null
-	@echo "OK: events $(EVENT_NAME), $(PAYMENTS_EVENT_NAME) found in ABI"
+	@./scripts/check_shovel_abi.sh \
+		"$(SHOVEL_ABI_FILE)" \
+		"$(EVENT_NAME)" \
+		"$(PAYMENTS_ESCROW_ABI_FILE)" \
+		"$(PAYMENTS_EVENT_NAME)"
 
 
 
@@ -225,14 +215,13 @@ deploy-erc8004: check-docker env-init anvil-wait
 
 .PHONY: deploy-commerce-payments
 deploy-commerce-payments: check-docker env-init anvil-wait
-	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" run --rm \
-	  -e DEPLOYER_PRIVATE_KEY="$(ANVIL_DEPLOYER_KEY)" \
-	  foundry "cd /repo/contracts/vendor/commerce-payments && \
-	  DEPLOYER_ADDRESS=\$$(cast wallet address $(ANVIL_DEPLOYER_KEY)) && \
-	  forge script script/Deploy.s.sol:Deploy \
-	  --rpc-url $(ANVIL_DOCKER_URL) --broadcast \
-	  --sender \$${DEPLOYER_ADDRESS} --private-key $(ANVIL_DEPLOYER_KEY)"
-	@./scripts/update_payments_env.sh "$(ENV_FILE)" "$(COMMERCE_PAYMENTS_DIR)" "$(CHAIN_ID)"
+	@./scripts/deploy_commerce_payments.sh \
+		"$(ANVIL_COMPOSE_FILE)" \
+		"$(ENV_FILE)" \
+		"$(ANVIL_DOCKER_URL)" \
+		"$(ANVIL_DEPLOYER_KEY)" \
+		"$(COMMERCE_PAYMENTS_DIR)" \
+		"$(CHAIN_ID)"
 
 .PHONY: infra-up
 infra-up: env-init anvil deploy-erc8004 deploy-commerce-payments shovel-config shovel-up
