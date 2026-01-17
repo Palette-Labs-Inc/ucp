@@ -83,6 +83,9 @@ importers:
       '@ucp/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ucp/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       hono:
         specifier: 'catalog:'
         version: 4.11.4
@@ -117,6 +120,9 @@ importers:
       '@indexsupply/shovel-config':
         specifier: 'catalog:'
         version: 0.0.18
+      '@ucp/contracts':
+        specifier: workspace:*
+        version: link:../contracts
       abitype:
         specifier: 'catalog:'
         version: 1.2.3(typescript@5.9.3)(zod@4.3.5)
@@ -129,6 +135,22 @@ importers:
       zod:
         specifier: 'catalog:'
         version: 4.3.5
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.9
+      tsx:
+        specifier: 'catalog:'
+        version: 4.21.0
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  packages/contracts:
+    dependencies:
+      abitype:
+        specifier: 'catalog:'
+        version: 1.2.3(typescript@5.9.3)(zod@4.3.5)
     devDependencies:
       '@types/node':
         specifier: 'catalog:'

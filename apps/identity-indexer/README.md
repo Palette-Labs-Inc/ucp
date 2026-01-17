@@ -7,7 +7,7 @@ and serves results from an in-memory cache.
 ## Prerequisites
 
 - Shovel is running and writing to Postgres.
-- `infra/shovel/contracts.json` includes the ERC-8004 `Registered` event with
+- The Shovel config generator includes the ERC-8004 `Registered` event with
   `agentURI` stored as `agent_uri`.
 - `SHOVEL_PG_URL` is set in your environment (see `.env.template`).
 

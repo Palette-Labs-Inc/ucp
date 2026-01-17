@@ -12,6 +12,7 @@
     "@hono/node-server": "catalog:",
     "@ucp/config": "workspace:*",
     "@ucp-js/sdk": "workspace:*",
+    "@ucp/contracts": "workspace:*",
     "hono": "catalog:",
     "kysely": "catalog:",
     "pg": "catalog:",

@@ -27,7 +27,6 @@ ANVIL_DEPLOYER_KEY ?= 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7b
 SHOVEL_CONFIG_DIR := $(CURDIR)/infra/shovel
 SHOVEL_OUTPUT_DIR := $(SHOVEL_CONFIG_DIR)/generated
 SHOVEL_CONFIG := $(SHOVEL_OUTPUT_DIR)/ucp.local.json
-SHOVEL_CONTRACTS_CONFIG := $(SHOVEL_CONFIG_DIR)/contracts.json
 
 SHOVEL_PG_URL ?= postgres://postgres:postgres@postgres:5432/shovel
 ETH_RPC_URL ?= $(ANVIL_DOCKER_URL)
@@ -67,7 +66,10 @@ help:
 	@echo "  make seed-validation       - write a sample validation entry"
 	@echo "  make seed-erc8004          - register + seed feedback + validation"
 	@echo "  make deploy-commerce-payments - deploy payments escrow to Anvil"
-	@echo "  make infra-check           - build ABIs + validate + config JSON"
+	@echo "  make infra-check           - build ABIs + typegen + shovel config"
+	@echo "  make shovel-config         - generate shovel config JSON"
+	@echo "  make build-contract-abis   - build contract ABIs via Foundry"
+	@echo "  make generate-contracts    - generate TS ABIs/types from artifacts"
 	@echo "  make indexer-db-types      - generate Kysely DB types for indexer"
 	@echo "  make fmt                   - run formatting across TS + Python (if present)"
 	@echo "  make test                  - run all tests (ts + conformance)"
@@ -156,8 +158,16 @@ anvil-logs: check-docker env-init
 	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" logs -f anvil
 
 # --- shovel (docker) ---
+.PHONY: shovel-config
+shovel-config: check-docker env-init
+	@pnpm -C packages/config run generate-shovel-config -- \
+		"$(ENV_FILE)" \
+		"$(SHOVEL_CONFIG)"
+	@python3 -m json.tool "$(SHOVEL_CONFIG)" >/dev/null
+	@echo "OK: valid JSON"
+
 .PHONY: shovel-up
-shovel-up: check-docker env-init infra-check
+shovel-up: check-docker env-init shovel-config
 	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" up -d shovel
 
 .PHONY: shovel-logs
@@ -167,11 +177,6 @@ shovel-logs: check-docker env-init
 .PHONY: shovel-down
 shovel-down: check-docker env-init
 	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" stop shovel
-
-# --- shovel (index supply) ---
-
-
-
 
 # --- erc8004 (foundry) ---
 .PHONY: test-erc8004
@@ -226,21 +231,22 @@ deploy-commerce-payments: check-docker env-init anvil-wait
 
 .PHONY: infra-check
 infra-check: check-docker env-init
-	@./scripts/build_contract_abis.sh \
+	@$(MAKE) build-contract-abis
+	@$(MAKE) generate-contracts
+	@$(MAKE) shovel-config
+
+.PHONY: build-contract-abis
+build-contract-abis: check-docker env-init
+	@bash ./scripts/build_contract_abis.sh \
 		"$(ANVIL_COMPOSE_FILE)" \
-		"$(ENV_FILE)" \
-		"$(SHOVEL_CONTRACTS_CONFIG)"
-	@pnpm -C packages/config run shovel-abi-check -- \
-		"$(SHOVEL_CONTRACTS_CONFIG)"
-	@pnpm -C packages/config run generate-shovel-config -- \
-		"$(ENV_FILE)" \
-		"$(SHOVEL_CONTRACTS_CONFIG)" \
-		"$(SHOVEL_CONFIG)"
-	@python3 -m json.tool "$(SHOVEL_CONFIG)" >/dev/null
-	@echo "OK: valid JSON"
+		"$(ENV_FILE)"
+
+.PHONY: generate-contracts
+generate-contracts:
+	@pnpm -C packages/contracts generate
 
 .PHONY: infra-up
-infra-up: env-init anvil deploy-registries deploy-commerce-payments shovel-up
+infra-up: env-init anvil deploy-registries deploy-commerce-payments generate-contracts shovel-config shovel-up
 
 .PHONY: infra-down
 infra-down: check-docker env-init

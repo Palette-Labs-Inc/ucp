@@ -5,6 +5,9 @@
   "type": "module",
   "exports": {
     "./env": "./src/env.ts",
+    "./infra/shovel-types": "./src/infra/shovel-types.ts",
+    "./infra/shovel-utils": "./src/infra/shovel-utils.ts",
+    "./infra/shovel-integrations": "./src/infra/shovel-integrations.ts",
     "./infra/shovel-config": "./src/infra/shovel-config.ts",
     ".": "./src/index.ts"
   },
@@ -14,11 +17,11 @@
   ],
   "scripts": {
     "check": "tsc -p tsconfig.json --noEmit",
-    "generate-shovel-config": "TSX_DISABLE_CACHE=1 node --import tsx src/infra/shovel-config.ts",
-    "shovel-abi-check": "TSX_DISABLE_CACHE=1 node --import tsx src/infra/shovel-abi-check.ts"
+    "generate-shovel-config": "TSX_DISABLE_CACHE=1 node --import tsx src/infra/shovel-config.ts"
   },
   "dependencies": {
     "@indexsupply/shovel-config": "catalog:",
+    "@ucp/contracts": "workspace:*",
     "abitype": "catalog:",
     "dotenv": "catalog:",
     "ox": "catalog:",

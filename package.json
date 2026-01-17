@@ -12,7 +12,7 @@
     "typescript": "catalog:"
   },
   "scripts": {
-    "preinstall": "node scripts/ensure_pnpm.cjs",
-    "generate:ts": "node spec/generate_ts_schema_types.js"
+    "generate:ts": "node spec/generate_ts_schema_types.js",
+    "generate:contracts": "pnpm -C packages/contracts generate:abis && pnpm -C packages/contracts generate:addresses"
   }
 }

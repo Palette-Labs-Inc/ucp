@@ -89,7 +89,7 @@ cp .env.template .env
 ```
 
 This `.env` is used by `make` targets (deploy/seed/shovel-config) and
-`infra/shovel/contracts.json` (the Shovel config source of truth).
+the TypeScript Shovel config generator in `packages/config/src/infra/shovel-config.ts`.
 
 Foreground mode and logs:
 
