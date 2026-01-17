@@ -3,13 +3,14 @@ set -euo pipefail
 
 env_file="${1:-}"
 erc8004_dir="${2:-}"
+chain_id="${3:-}"
 
-if [[ -z "$env_file" || -z "$erc8004_dir" ]]; then
-  echo "Usage: $0 <env-file> <erc8004-dir>"
+if [[ -z "$env_file" || -z "$erc8004_dir" || -z "$chain_id" ]]; then
+  echo "Usage: $0 <env-file> <erc8004-dir> <chain-id>"
   exit 1
 fi
 
-registry_file="${erc8004_dir}/broadcast/identity-registry.json"
+registry_file="${erc8004_dir}/broadcast/DeployIdentityRegistry.s.sol/${chain_id}/run-latest.json"
 if [[ ! -f "$registry_file" ]]; then
   echo "Missing registry file: ${registry_file}"
   exit 1
@@ -24,7 +25,12 @@ path = sys.argv[1]
 with open(path, "r", encoding="utf-8") as f:
     data = json.load(f)
 
-address = data.get("identityRegistry") or data.get("deployment", {}).get("identityRegistry")
+address = None
+for tx in data.get("transactions", []):
+    if tx.get("contractName") == "IdentityRegistry":
+        address = tx.get("contractAddress")
+        if address:
+            break
 print(address or "")
 PY
 )"

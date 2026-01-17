@@ -52,7 +52,7 @@ services:
     volumes:
       - ./shovel:/shovel
     command: >
-      shovel -config /shovel/generated/erc8004.identity.json
+      shovel -config /shovel/generated/ucp.local.json
     restart: unless-stopped
 
     

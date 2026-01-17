@@ -28,9 +28,11 @@ ANVIL_AGENT_KEY ?= 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b7
 AGENT_DOMAIN ?= agent.local
 SHOVEL_CONFIG_DIR := $(CURDIR)/infra/shovel
 SHOVEL_OUTPUT_DIR := $(SHOVEL_CONFIG_DIR)/generated
-SHOVEL_TEMPLATE := $(SHOVEL_CONFIG_DIR)/erc8004.identity.template.json
-SHOVEL_CONFIG := $(SHOVEL_OUTPUT_DIR)/erc8004.identity.json
+SHOVEL_TEMPLATE := $(SHOVEL_CONFIG_DIR)/ucp.local.template.json
+SHOVEL_CONFIG := $(SHOVEL_OUTPUT_DIR)/ucp.local.json
 SHOVEL_ABI_FILE := $(ERC8004_DIR)/out/IdentityRegistry.sol/IdentityRegistry.json
+COMMERCE_PAYMENTS_DIR := $(CURDIR)/contracts/vendor/commerce-payments
+PAYMENTS_ESCROW_ABI_FILE := $(COMMERCE_PAYMENTS_DIR)/out/AuthCaptureEscrow.sol/AuthCaptureEscrow.json
 ENV_SUBST ?= envsubst
 
 SHOVEL_PG_URL ?= postgres://postgres:postgres@postgres:5432/shovel
@@ -38,8 +40,12 @@ ETH_RPC_URL ?= $(ANVIL_DOCKER_URL)
 SHOVEL_START_BLOCK ?= 0
 IDENTITY_REGISTRY_ADDRESS ?= 0x0000000000000000000000000000000000000000
 EVENT_NAME ?= AgentRegistered
+PAYMENTS_START_BLOCK ?= 0
+PAYMENTS_ESCROW_ADDRESS ?= 0x0000000000000000000000000000000000000000
+PAYMENTS_EVENT_NAME ?= PaymentCaptured
 
 export SHOVEL_PG_URL CHAIN_ID ETH_RPC_URL SHOVEL_START_BLOCK IDENTITY_REGISTRY_ADDRESS EVENT_NAME
+export PAYMENTS_START_BLOCK PAYMENTS_ESCROW_ADDRESS PAYMENTS_EVENT_NAME
 
 .PHONY: help
 help:
@@ -67,6 +73,7 @@ help:
 	@echo "  make shovel-config         - generate Shovel config from template"
 	@echo "  make shovel-config-check   - validate generated Shovel JSON"
 	@echo "  make shovel-abi-check      - verify event exists in ABI"
+	@echo "  make deploy-commerce-payments     - deploy payments escrow to Anvil"
 	@echo "  make fmt                   - run formatting across TS + Python (if present)"
 	@echo "  make test                  - run all tests (ts + conformance)"
 
@@ -172,10 +179,18 @@ shovel-config: env-init $(SHOVEL_TEMPLATE)
 		echo "Event $(EVENT_NAME) not found in $(SHOVEL_ABI_FILE)"; \
 		exit 1; \
 	}
+	@jq -e '.abi[] | select(.type=="event" and .name=="$(PAYMENTS_EVENT_NAME)")' \
+		"$(PAYMENTS_ESCROW_ABI_FILE)" >/dev/null || { \
+		echo "Event $(PAYMENTS_EVENT_NAME) not found in $(PAYMENTS_ESCROW_ABI_FILE)"; \
+		exit 1; \
+	}
 	@echo "Generating $(SHOVEL_CONFIG) from $(SHOVEL_TEMPLATE)..."
-	@$(ENV_SUBST) < "$(SHOVEL_TEMPLATE)" | \
-		jq '.eth_sources[0].chain_id |= tonumber | .integrations[0].sources[0].start |= tonumber' \
-		> "$(SHOVEL_CONFIG)"
+	@bash -c 'set -a; . "$(ENV_FILE)"; set +a; \
+		$(ENV_SUBST) < "$(SHOVEL_TEMPLATE)" | \
+		jq '"'"'.eth_sources[0].chain_id |= tonumber \
+			| .integrations[0].sources[0].start |= tonumber \
+			| .integrations[1].sources[0].start |= tonumber'"'"' \
+		> "$(SHOVEL_CONFIG)"'
 
 .PHONY: shovel-config-check
 shovel-config-check: shovel-config
@@ -186,7 +201,10 @@ shovel-config-check: shovel-config
 shovel-abi-check: env-init
 	@jq -e '.abi[] | select(.type=="event" and .name=="$(EVENT_NAME)")' \
 		"$(SHOVEL_ABI_FILE)" >/dev/null
-	@echo "OK: event $(EVENT_NAME) found in ABI"
+	@jq -e '.abi[] | select(.type=="event" and .name=="$(PAYMENTS_EVENT_NAME)")' \
+		"$(PAYMENTS_ESCROW_ABI_FILE)" >/dev/null
+	@echo "OK: events $(EVENT_NAME), $(PAYMENTS_EVENT_NAME) found in ABI"
+
 
 
 
@@ -205,8 +223,19 @@ deploy-erc8004: check-docker env-init anvil-wait
 	  --rpc-url $(ANVIL_DOCKER_URL) --broadcast"
 	@./scripts/update_identity_registry_env.sh "$(ENV_FILE)" "$(ERC8004_DIR)" "$(CHAIN_ID)"
 
+.PHONY: deploy-commerce-payments
+deploy-commerce-payments: check-docker env-init anvil-wait
+	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" run --rm \
+	  -e DEPLOYER_PRIVATE_KEY="$(ANVIL_DEPLOYER_KEY)" \
+	  foundry "cd /repo/contracts/vendor/commerce-payments && \
+	  DEPLOYER_ADDRESS=\$$(cast wallet address $(ANVIL_DEPLOYER_KEY)) && \
+	  forge script script/Deploy.s.sol:Deploy \
+	  --rpc-url $(ANVIL_DOCKER_URL) --broadcast \
+	  --sender \$${DEPLOYER_ADDRESS} --private-key $(ANVIL_DEPLOYER_KEY)"
+	@./scripts/update_payments_env.sh "$(ENV_FILE)" "$(COMMERCE_PAYMENTS_DIR)" "$(CHAIN_ID)"
+
 .PHONY: infra-up
-infra-up: env-init anvil deploy-erc8004 shovel-config shovel-up
+infra-up: env-init anvil deploy-erc8004 deploy-commerce-payments shovel-config shovel-up
 
 .PHONY: infra-down
 infra-down: env-init anvil-down

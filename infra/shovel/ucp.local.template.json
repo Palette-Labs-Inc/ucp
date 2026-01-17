@@ -47,6 +47,48 @@
           { "indexed": true, "name": "agentAddress", "type": "address", "column": "agent_address" }
         ]
       }
+    },
+    {
+      "name": "commerce_payments_auth_capture_escrow",
+      "enabled": true,
+      "sources": [{ "name": "local", "start": "${PAYMENTS_START_BLOCK}" }],
+      "table": {
+        "name": "commerce_payments_captures",
+        "columns": [
+          { "name": "chain_id", "type": "numeric" },
+          { "name": "block_num", "type": "numeric" },
+          { "name": "tx_hash", "type": "bytea" },
+          { "name": "log_idx", "type": "numeric" },
+          { "name": "escrow", "type": "bytea" },
+          { "name": "payment_info_hash", "type": "bytea" },
+          { "name": "amount", "type": "numeric" },
+          { "name": "fee_bps", "type": "numeric" },
+          { "name": "fee_receiver", "type": "bytea" }
+        ]
+      },
+      "block": [
+        { "name": "chain_id", "column": "chain_id" },
+        { "name": "block_num", "column": "block_num" },
+        { "name": "tx_hash", "column": "tx_hash" },
+        { "name": "log_idx", "column": "log_idx" },
+        {
+          "name": "log_addr",
+          "column": "escrow",
+          "filter_op": "contains",
+          "filter_arg": ["${PAYMENTS_ESCROW_ADDRESS}"]
+        }
+      ],
+      "event": {
+        "type": "event",
+        "name": "${PAYMENTS_EVENT_NAME}",
+        "anonymous": false,
+        "inputs": [
+          { "indexed": true, "name": "paymentInfoHash", "type": "bytes32", "column": "payment_info_hash" },
+          { "indexed": false, "name": "amount", "type": "uint256", "column": "amount" },
+          { "indexed": false, "name": "feeBps", "type": "uint16", "column": "fee_bps" },
+          { "indexed": false, "name": "feeReceiver", "type": "address", "column": "fee_receiver" }
+        ]
+      }
     }
   ]
 }
