@@ -1,32 +1,63 @@
 services:
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-shovel}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d shovel"]
+      interval: 1s
+      timeout: 2s
+      retries: 30
+
   anvil:
-    image: ghcr.io/foundry-rs/foundry:stable
+    image: ${FOUNDRY_IMAGE:-ghcr.io/foundry-rs/foundry:stable}
     container_name: anvil
     ports:
-      - "8545:8545"
+      - "${ANVIL_PORT:-8545}:8545"
     entrypoint: ["anvil"]
     command:
       - --host
-      - "0.0.0.0"
+      - "${ANVIL_HOST:-0.0.0.0}"
       - --port
-      - "8545"
+      - "${ANVIL_PORT:-8545}"
       - --chain-id
-      - "31337"
+      - "${CHAIN_ID:-31337}"
       - --mnemonic
-      - "test test test test test test test test test test test junk"
+      - "${ANVIL_MNEMONIC:-test test test test test test test test test test test junk}"
       - --balance
-      - "1000000"
+      - "${ANVIL_BALANCE:-1000000}"
       - --block-time
-      - "1"
+      - "${ANVIL_BLOCK_TIME:-1}"
       - --gas-limit
-      - "30000000"
+      - "${ANVIL_GAS_LIMIT:-30000000}"
     healthcheck:
-      test: ["CMD", "cast", "block-number", "--rpc-url", "http://127.0.0.1:8545"]
+      test: ["CMD", "cast", "block-number", "--rpc-url", "http://127.0.0.1:${ANVIL_PORT:-8545}"]
       interval: 1s
       timeout: 1s
       retries: 30
+
+  shovel:
+    image: indexsupply/shovel:latest
+    container_name: shovel
+    depends_on:
+      postgres:
+        condition: service_healthy
+      anvil:
+        condition: service_healthy
+    volumes:
+      - ./shovel:/shovel
+    command: >
+      shovel -config /shovel/generated/erc8004.identity.json
+    restart: unless-stopped
+
+    
   foundry:
-    image: ghcr.io/foundry-rs/foundry:stable
+    image: ${FOUNDRY_IMAGE:-ghcr.io/foundry-rs/foundry:stable}
     container_name: foundry
     working_dir: /repo/contracts
     volumes:

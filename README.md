@@ -74,6 +74,17 @@ Start a local Anvil node via Docker:
 make anvil
 ```
 
+### Infra env (Anvil + Shovel)
+
+Copy the repo root template and edit as needed:
+
+```
+cp .env.template .env
+```
+
+This `.env` is used by `make` targets (deploy/seed/shovel-config) and the
+Shovel config template in `infra/shovel/`.
+
 Foreground mode and logs:
 
 ```

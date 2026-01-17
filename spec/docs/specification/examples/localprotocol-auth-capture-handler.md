@@ -14,9 +14,9 @@
    limitations under the License.
 -->
 
-# Coinbase Commerce Auth/Capture Payment Handler
+# Localprotocol Commerce Auth/Capture Payment Handler
 
-* **Handler Name:** `com.coinbase.commerce.auth_capture`
+* **Handler Name:** `xyz.localprotocol.commerce.auth_capture`
 * **Version:** `2026-01-11`
 
 ## Introduction
@@ -73,7 +73,7 @@ Businesses advertise support for this handler in the checkout's
 
 #### Configuration Schema
 
-**Schema URL:** `https://ucp.dev/handlers/coinbase_commerce_auth_capture/config.json`
+**Schema URL:** `https://ucp.dev/handlers/localprotocol_auth_capture/config.json`
 
 #### Example Handler Declaration
 
@@ -82,13 +82,13 @@ Businesses advertise support for this handler in the checkout's
   "payment": {
     "handlers": [
       {
-        "id": "coinbase_auth_capture",
-        "name": "com.coinbase.commerce.auth_capture",
+        "id": "localprotocol_auth_capture",
+        "name": "xyz.localprotocol.commerce.auth_capture",
         "version": "2026-01-11",
         "spec": "https://github.com/base/commerce-payments",
-        "config_schema": "https://ucp.dev/handlers/coinbase_commerce_auth_capture/config.json",
+        "config_schema": "https://ucp.dev/handlers/localprotocol_auth_capture/config.json",
         "instrument_schemas": [
-          "https://ucp.dev/handlers/coinbase_commerce_auth_capture/instrument.json"
+          "https://ucp.dev/handlers/localprotocol_auth_capture/instrument.json"
         ],
         "config": {
           "chain_id": 8453,
@@ -129,7 +129,7 @@ Before using this handler, platforms **MUST** complete:
 
 #### Step 1: Discover Handler
 
-Identify `com.coinbase.commerce.auth_capture` in `payment.handlers`.
+Identify `xyz.localprotocol.commerce.auth_capture` in `payment.handlers`.
 
 #### Step 2: Collect Authorization
 
@@ -146,13 +146,13 @@ its `id` in `payment.selected_instrument_id`.
 
 #### Instrument Schema
 
-**Schema URL:** `https://ucp.dev/handlers/coinbase_commerce_auth_capture/instrument.json`
+**Schema URL:** `https://ucp.dev/handlers/localprotocol_auth_capture/instrument.json`
 
 ```json
 {
   "id": "instr_1",
-  "handler_id": "coinbase_auth_capture",
-  "type": "coinbase_auth_capture",
+  "handler_id": "localprotocol_auth_capture",
+  "type": "localprotocol_auth_capture",
   "authorization_id": "0xabc123",
   "authorize_tx_hash": "0xdeadbeef",
   "chain_id": 8453,

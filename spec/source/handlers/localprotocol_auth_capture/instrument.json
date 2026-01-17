@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://ucp.dev/handlers/coinbase_commerce_auth_capture/instrument.json",
-  "title": "Coinbase Commerce Auth/Capture Instrument",
-  "description": "Payment instrument for Coinbase Commerce auth/capture escrow flows.",
+  "$id": "https://ucp.dev/handlers/localprotocol_auth_capture/instrument.json",
+  "title": "Localprotocol Commerce Auth/Capture Instrument",
+  "description": "Payment instrument for Localprotocol commerce auth/capture escrow flows.",
   "allOf": [
     {
       "$ref": "../../schemas/shopping/types/payment_instrument_base.json"
@@ -19,8 +19,8 @@
       "properties": {
         "type": {
           "type": "string",
-          "const": "coinbase_auth_capture",
-          "description": "Indicates this is a Coinbase Commerce auth/capture instrument."
+          "const": "localprotocol_auth_capture",
+          "description": "Indicates this is a Localprotocol commerce auth/capture instrument."
         },
         "authorization_id": {
           "type": "string",

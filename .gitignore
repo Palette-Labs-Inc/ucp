@@ -187,6 +187,10 @@ Thumbs.db
 
 .logs/
 
+# Shovel generated config
+/infra/shovel/generated/*.json
+
+
 ### Gradle ###
 .gradle
 **/build/

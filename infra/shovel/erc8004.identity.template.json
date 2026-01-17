@@ -1,0 +1,52 @@
+{
+  "pg_url": "${SHOVEL_PG_URL}",
+  "eth_sources": [
+    {
+      "name": "local",
+      "chain_id": "${CHAIN_ID}",
+      "urls": ["${ETH_RPC_URL}"]
+    }
+  ],
+  "integrations": [
+    {
+      "name": "erc8004_identity_registry",
+      "enabled": true,
+      "sources": [{ "name": "local", "start": "${SHOVEL_START_BLOCK}" }],
+      "table": {
+        "name": "erc8004_identity_events",
+        "columns": [
+          { "name": "chain_id", "type": "numeric" },
+          { "name": "block_num", "type": "numeric" },
+          { "name": "tx_hash", "type": "bytea" },
+          { "name": "log_idx", "type": "numeric" },
+          { "name": "registry", "type": "bytea" },
+          { "name": "agent_id", "type": "numeric" },
+          { "name": "agent_domain", "type": "text" },
+          { "name": "agent_address", "type": "bytea" }
+        ]
+      },
+      "block": [
+        { "name": "chain_id", "column": "chain_id" },
+        { "name": "block_num", "column": "block_num" },
+        { "name": "tx_hash", "column": "tx_hash" },
+        { "name": "log_idx", "column": "log_idx" },
+        {
+          "name": "log_addr",
+          "column": "registry",
+          "filter_op": "contains",
+          "filter_arg": ["${IDENTITY_REGISTRY_ADDRESS}"]
+        }
+      ],
+      "event": {
+        "type": "event",
+        "name": "${EVENT_NAME}",
+        "anonymous": false,
+        "inputs": [
+          { "indexed": true, "name": "agentId", "type": "uint256", "column": "agent_id" },
+          { "indexed": true, "name": "agentDomain", "type": "string", "column": "agent_domain" },
+          { "indexed": true, "name": "agentAddress", "type": "address", "column": "agent_address" }
+        ]
+      }
+    }
+  ]
+}
