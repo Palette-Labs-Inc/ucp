@@ -18,7 +18,6 @@
       "name": "AgentRegistered",
       "store": {
         "agentId": "agent_id",
-        "agentDomain": "agent_domain",
         "agentAddress": "agent_address"
       }
     }
@@ -32,7 +31,7 @@
       "address_column": "escrow"
     },
     "env": {
-      "start_block": "PAYMENTS_START_BLOCK"
+      "start_block": "SHOVEL_START_BLOCK"
     },
     "deploy": {
       "broadcast_path": "contracts/vendor/commerce-payments/broadcast/Deploy.s.sol",

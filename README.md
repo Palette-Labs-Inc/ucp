@@ -92,7 +92,7 @@ make anvil-fg
 make anvil-logs
 ```
 
-For the streamlined infra flow (Anvil + Shovel + ABI), see `docs/infra.md`.
+For the streamlined infra flow (Anvil + Shovel + ABI), see `infra/README.md`.
 
 Run ERC-8004 tests or deploy to Anvil:
 

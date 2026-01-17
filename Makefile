@@ -34,10 +34,8 @@ SHOVEL_CONTRACTS_CONFIG := $(SHOVEL_CONFIG_DIR)/contracts.json
 SHOVEL_PG_URL ?= postgres://postgres:postgres@postgres:5432/shovel
 ETH_RPC_URL ?= $(ANVIL_DOCKER_URL)
 SHOVEL_START_BLOCK ?= 0
-PAYMENTS_START_BLOCK ?= 0
 
 export SHOVEL_PG_URL CHAIN_ID ETH_RPC_URL SHOVEL_START_BLOCK
-export PAYMENTS_START_BLOCK
 
 .PHONY: help
 help:
@@ -55,6 +53,7 @@ help:
 	@echo "  make anvil-down            - stop Anvil via docker-compose"
 	@echo "  make anvil-logs            - tail Anvil logs"
 	@echo "  make shovel-up             - start Shovel via docker-compose"
+	@echo "  make shovel-down           - stop Shovel via docker-compose"
 	@echo "  make shovel-logs           - tail Shovel logs"
 	@echo "  make infra-up              - boot anvil + deploy + shovel"
 	@echo "  make infra-down            - stop all infra services"
@@ -62,9 +61,9 @@ help:
 	@echo "  make env-init              - create .env from .env.template if missing"
 	@echo "  make test-erc8004          - run ERC-8004 Foundry tests"
 	@echo "  make deploy-erc8004        - deploy ERC-8004 to Anvil"
-	@echo "  make seed-erc8004          - register a sample agent"
-	@echo "  make deploy-commerce-payments     - deploy payments escrow to Anvil"
-	@echo "  make infra-check          - build ABIs + validate + config JSON"
+	@echo "  make register-agent        - register a sample agent"
+	@echo "  make deploy-commerce-payments - deploy payments escrow to Anvil"
+	@echo "  make infra-check           - build ABIs + validate + config JSON"
 	@echo "  make fmt                   - run formatting across TS + Python (if present)"
 	@echo "  make test                  - run all tests (ts + conformance)"
 
@@ -160,6 +159,10 @@ shovel-up: check-docker env-init infra-check
 shovel-logs: check-docker env-init
 	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" logs -f shovel
 
+.PHONY: shovel-down
+shovel-down: check-docker env-init
+	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" stop shovel
+
 # --- shovel (index supply) ---
 
 
@@ -206,20 +209,26 @@ infra-check: check-docker env-init
 infra-up: env-init anvil deploy-erc8004 deploy-commerce-payments shovel-up
 
 .PHONY: infra-down
-infra-down: env-init anvil-down
+infra-down: check-docker env-init
+	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" down --remove-orphans --volumes
 
 .PHONY: infra-clean
 infra-clean:
 	@rm -f "$(ENV_FILE)" "$(SHOVEL_CONFIG)"
 
-.PHONY: seed-erc8004
-seed-erc8004: check-docker env-init anvil-wait
+.PHONY: register-agent
+register-agent: check-docker env-init anvil-wait
 	@mkdir -p "$(ERC8004_DIR)/broadcast"
-	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" run --rm \
+	registry_address=$$(python3 -c 'import json, os, sys; \
+path=os.path.join("$(ERC8004_DIR)","broadcast","DeployIdentityRegistry.s.sol","$(CHAIN_ID)","run-latest.json"); \
+data=json.load(open(path)); \
+value=data.get("returns", {}).get("registry", {}).get("value"); \
+print(value) if value else (print(f"Missing registry address in {path}", file=sys.stderr) or sys.exit(1))'); \
+	docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" run --rm \
 	  -e AGENT_PRIVATE_KEY="$(ANVIL_AGENT_KEY)" \
 	  -e AGENT_DOMAIN="$(AGENT_DOMAIN)" \
 	  foundry "cd /repo/contracts/erc8004 && forge script script/SeedAgent.s.sol:SeedAgent \
-	  --rpc-url $(ANVIL_DOCKER_URL) --broadcast"
+	  --rpc-url $(ANVIL_DOCKER_URL) --broadcast --sig 'run(address)' -- $$registry_address"
 
 # --- conformance ---
 .PHONY: test-conformance

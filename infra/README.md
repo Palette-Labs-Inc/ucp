@@ -40,6 +40,8 @@ artifacts (the `run-latest.json` under the `deploy.broadcast_path` in
 `infra/shovel/contracts.json`), so deploy the contracts first if you’re starting
 from a clean checkout.
 
+All Shovel contract indexing share the same `SHOVEL_START_BLOCK`.
+
 ```
 pnpm install
 ```

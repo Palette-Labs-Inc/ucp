@@ -15,7 +15,7 @@ import {
   getEventAndStoreMap,
   loadContracts,
   parseArgs,
-  requireDeployAddressNo0xLower,
+  requireDeployAddress0xLower,
   requireBigInt,
   toSnakeCase,
 } from "./shovel-utils.js";
@@ -37,7 +37,7 @@ function buildConfig(contracts: ContractConfig[]): string {
   };
 
   const integrations: Integration[] = contracts.map((contract) => {
-    const addressValue = requireDeployAddressNo0xLower({
+    const addressFilter = requireDeployAddress0xLower({
       abiPath: contract.abi,
       chainId,
       deploy: contract.deploy,
@@ -65,23 +65,39 @@ function buildConfig(contracts: ContractConfig[]): string {
 
     const eventColumns: Array<{ name: string; type: PGColumnType }> = [];
     const eventInputs: Array<{
-      indexed: boolean;
-      name: string;
+      indexed?: boolean;
+      name?: string;
       type: string;
-      column: string;
+      column?: string;
     }> = [];
+    const storedByName = new Map(
+      storedInputs.map((input) => [input.name, input] as const),
+    );
 
-    for (const input of storedInputs) {
-      const columnName = toSnakeCase(input.column);
-      ensureLowercase("column name", columnName);
-      ensureUnique(columnName, columnNames);
+    for (const input of parsedEvent.inputs) {
+      const stored = input.name ? storedByName.get(input.name) : undefined;
+      if (stored) {
+        const columnName = toSnakeCase(stored.column);
+        ensureLowercase("column name", columnName);
+        ensureUnique(columnName, columnNames);
 
-      eventColumns.push({ name: columnName, type: columnType(input.type) });
+        eventColumns.push({
+          name: columnName,
+          type: columnType(stored.type, stored.indexed),
+        });
+        eventInputs.push({
+          indexed: Boolean(stored.indexed),
+          name: stored.name,
+          type: stored.type,
+          column: columnName,
+        });
+        continue;
+      }
+
       eventInputs.push({
-        indexed: Boolean(input.indexed),
+        indexed: input.indexed,
         name: input.name,
         type: input.type,
-        column: columnName,
       });
     }
 
@@ -104,7 +120,7 @@ function buildConfig(contracts: ContractConfig[]): string {
           name: "log_addr",
           column: contract.table.address_column,
           filter_op: "contains",
-          filter_arg: [addressValue],
+          filter_arg: [addressFilter],
         },
       ],
       event: {

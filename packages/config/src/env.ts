@@ -35,8 +35,7 @@ export const EnvSchema = z.object({
 
   // shovel
   SHOVEL_PG_URL: z.string().min(1),
-  SHOVEL_START_BLOCK: z.coerce.number().int().min(0).default(0),
-  PAYMENTS_START_BLOCK: z.coerce.number().int().min(0).default(0)
+  SHOVEL_START_BLOCK: z.coerce.number().int().min(0).default(0)
 });
 
 export interface Env extends z.infer<typeof EnvSchema> {}

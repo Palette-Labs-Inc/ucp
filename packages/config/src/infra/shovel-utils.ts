@@ -127,14 +127,14 @@ export function assertDeployArtifacts(args: {
   return fromDeploy;
 }
 
-export function requireDeployAddressNo0xLower(args: {
+export function requireDeployAddress0xLower(args: {
   abiPath: string;
   chainId: number;
   deploy: { broadcast_path: string; contract_name: string };
 }): string {
   const address = assertDeployArtifacts(args);
   const normalized = Address.from(address);
-  return normalized.slice(2).toLowerCase();
+  return normalized.toLowerCase();
 }
 
 export function toSnakeCase(value: string): string {
@@ -144,7 +144,7 @@ export function toSnakeCase(value: string): string {
     .toLowerCase();
 }
 
-export function columnType(abiType: string): PGColumnType {
+export function columnType(abiType: string, indexed?: boolean): PGColumnType {
   if (abiType.startsWith("uint") || abiType.startsWith("int")) {
     return "numeric";
   }
@@ -152,7 +152,7 @@ export function columnType(abiType: string): PGColumnType {
     return "bool";
   }
   if (abiType === "string") {
-    return "text";
+    return indexed ? "bytea" : "text";
   }
   if (abiType === "address" || abiType.startsWith("bytes")) {
     return "bytea";
