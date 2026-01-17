@@ -58,10 +58,10 @@ make anvil-logs
 make shovel-logs
 ```
 
-## Seed an agent (requires IDENTITY_REGISTRY)
+## Register an agent
 
 ```
-make seed-erc8004
+make register-agent
 ```
 
 ## Tear down

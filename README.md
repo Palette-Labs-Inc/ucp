@@ -99,7 +99,7 @@ Run ERC-8004 tests or deploy to Anvil:
 ```
 make test-erc8004
 make deploy-erc8004
-make seed-erc8004
+make register-agent
 ```
 
 Install dependencies with:

@@ -14,7 +14,8 @@ contract SeedAgent is Script {
             keccak256(abi.encodePacked(registryAddress, block.number, block.timestamp))
         );
         address agentAddress = vm.addr(agentKey);
-        string memory agentDomain = string.concat("agent-", vm.toString(agentAddress));
+        // Use a DNS-like domain (no URI scheme) to match the registry expectations.
+        string memory agentDomain = string.concat("agent-", vm.toString(agentAddress), ".local");
 
         if (registryAddress == address(0)) {
             revert("IDENTITY_REGISTRY is required");
