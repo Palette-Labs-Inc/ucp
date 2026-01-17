@@ -29,8 +29,7 @@ This repo uses `pnpm` workspaces for `apps/*` and `packages/*`.
 
 Requirements pulled from the upstream subtree READMEs:
 
-- Node.js + npm (JS SDK build + model generation).
-- pnpm (monorepo orchestration).
+- Node.js + pnpm (JS SDK build + model generation + orchestration).
 - uv 0.9+ (Python SDK, samples, and conformance).
 - Python 3.10+ (conformance + Python samples).
 - ruff (used by Python SDK generation/formatting via `uv`).
@@ -131,7 +130,7 @@ git subtree pull --prefix packages/js-sdk https://github.com/Universal-Commerce-
 ## Orchestration
 
 Orchestration is handled by `Makefile` + scripts in `scripts/`. These wrappers
-run upstream tooling in-place (npm/uv) and pass the local `spec/` path when
+run upstream tooling in-place (pnpm/uv) and pass the local `spec/` path when
 generating SDK models so we do not fork upstream build conventions.
 
 Why this order (`spec` → `Python SDK` → `conformance` → `JS SDK`):

@@ -7,15 +7,14 @@ import {IdentityRegistry} from "../src/IdentityRegistry.sol";
 
 contract SeedAgent is Script {
     function run(address registryAddress) external {
-        // Agent domains + addresses must be unique. We derive a fresh key and
-        // domain each run so re-running the script does not revert.
+        // Agent URIs must be unique for testing runs. We derive a fresh key and
+        // URI each run so re-running the script does not revert.
         uint256 deployerKey = vm.envUint("ANVIL_DEPLOYER_KEY");
         uint256 agentKey = uint256(
             keccak256(abi.encodePacked(registryAddress, block.number, block.timestamp))
         );
         address agentAddress = vm.addr(agentKey);
-        // Use a DNS-like domain (no URI scheme) to match the registry expectations.
-        string memory agentDomain = string.concat("agent-", vm.toString(agentAddress), ".local");
+        string memory agentUri = string.concat("https://example.com/agents/", vm.toString(agentAddress), ".json");
 
         if (registryAddress == address(0)) {
             revert("IDENTITY_REGISTRY is required");
@@ -27,7 +26,7 @@ contract SeedAgent is Script {
         vm.stopBroadcast();
 
         vm.startBroadcast(agentKey);
-        IdentityRegistry(registryAddress).newAgent(agentDomain, agentAddress);
+        IdentityRegistry(registryAddress).register(agentUri);
         vm.stopBroadcast();
     }
 }

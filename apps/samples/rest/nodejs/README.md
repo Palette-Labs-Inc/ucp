@@ -23,7 +23,7 @@ implement the UCP specifications for shopping, checkout, and order management.
 ## Prerequisites
 
 *   Node.js (v20 or higher recommended)
-*   npm (Node Package Manager)
+*   pnpm
 
 ## Setup
 
@@ -40,7 +40,7 @@ implement the UCP specifications for shopping, checkout, and order management.
     packages:
 
     ```bash
-    npm install
+    pnpm install
     ```
 
 3.  **Database Setup**
@@ -64,14 +64,14 @@ implement the UCP specifications for shopping, checkout, and order management.
 To start the server in development mode (with hot reloading):
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 To build and start the server for production:
 
 ```bash
-npm run build
-npm start
+pnpm run build
+pnpm start
 ```
 
 The server will start on port **3000** by default. You can access the discovery

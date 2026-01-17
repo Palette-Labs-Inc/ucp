@@ -3,7 +3,7 @@
 if [[ -z "$1" ]]; then
   echo "Error: spec directory path is required."
   echo "Usage: $0 <spec_dir>"
-  echo "Example: npm run generate -- /path/to/spec"
+  echo "Example: pnpm run generate -- /path/to/spec"
   exit 1
 fi
 

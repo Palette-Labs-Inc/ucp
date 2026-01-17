@@ -4,9 +4,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/lib/uv.sh"
 
-echo "[tooling] installing js-sdk deps (npm)"
+echo "[tooling] installing js-sdk deps (pnpm)"
 if [ -d packages/js-sdk ]; then
-  (cd packages/js-sdk && npm ci)
+  (cd packages/js-sdk && pnpm install --frozen-lockfile)
 fi
 
 UV_BIN="$(resolve_uv_optional)"

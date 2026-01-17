@@ -13,202 +13,116 @@ contract ValidationRegistryTest is Test {
     address bob = address(0x2);
     address charlie = address(0x3);
 
-    string aliceDomain = "alice.com";
-    string bobDomain = "bob.agent.com";
-    string charlieDomain = "charlie.my.agent.com";
+    string aliceUri = "https://example.com/alice.json";
 
-    event ValidationRequest(uint256 indexed agentValidatorId, uint256 indexed agentServerId, bytes32 indexed dataHash);
+    event ValidationRequest(
+        address indexed validatorAddress,
+        uint256 indexed agentId,
+        string requestURI,
+        bytes32 indexed requestHash
+    );
+
     event ValidationResponse(
-        uint256 indexed agentValidatorId, uint256 indexed agentServerId, bytes32 indexed dataHash, uint8 response
+        address indexed validatorAddress,
+        uint256 indexed agentId,
+        bytes32 indexed requestHash,
+        uint8 response,
+        string responseURI,
+        bytes32 responseHash,
+        string tag
     );
 
     function setUp() public {
         identityRegistry = new IdentityRegistry();
-        validationRegistry = new ValidationRegistry(address(identityRegistry), 1 days);
+        validationRegistry = new ValidationRegistry(address(identityRegistry));
     }
 
     function test_ValidationRequestEvent() public {
         vm.prank(alice);
-        uint256 aliceId = identityRegistry.newAgent(aliceDomain, alice);
-        assertEq(aliceId, 1);
+        uint256 agentId = identityRegistry.register(aliceUri);
 
-        vm.prank(bob);
-        uint256 bobId = identityRegistry.newAgent(bobDomain, bob);
-        assertEq(bobId, 2);
+        bytes32 requestHash = keccak256("request");
 
-        bytes32 dataHash = keccak256(abi.encodePacked("Some important data"));
-
-        vm.prank(bob);
+        vm.prank(alice);
         vm.expectEmit(true, true, true, true);
-        emit ValidationRequest(aliceId, bobId, dataHash);
-        validationRegistry.validationRequest(aliceId, bobId, dataHash);
+        emit ValidationRequest(bob, agentId, "ipfs://request", requestHash);
+        validationRegistry.validationRequest(bob, agentId, "ipfs://request", requestHash);
     }
 
     function test_ValidationResponseEvent() public {
         vm.prank(alice);
-        uint256 aliceId = identityRegistry.newAgent(aliceDomain, alice);
-        assertEq(aliceId, 1);
+        uint256 agentId = identityRegistry.register(aliceUri);
 
-        vm.prank(bob);
-        uint256 bobId = identityRegistry.newAgent(bobDomain, bob);
-        assertEq(bobId, 2);
-
-        bytes32 dataHash = keccak256(abi.encodePacked("Some important data"));
-
-        vm.prank(bob);
-        validationRegistry.validationRequest(aliceId, bobId, dataHash);
-
+        bytes32 requestHash = keccak256("request");
         vm.prank(alice);
+        validationRegistry.validationRequest(bob, agentId, "ipfs://request", requestHash);
+
+        vm.prank(bob);
         vm.expectEmit(true, true, true, true);
-        emit ValidationResponse(aliceId, bobId, dataHash, 1);
-        validationRegistry.validationResponse(dataHash, 1);
+        emit ValidationResponse(bob, agentId, requestHash, 100, "ipfs://resp", bytes32(0), "ok");
+        validationRegistry.validationResponse(requestHash, 100, "ipfs://resp", bytes32(0), "ok");
     }
 
     function test_ValidationRequest_Unauthorized() public {
         vm.prank(alice);
-        uint256 aliceId = identityRegistry.newAgent(aliceDomain, alice);
-        assertEq(aliceId, 1);
+        uint256 agentId = identityRegistry.register(aliceUri);
 
-        vm.prank(bob);
-        uint256 bobId = identityRegistry.newAgent(bobDomain, bob);
-        assertEq(bobId, 2);
-
-        bytes32 dataHash = keccak256(abi.encodePacked("Some important data"));
+        bytes32 requestHash = keccak256("request");
 
         vm.prank(charlie);
-        vm.expectRevert(abi.encodeWithSignature("Unauthorized(address,address)", charlie, bob));
-        validationRegistry.validationRequest(aliceId, bobId, dataHash);
+        vm.expectRevert(abi.encodeWithSignature("Unauthorized(address,address)", charlie, alice));
+        validationRegistry.validationRequest(bob, agentId, "ipfs://request", requestHash);
     }
 
     function test_ValidationResponse_Unauthorized() public {
         vm.prank(alice);
-        uint256 aliceId = identityRegistry.newAgent(aliceDomain, alice);
-        assertEq(aliceId, 1);
+        uint256 agentId = identityRegistry.register(aliceUri);
 
-        vm.prank(bob);
-        uint256 bobId = identityRegistry.newAgent(bobDomain, bob);
-        assertEq(bobId, 2);
-
-        bytes32 dataHash = keccak256(abi.encodePacked("Some important data"));
-
-        vm.prank(bob);
-        validationRegistry.validationRequest(aliceId, bobId, dataHash);
+        bytes32 requestHash = keccak256("request");
+        vm.prank(alice);
+        validationRegistry.validationRequest(bob, agentId, "ipfs://request", requestHash);
 
         vm.prank(charlie);
-        vm.expectRevert(abi.encodeWithSignature("Unauthorized(address,address)", charlie, alice));
-        validationRegistry.validationResponse(dataHash, 1);
+        vm.expectRevert(abi.encodeWithSignature("Unauthorized(address,address)", charlie, bob));
+        validationRegistry.validationResponse(requestHash, 100, "", bytes32(0), "");
     }
 
     function test_ValidationResponse_RequestNotFound() public {
-        bytes32 dataHash = keccak256(abi.encodePacked("Some important data"));
-
-        vm.prank(alice);
-        vm.expectRevert(abi.encodeWithSignature("RequestNotFound(bytes32)", dataHash));
-        validationRegistry.validationResponse(dataHash, 1);
+        bytes32 requestHash = keccak256("missing");
+        vm.expectRevert(abi.encodeWithSignature("RequestNotFound(bytes32)", requestHash));
+        validationRegistry.validationResponse(requestHash, 100, "", bytes32(0), "");
     }
 
     function test_ValidationResponse_InvalidResponse() public {
         vm.prank(alice);
-        uint256 aliceId = identityRegistry.newAgent(aliceDomain, alice);
-        assertEq(aliceId, 1);
+        uint256 agentId = identityRegistry.register(aliceUri);
 
-        vm.prank(bob);
-        uint256 bobId = identityRegistry.newAgent(bobDomain, bob);
-        assertEq(bobId, 2);
-
-        bytes32 dataHash = keccak256(abi.encodePacked("Some important data"));
-
-        vm.prank(bob);
-        validationRegistry.validationRequest(aliceId, bobId, dataHash);
-
+        bytes32 requestHash = keccak256("request");
         vm.prank(alice);
-        vm.expectRevert(abi.encodeWithSignature("InvalidResponse(uint8,uint8,uint8)", 255, 0, 100));
-        validationRegistry.validationResponse(dataHash, 255);
+        validationRegistry.validationRequest(bob, agentId, "ipfs://request", requestHash);
+
+        vm.prank(bob);
+        vm.expectRevert(abi.encodeWithSignature("InvalidResponse(uint8,uint8,uint8)", 200, 0, 100));
+        validationRegistry.validationResponse(requestHash, 200, "", bytes32(0), "");
     }
 
-    function test_ValidationResponse_RequestExpired() public {
+    function test_GetValidationStatus() public {
         vm.prank(alice);
-        uint256 aliceId = identityRegistry.newAgent(aliceDomain, alice);
-        assertEq(aliceId, 1);
+        uint256 agentId = identityRegistry.register(aliceUri);
 
-        vm.prank(bob);
-        uint256 bobId = identityRegistry.newAgent(bobDomain, bob);
-        assertEq(bobId, 2);
-
-        bytes32 dataHash = keccak256(abi.encodePacked("Some important data"));
-
-        vm.prank(bob);
-        validationRegistry.validationRequest(aliceId, bobId, dataHash);
-
-        vm.warp(block.timestamp + 2 days);
-
+        bytes32 requestHash = keccak256("request");
         vm.prank(alice);
-        vm.expectRevert(
-            abi.encodeWithSignature(
-                "RequestExpired(bytes32,uint256,uint256)", dataHash, block.timestamp, block.timestamp - 1 days
-            )
-        );
-        validationRegistry.validationResponse(dataHash, 1);
-    }
-
-    function test_ValidationRequest_AlreadyRequested() public {
-        vm.prank(alice);
-        uint256 aliceId = identityRegistry.newAgent(aliceDomain, alice);
-        assertEq(aliceId, 1);
+        validationRegistry.validationRequest(bob, agentId, "ipfs://request", requestHash);
 
         vm.prank(bob);
-        uint256 bobId = identityRegistry.newAgent(bobDomain, bob);
-        assertEq(bobId, 2);
+        validationRegistry.validationResponse(requestHash, 90, "ipfs://resp", bytes32(0), "soft");
 
-        bytes32 dataHash = keccak256(abi.encodePacked("Some important data"));
-
-        vm.prank(bob);
-        validationRegistry.validationRequest(aliceId, bobId, dataHash);
-
-        vm.prank(bob);
-        vm.expectRevert(abi.encodeWithSignature("AlreadyRequested(uint256,uint256,bytes32)", aliceId, bobId, dataHash));
-        validationRegistry.validationRequest(aliceId, bobId, dataHash);
-    }
-
-    function test_ValidationResponse_AlreadyResponded() public {
-        vm.prank(alice);
-        uint256 aliceId = identityRegistry.newAgent(aliceDomain, alice);
-        assertEq(aliceId, 1);
-
-        vm.prank(bob);
-        uint256 bobId = identityRegistry.newAgent(bobDomain, bob);
-        assertEq(bobId, 2);
-
-        bytes32 dataHash = keccak256(abi.encodePacked("Some important data"));
-
-        vm.prank(bob);
-        validationRegistry.validationRequest(aliceId, bobId, dataHash);
-
-        vm.prank(alice);
-        validationRegistry.validationResponse(dataHash, 1);
-
-        vm.prank(alice);
-        vm.expectRevert(abi.encodeWithSignature("AlreadyResponded(uint256,uint256,bytes32)", aliceId, bobId, dataHash));
-        validationRegistry.validationResponse(dataHash, 1);
-    }
-
-    function test_ValidationRequest_AgentNotFound() public {
-        bytes32 dataHash = keccak256(abi.encodePacked("Some important data"));
-
-        vm.prank(bob);
-        vm.expectRevert(abi.encodeWithSignature("AgentNotFound(uint256)", 1));
-        validationRegistry.validationRequest(1, 2, dataHash);
-    }
-
-    function test_ValidationRequest_AgentNotFound_Server() public {
-        vm.prank(alice);
-        uint256 aliceId = identityRegistry.newAgent(aliceDomain, alice);
-        assertEq(aliceId, 1);
-
-        bytes32 dataHash = keccak256(abi.encodePacked("Some important data"));
-
-        vm.prank(bob);
-        vm.expectRevert(abi.encodeWithSignature("AgentNotFound(uint256)", 2));
-        validationRegistry.validationRequest(aliceId, 2, dataHash);
+        (address validatorAddress, uint256 storedAgentId, uint8 response, string memory tag, uint256 lastUpdate) =
+            validationRegistry.getValidationStatus(requestHash);
+        assertEq(validatorAddress, bob);
+        assertEq(storedAgentId, agentId);
+        assertEq(response, 90);
+        assertEq(tag, "soft");
+        assertTrue(lastUpdate > 0);
     }
 }

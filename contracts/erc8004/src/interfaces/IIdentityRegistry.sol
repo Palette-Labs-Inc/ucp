@@ -1,102 +1,77 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.30;
 
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
+
 /// @title IIdentityRegistry
-/// @notice Interface for the Identity Registry contract as defined in ERC-8004 (draft)
-interface IIdentityRegistry {
-    /// @notice Struct representing an agent
-    /// @param domain The domain of the agent
-    /// @param addr The address of the agent
-    struct Agent {
-        string domain;
-        address addr;
+/// @notice ERC-8004 Identity Registry interface (Jan 2026 update)
+interface IIdentityRegistry is IERC721, IERC721Metadata {
+    /// @notice Metadata entry for batch updates
+    struct MetadataEntry {
+        string metadataKey;
+        bytes metadataValue;
     }
 
     /// @notice Emitted when a new agent is registered
-    /// @param agentId The ID of the agent
-    /// @param agentDomain The domain of the agent
-    /// @param agentAddress The address of the agent
-    event AgentRegistered(uint256 indexed agentId, string indexed agentDomain, address indexed agentAddress);
+    event Registered(uint256 indexed agentId, string agentURI, address indexed owner);
 
-    /// @notice Emitted when an agent is updated
-    /// @param agentId The ID of the agent
-    /// @param previousAgentDomain The previous domain of the agent
-    /// @param newAgentDomain The new domain of the agent
-    /// @param previousAgentAddress The previous address of the agent
-    /// @param newAgentAddress The new address of the agent
-    event AgentUpdated(
-        uint256 indexed agentId,
-        string previousAgentDomain,
-        string indexed newAgentDomain,
-        address previousAgentAddress,
-        address indexed newAgentAddress
+    /// @notice Emitted when metadata is set for an agent
+    event MetadataSet(
+        uint256 indexed agentId, 
+        string indexed indexedMetadataKey, 
+        string metadataKey, 
+        bytes metadataValue
     );
 
-    /// @notice Thrown when the caller is not authorized to perform an action
-    /// @param caller The address of the caller
-    /// @param expected The expected address that is authorized
-    error Unauthorized(address caller, address expected);
+    /// @notice Emitted when agentURI is updated
+    event URIUpdated(uint256 indexed agentId, string newURI, address indexed updatedBy);
 
-    /// @notice Thrown when the provided domain is invalid (e.g., empty)
-    error InvalidDomain();
+    /// @notice Emitted when agentWallet is set or updated
+    event AgentWalletSet(uint256 indexed agentId, address indexed newWallet, address indexed setBy);
 
-    /// @notice Thrown when the provided address is invalid (e.g., zero address)
-    error InvalidAddress();
+    /// @notice Register a new agent with agentURI and metadata
+    function register(
+        string calldata agentURI, 
+        MetadataEntry[] calldata metadata
+    ) external returns (uint256 agentId);
 
-    /// @notice Thrown when trying to register a domain that is already registered
-    /// @param domain The domain that is already registered
-    error DomainAlreadyRegistered(string domain);
+    /// @notice Register a new agent with agentURI only
+    function register(string calldata agentURI) external returns (uint256 agentId);
 
-    /// @notice Thrown when trying to register an address that is already registered
-    /// @param agentAddress The address that is already registered
-    error AddressAlreadyRegistered(address agentAddress);
+    /// @notice Register a new agent without agentURI
+    function register() external returns (uint256 agentId);
 
-    /// @notice Thrown when an agent with the specified ID is not found
-    /// @param agentId The ID of the agent that was not found
-    error AgentNotFound(uint256 agentId);
+    /// @notice Set metadata for an agent (agentWallet is reserved)
+    function setMetadata(
+        uint256 agentId, 
+        string calldata metadataKey, 
+        bytes calldata metadataValue
+    ) external;
 
-    /// @notice Register a new agent
-    /// @param agentDomain The domain of the agent
-    /// @param agentAddress The address of the agent
-    /// @return agentId_ The ID of the newly registered agent
-    function newAgent(string calldata agentDomain, address agentAddress) external returns (uint256 agentId_);
+    /// @notice Get metadata for an agent
+    function getMetadata(
+        uint256 agentId, 
+        string calldata metadataKey
+    ) external view returns (bytes memory metadataValue);
 
-    /// @notice Update an existing agent's domain and/or address
-    /// @param agentId The ID of the agent to update
-    /// @param newAgentDomain The new domain of the agent (pass empty string to keep current)
-    /// @param newAgentAddress The new address of the agent (pass address(0) to keep current)
-    /// @return success_ True if the update was successful
-    function updateAgent(uint256 agentId, string calldata newAgentDomain, address newAgentAddress)
-        external
-        returns (bool success_);
+    /// @notice Update the agentURI for an agent
+    function setAgentURI(uint256 agentId, string calldata newURI) external;
 
-    /// @notice Get an agent by its ID
-    /// @param agentId The ID of the agent to retrieve
-    /// @return agentId_ The ID of the agent
-    /// @return agentDomain_ The domain of the agent
-    /// @return agentAddress_ The address of the agent
-    function getAgent(uint256 agentId)
-        external
-        view
-        returns (uint256 agentId_, string memory agentDomain_, address agentAddress_);
+    /// @notice Set the agentWallet address with signature verification
+    function setAgentWallet(
+        uint256 agentId,
+        address newWallet,
+        uint256 deadline,
+        bytes calldata signature
+    ) external;
 
-    /// @notice Resolve an agent by its domain
-    /// @param agentDomain The domain of the agent to resolve
-    /// @return agentId_ The ID of the agent
-    /// @return agentDomain_ The domain of the agent
-    /// @return agentAddress_ The address of the agent
-    function resolveAgentByDomain(string calldata agentDomain)
-        external
-        view
-        returns (uint256 agentId_, string memory agentDomain_, address agentAddress_);
+    /// @notice Get the agentWallet address for an agent
+    function getAgentWallet(uint256 agentId) external view returns (address wallet);
 
-    /// @notice Resolve an agent by its address
-    /// @param agentAddress The address of the agent to resolve
-    /// @return agentId_ The ID of the agent
-    /// @return agentDomain_ The domain of the agent
-    /// @return agentAddress_ The address of the agent
-    function resolveAgentByAddress(address agentAddress)
-        external
-        view
-        returns (uint256 agentId_, string memory agentDomain_, address agentAddress_);
+    /// @notice Get the total number of registered agents
+    function totalAgents() external view returns (uint256 count);
+
+    /// @notice Check if an agent exists
+    function agentExists(uint256 agentId) external view returns (bool exists);
 }

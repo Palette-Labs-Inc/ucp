@@ -17,20 +17,20 @@
     "dist"
   ],
   "scripts": {
-    "build": "rm -rf dist && npm run build:cjs && npm run build:esm && npm run build:types",
+    "build": "rm -rf dist && pnpm run build:cjs && pnpm run build:esm && pnpm run build:types",
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "build:esm": "tsc -p tsconfig.esm.json && echo '{\"type\": \"module\"}' > dist/esm/package.json",
     "build:types": "tsc -p tsconfig.types.json",
     "build:noEmit": "tsc --noEmit",
     "generate": "./generate_models.sh",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
-    "zod": "^3.23.8"
+    "zod": "catalog:"
   },
   "devDependencies": {
-    "quicktype": "^23.2.6",
-    "typescript": "^5.4.5"
+    "quicktype": "catalog:",
+    "typescript": "catalog:"
   },
   "publishConfig": {
     "access": "public",

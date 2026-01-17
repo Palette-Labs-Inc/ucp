@@ -1,84 +1,94 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.30;
 
 /// @title IValidationRegistry
-/// @notice Interface for the Validation Registry contract as defined in ERC-8004 (draft)
+/// @notice ERC-8004 Validation Registry interface (Jan 2026 update)
 interface IValidationRegistry {
-    /// @notice Struct representing a validation request
-    /// @param agentValidatorId The ID of the validator agent
-    /// @param agentServerId The ID of the server agent
-    /// @param expiresAt The timestamp when the request expires
-    /// @param responded Whether the request has been responded to
-    struct Request {
-        uint256 agentValidatorId;
-        uint256 agentServerId;
-        uint256 expiresAt;
-        bool responded;
-    }
-
-    /// @notice Emitted when a new validation request is created
-    /// @param agentValidatorId The ID of the validator agent
-    /// @param agentServerId The ID of the server agent
-    /// @param dataHash The hash of the data to be validated
-    event ValidationRequest(uint256 indexed agentValidatorId, uint256 indexed agentServerId, bytes32 indexed dataHash);
-
-    /// @notice Emitted when a validation response is submitted
-    /// @param agentValidatorId The ID of the validator agent
-    /// @param agentServerId The ID of the server agent
-    /// @param dataHash The hash of the data that was validated
-    /// @param response The response is value between 0 and 100
-    event ValidationResponse(
-        uint256 indexed agentValidatorId, uint256 indexed agentServerId, bytes32 indexed dataHash, uint8 response
+    /// @notice Emitted when a validation request is made
+    event ValidationRequest(
+        address indexed validatorAddress,
+        uint256 indexed agentId,
+        string requestURI,
+        bytes32 indexed requestHash
     );
 
-    /// @notice Thrown when the provided identity registry address is invalid (e.g., zero address)
+    /// @notice Emitted when a validation response is provided
+    event ValidationResponse(
+        address indexed validatorAddress,
+        uint256 indexed agentId,
+        bytes32 indexed requestHash,
+        uint8 response,
+        string responseURI,
+        bytes32 responseHash,
+        string tag
+    );
+
+    /// @notice Thrown when the provided identity registry address is invalid
     error InvalidIdentityRegistryAddress();
 
     /// @notice Thrown when an agent with the specified ID is not found
-    /// @param agentId The ID of the agent that was not found
     error AgentNotFound(uint256 agentId);
 
-    /// @notice Thrown when a validation request for the given data hash already exists
-    /// @param agentValidatorId The ID of the validator agent
-    /// @param agentServerId The ID of the server agent
-    /// @param dataHash The hash of the data for which the request already exists
-    error AlreadyRequested(uint256 agentValidatorId, uint256 agentServerId, bytes32 dataHash);
-
-    /// @notice Thrown when a validation request has already been responded to
-    /// @param agentValidatorId The ID of the validator agent
-    /// @param agentServerId The ID of the server agent
-    /// @param dataHash The hash of the data for which the request was made
-    error AlreadyResponded(uint256 agentValidatorId, uint256 agentServerId, bytes32 dataHash);
-
-    /// @notice Thrown when a validation request for the given data hash is not found
-    /// @param dataHash The hash of the data for which the request was not found
-    error RequestNotFound(bytes32 dataHash);
-
-    /// @notice Thrown when a validation request has expired
-    /// @param dataHash The hash of the data for which the request expired
-    /// @param currentTime The current block timestamp
-    /// @param expiresAt The timestamp when the request expired
-    error RequestExpired(bytes32 dataHash, uint256 currentTime, uint256 expiresAt);
-
     /// @notice Thrown when the caller is not authorized to perform an action
-    /// @param caller The address of the caller
-    /// @param expected The expected address that is authorized
     error Unauthorized(address caller, address expected);
 
-    /// @notice Thrown when the provided response is invalid (not between 0 and 100)
-    /// @param response The invalid response value
-    /// @param minResponse The minimum valid response value
-    /// @param maxResponse The maximum valid response value
+    /// @notice Thrown when a validation request does not exist
+    error RequestNotFound(bytes32 requestHash);
+
+    /// @notice Thrown when a response is out of range
     error InvalidResponse(uint8 response, uint8 minResponse, uint8 maxResponse);
 
-    /// @notice Create a new validation request
-    /// @param agentValidatorId The ID of the validator agent
-    /// @param agentServerId The ID of the server agent
-    /// @param dataHash The hash of the data to be validated
-    function validationRequest(uint256 agentValidatorId, uint256 agentServerId, bytes32 dataHash) external;
+    /// @notice Request validation for an agent's work
+    function validationRequest(
+        address validatorAddress,
+        uint256 agentId,
+        string calldata requestURI,
+        bytes32 requestHash
+    ) external;
 
-    /// @notice Submit a response to a validation request
-    /// @param dataHash The hash of the data that was validated
-    /// @param response The response is value between 0 and 100
-    function validationResponse(bytes32 dataHash, uint8 response) external;
+    /// @notice Provide a validation response
+    function validationResponse(
+        bytes32 requestHash,
+        uint8 response,
+        string calldata responseURI,
+        bytes32 responseHash,
+        string calldata tag
+    ) external;
+
+    /// @notice Get validation status for a request
+    function getValidationStatus(bytes32 requestHash)
+        external
+        view
+        returns (
+            address validatorAddress,
+            uint256 agentId,
+            uint8 response,
+            string memory tag,
+            uint256 lastUpdate
+        );
+
+    /// @notice Get aggregated validation summary for an agent
+    function getSummary(
+        uint256 agentId,
+        address[] calldata validatorAddresses,
+        string calldata tag
+    ) external view returns (uint64 count, uint8 averageResponse);
+
+    /// @notice Get all validation request hashes for an agent
+    function getAgentValidations(uint256 agentId) external view returns (bytes32[] memory requestHashes);
+
+    /// @notice Get all validation request hashes for a validator
+    function getValidatorRequests(address validatorAddress) external view returns (bytes32[] memory requestHashes);
+
+    /// @notice Check if a validation request exists
+    function requestExists(bytes32 requestHash) external view returns (bool exists);
+
+    /// @notice Get validation request details
+    function getRequest(bytes32 requestHash)
+        external
+        view
+        returns (address validatorAddress, uint256 agentId, string memory requestURI, uint256 timestamp);
+
+    /// @notice Get the identity registry address
+    function getIdentityRegistry() external view returns (address registry);
 }

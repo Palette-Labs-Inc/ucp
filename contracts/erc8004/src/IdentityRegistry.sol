@@ -1,146 +1,168 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.30;
 
-import {IIdentityRegistry} from "./interfaces/IIdentityRegistry.sol";
-import {Constants} from "./libraries/Constants.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
+import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import "./interfaces/IIdentityRegistry.sol";
 
-/// @title IdentityRegistry
-/// @notice Implementation of the Identity Registry contract as defined in ERC-8004 (draft)
-contract IdentityRegistry is IIdentityRegistry {
-    uint256 private _agentCount;
+contract IdentityRegistry is ERC721URIStorage, ReentrancyGuard, IIdentityRegistry {
+    uint256 private _nextAgentId = 1;
 
-    mapping(uint256 agentId => Agent) private _agentById;
-    mapping(string agentDomain => uint256 agentId) private _agentIdByDomain;
-    mapping(address agentAddress => uint256 agentId) private _agentIdByAddress;
+    mapping(uint256 => mapping(string => bytes)) private _metadata;
+    mapping(uint256 => address) private _agentWallet;
 
-    /// @notice Initializes the Identity Registry
-    constructor() {
-        _agentCount = 0;
+    bytes32 private constant _TYPE_HASH =
+        keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
+    bytes32 private constant _SET_AGENT_WALLET_TYPEHASH =
+        keccak256("SetAgentWallet(uint256 agentId,address newWallet,uint256 deadline)");
+    bytes32 private immutable _DOMAIN_SEPARATOR;
+
+    constructor() ERC721("ERC-8004 Trustless Agent", "AGENT") {
+        _DOMAIN_SEPARATOR = keccak256(
+            abi.encode(
+                _TYPE_HASH,
+                keccak256(bytes("ERC-8004 IdentityRegistry")),
+                keccak256(bytes("1.1")),
+                block.chainid,
+                address(this)
+            )
+        );
     }
 
-    /// @inheritdoc IIdentityRegistry
-    function newAgent(string calldata agentDomain, address agentAddress) external returns (uint256 agentId_) {
-        if (bytes(agentDomain).length == 0) {
-            revert InvalidDomain();
-        }
-        if (agentAddress == address(0)) {
-            revert InvalidAddress();
-        }
-        if (_agentIdByDomain[agentDomain] != 0) {
-            revert DomainAlreadyRegistered(agentDomain);
-        }
-        if (_agentIdByAddress[agentAddress] != 0) {
-            revert AddressAlreadyRegistered(agentAddress);
-        }
-        if (msg.sender != agentAddress) {
-            revert Unauthorized(msg.sender, agentAddress);
-        }
-
-        unchecked {
-            agentId_ = ++_agentCount;
-        }
-
-        _agentById[agentId_] = Agent({domain: agentDomain, addr: agentAddress});
-        _agentIdByDomain[agentDomain] = agentId_;
-        _agentIdByAddress[agentAddress] = agentId_;
-
-        emit AgentRegistered(agentId_, agentDomain, agentAddress);
-    }
-
-    /// @inheritdoc IIdentityRegistry
-    function updateAgent(uint256 agentId, string calldata newAgentDomain, address newAgentAddress)
-        external
-        returns (bool success_)
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC721URIStorage, IERC165)
+        returns (bool)
     {
-        Agent storage agent = _agentById[agentId];
-
-        if (agent.addr == address(0)) {
-            revert AgentNotFound(agentId);
-        }
-        if (msg.sender != agent.addr) {
-            revert Unauthorized(msg.sender, agent.addr);
-        }
-
-        if (
-            bytes(newAgentDomain).length != 0 && _agentIdByDomain[newAgentDomain] != 0
-                && keccak256(bytes(newAgentDomain)) != keccak256(bytes(agent.domain))
-        ) {
-            revert DomainAlreadyRegistered(newAgentDomain);
-        }
-        if (
-            newAgentAddress != address(0) && _agentIdByAddress[newAgentAddress] != 0
-                && _agentIdByAddress[newAgentAddress] != agentId
-        ) {
-            revert AddressAlreadyRegistered(newAgentAddress);
-        }
-
-        string memory previousDomain = agent.domain;
-        address previousAddress = agent.addr;
-
-        if (bytes(newAgentDomain).length != 0) {
-            delete _agentIdByDomain[agent.domain];
-            agent.domain = newAgentDomain;
-            _agentIdByDomain[newAgentDomain] = agentId;
-        }
-        if (newAgentAddress != address(0)) {
-            delete _agentIdByAddress[agent.addr];
-            agent.addr = newAgentAddress;
-            _agentIdByAddress[newAgentAddress] = agentId;
-        }
-
-        success_ = true;
-
-        emit AgentUpdated(agentId, previousDomain, agent.domain, previousAddress, agent.addr);
+        return interfaceId == type(IIdentityRegistry).interfaceId || super.supportsInterface(interfaceId);
     }
 
-    /// @inheritdoc IIdentityRegistry
-    function getAgent(uint256 agentId)
+    function register(string calldata agentURI, MetadataEntry[] calldata metadata)
+        external
+        nonReentrant
+        returns (uint256 agentId)
+    {
+        agentId = _mintAgent(msg.sender, agentURI);
+        if (metadata.length > 0) {
+            _setMetadataBatch(agentId, metadata);
+        }
+    }
+
+    function register(string calldata agentURI) external nonReentrant returns (uint256 agentId) {
+        agentId = _mintAgent(msg.sender, agentURI);
+    }
+
+    function register() external nonReentrant returns (uint256 agentId) {
+        agentId = _mintAgent(msg.sender, "");
+    }
+
+    function setMetadata(uint256 agentId, string calldata metadataKey, bytes calldata metadataValue)
+        external
+    {
+        address owner = _ownerOf(agentId);
+        require(owner != address(0), "Agent does not exist");
+        require(_isAuthorized(owner, msg.sender, agentId), "Not authorized");
+        _setMetadata(agentId, metadataKey, metadataValue);
+    }
+
+    function getMetadata(uint256 agentId, string calldata metadataKey)
         external
         view
-        returns (uint256 agentId_, string memory agentDomain_, address agentAddress_)
+        returns (bytes memory metadataValue)
     {
-        Agent storage agent = _agentById[agentId];
-
-        if (agent.addr == address(0)) {
-            return (Constants.AGENT_ID_NONE, Constants.AGENT_DOMAIN_NONE, Constants.AGENT_ADDRESS_NONE);
-        }
-
-        agentId_ = agentId;
-        agentDomain_ = agent.domain;
-        agentAddress_ = agent.addr;
+        _requireOwned(agentId);
+        if (_isAgentWalletKey(metadataKey)) return abi.encode(_agentWallet[agentId]);
+        return _metadata[agentId][metadataKey];
     }
 
-    /// @inheritdoc IIdentityRegistry
-    function resolveAgentByDomain(string calldata agentDomain)
-        external
-        view
-        returns (uint256 agentId_, string memory agentDomain_, address agentAddress_)
-    {
-        uint256 agentId = _agentIdByDomain[agentDomain];
-        if (agentId == 0) {
-            return (Constants.AGENT_ID_NONE, Constants.AGENT_DOMAIN_NONE, Constants.AGENT_ADDRESS_NONE);
-        }
-
-        Agent storage agent = _agentById[agentId];
-        agentId_ = agentId;
-        agentDomain_ = agent.domain;
-        agentAddress_ = agent.addr;
+    function setAgentURI(uint256 agentId, string calldata newURI) external {
+        address owner = _ownerOf(agentId);
+        require(owner != address(0), "Agent does not exist");
+        require(_isAuthorized(owner, msg.sender, agentId), "Not authorized");
+        require(bytes(newURI).length > 0, "Empty URI");
+        _setTokenURI(agentId, newURI);
+        emit URIUpdated(agentId, newURI, msg.sender);
     }
 
-    /// @inheritdoc IIdentityRegistry
-    function resolveAgentByAddress(address agentAddress)
-        external
-        view
-        returns (uint256 agentId_, string memory agentDomain_, address agentAddress_)
-    {
-        uint256 agentId = _agentIdByAddress[agentAddress];
-        if (agentId == 0) {
-            return (Constants.AGENT_ID_NONE, Constants.AGENT_DOMAIN_NONE, Constants.AGENT_ADDRESS_NONE);
-        }
+    function setAgentWallet(
+        uint256 agentId,
+        address newWallet,
+        uint256 deadline,
+        bytes calldata signature
+    ) external {
+        address owner = _ownerOf(agentId);
+        require(owner != address(0), "Agent does not exist");
+        require(_isAuthorized(owner, msg.sender, agentId), "Not authorized");
+        require(newWallet != address(0), "Invalid wallet address");
+        require(block.timestamp <= deadline, "Signature expired");
 
-        Agent storage agent = _agentById[agentId];
-        agentId_ = agentId;
-        agentDomain_ = agent.domain;
-        agentAddress_ = agent.addr;
+        bytes32 structHash = keccak256(
+            abi.encode(_SET_AGENT_WALLET_TYPEHASH, agentId, newWallet, deadline)
+        );
+        bytes32 digest = keccak256(abi.encodePacked("\x19\x01", _DOMAIN_SEPARATOR, structHash));
+        require(SignatureChecker.isValidSignatureNow(newWallet, digest, signature), "Invalid signature");
+
+        _agentWallet[agentId] = newWallet;
+        emit AgentWalletSet(agentId, newWallet, msg.sender);
+    }
+
+    function getAgentWallet(uint256 agentId) external view returns (address wallet) {
+        _requireOwned(agentId);
+        return _agentWallet[agentId];
+    }
+
+    function totalAgents() external view returns (uint256 count) {
+        return _nextAgentId - 1;
+    }
+
+    function agentExists(uint256 agentId) external view returns (bool exists) {
+        return _ownerOf(agentId) != address(0);
+    }
+
+    function _mintAgent(address to, string memory agentURI) internal returns (uint256 agentId) {
+        require(to != address(0), "Invalid recipient");
+        agentId = _nextAgentId;
+        _nextAgentId += 1;
+        _safeMint(to, agentId);
+        if (bytes(agentURI).length > 0) {
+            _setTokenURI(agentId, agentURI);
+        }
+        _agentWallet[agentId] = to;
+        emit Registered(agentId, agentURI, to);
+    }
+
+    function _setMetadataBatch(uint256 agentId, MetadataEntry[] calldata metadata) internal {
+        uint256 length = metadata.length;
+        for (uint256 i = 0; i < length; i++) {
+            _setMetadata(agentId, metadata[i].metadataKey, metadata[i].metadataValue);
+        }
+    }
+
+    function _setMetadata(uint256 agentId, string memory metadataKey, bytes memory metadataValue)
+        internal
+    {
+        require(bytes(metadataKey).length > 0, "Empty key");
+        require(!_isAgentWalletKey(metadataKey), "Cannot set agentWallet via setMetadata");
+        _metadata[agentId][metadataKey] = metadataValue;
+        emit MetadataSet(agentId, metadataKey, metadataKey, metadataValue);
+    }
+
+    function _isAgentWalletKey(string memory metadataKey) internal pure returns (bool) {
+        return keccak256(bytes(metadataKey)) == keccak256(bytes("agentWallet"));
+    }
+
+    function _update(address to, uint256 tokenId, address auth)
+        internal
+        override
+        returns (address)
+    {
+        address from = super._update(to, tokenId, auth);
+        if (from != address(0) && to != address(0) && from != to) {
+            _agentWallet[tokenId] = address(0);
+        }
+        return from;
     }
 }

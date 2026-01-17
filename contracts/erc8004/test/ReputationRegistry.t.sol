@@ -13,109 +13,124 @@ contract ReputationRegistryTest is Test {
     address bob = address(0x2);
     address charlie = address(0x3);
 
-    string aliceDomain = "alice.com";
-    string bobDomain = "bob.agent.com";
-    string charlieDomain = "charlie.my.agent.com";
+    string aliceUri = "https://example.com/alice.json";
 
-    event AuthFeedback(uint256 indexed agentClientId, uint256 indexed agentServerId, bytes32 indexed feedbackAuthId);
+    event NewFeedback(
+        uint256 indexed agentId,
+        address indexed clientAddress,
+        uint64 feedbackIndex,
+        uint8 score,
+        string indexed tag1,
+        string tag2,
+        string endpoint,
+        string feedbackURI,
+        bytes32 feedbackHash
+    );
+
+    event FeedbackRevoked(uint256 indexed agentId, address indexed clientAddress, uint64 indexed feedbackIndex);
+
+    event ResponseAppended(
+        uint256 indexed agentId,
+        address indexed clientAddress,
+        uint64 feedbackIndex,
+        address indexed responder,
+        string responseURI
+    );
 
     function setUp() public {
         identityRegistry = new IdentityRegistry();
         reputationRegistry = new ReputationRegistry(address(identityRegistry));
     }
 
-    function test_AuthFeedbackEvent() public {
+    function test_GiveFeedback() public {
         vm.prank(alice);
-        uint256 aliceId = identityRegistry.newAgent(aliceDomain, alice);
-        assertEq(aliceId, 1);
-
-        vm.prank(bob);
-        uint256 bobId = identityRegistry.newAgent(bobDomain, bob);
-        assertEq(bobId, 2);
+        uint256 agentId = identityRegistry.register(aliceUri);
 
         vm.prank(bob);
         vm.expectEmit(true, true, true, true);
-        emit AuthFeedback(
-            aliceId,
-            bobId,
-            keccak256(abi.encodePacked(block.chainid, address(reputationRegistry), aliceId, bobId, uint256(1)))
+        emit NewFeedback(
+            agentId,
+            bob,
+            1,
+            90,
+            "quality",
+            "fast",
+            "https://api.example.com",
+            "ipfs://feedback",
+            bytes32(0)
         );
-        reputationRegistry.acceptFeedback(aliceId, bobId);
+        reputationRegistry.giveFeedback(
+            agentId,
+            90,
+            "quality",
+            "fast",
+            "https://api.example.com",
+            "ipfs://feedback",
+            bytes32(0)
+        );
+
+        (uint8 score, string memory tag1, string memory tag2, bool isRevoked) =
+            reputationRegistry.readFeedback(agentId, bob, 1);
+        assertEq(score, 90);
+        assertEq(tag1, "quality");
+        assertEq(tag2, "fast");
+        assertFalse(isRevoked);
     }
 
-    function test_AuthFeedbackEvent_Multiple() public {
+    function test_RevokeFeedback() public {
         vm.prank(alice);
-        uint256 aliceId = identityRegistry.newAgent(aliceDomain, alice);
-        assertEq(aliceId, 1);
+        uint256 agentId = identityRegistry.register(aliceUri);
 
         vm.prank(bob);
-        uint256 bobId = identityRegistry.newAgent(bobDomain, bob);
-        assertEq(bobId, 2);
-
-        vm.prank(charlie);
-        uint256 charlieId = identityRegistry.newAgent(charlieDomain, charlie);
-        assertEq(charlieId, 3);
+        reputationRegistry.giveFeedback(agentId, 80, "", "", "", "", bytes32(0));
 
         vm.prank(bob);
         vm.expectEmit(true, true, true, true);
-        emit AuthFeedback(
-            aliceId,
-            bobId,
-            keccak256(abi.encodePacked(block.chainid, address(reputationRegistry), aliceId, bobId, uint256(1)))
-        );
-        reputationRegistry.acceptFeedback(aliceId, bobId);
+        emit FeedbackRevoked(agentId, bob, 1);
+        reputationRegistry.revokeFeedback(agentId, 1);
+
+        (, , , bool isRevoked) = reputationRegistry.readFeedback(agentId, bob, 1);
+        assertTrue(isRevoked);
+    }
+
+    function test_AppendResponse_EmptyUri() public {
+        vm.prank(alice);
+        uint256 agentId = identityRegistry.register(aliceUri);
+
+        vm.prank(bob);
+        reputationRegistry.giveFeedback(agentId, 70, "", "", "", "", bytes32(0));
+
+        vm.prank(charlie);
+        vm.expectRevert(abi.encodeWithSignature("EmptyResponseURI()"));
+        reputationRegistry.appendResponse(agentId, bob, 1, "", bytes32(0));
+    }
+
+    function test_AppendResponse() public {
+        vm.prank(alice);
+        uint256 agentId = identityRegistry.register(aliceUri);
+
+        vm.prank(bob);
+        reputationRegistry.giveFeedback(agentId, 70, "", "", "", "", bytes32(0));
 
         vm.prank(charlie);
         vm.expectEmit(true, true, true, true);
-        emit AuthFeedback(
-            bobId,
-            charlieId,
-            keccak256(abi.encodePacked(block.chainid, address(reputationRegistry), bobId, charlieId, uint256(2)))
-        );
-        reputationRegistry.acceptFeedback(bobId, charlieId);
+        emit ResponseAppended(agentId, bob, 1, charlie, "ipfs://response");
+        reputationRegistry.appendResponse(agentId, bob, 1, "ipfs://response", bytes32(0));
     }
 
-    function test_AuthFeedbackEvent_Unauthorized() public {
+    function test_GetSummary() public {
         vm.prank(alice);
-        uint256 aliceId = identityRegistry.newAgent(aliceDomain, alice);
-        assertEq(aliceId, 1);
+        uint256 agentId = identityRegistry.register(aliceUri);
 
         vm.prank(bob);
-        uint256 bobId = identityRegistry.newAgent(bobDomain, bob);
-        assertEq(bobId, 2);
+        reputationRegistry.giveFeedback(agentId, 60, "a", "", "", "", bytes32(0));
 
         vm.prank(charlie);
-        vm.expectRevert(abi.encodeWithSignature("Unauthorized(address,address)", charlie, bob));
-        reputationRegistry.acceptFeedback(aliceId, bobId);
-    }
+        reputationRegistry.giveFeedback(agentId, 80, "a", "", "", "", bytes32(0));
 
-    function test_AuthFeedbackEvent_AgentNotFound() public {
-        vm.prank(alice);
-        uint256 aliceId = identityRegistry.newAgent(aliceDomain, alice);
-        assertEq(aliceId, 1);
-
-        vm.prank(bob);
-        vm.expectRevert(abi.encodeWithSignature("AgentNotFound(uint256)", 2));
-        reputationRegistry.acceptFeedback(aliceId, 2);
-    }
-
-    function test_AuthFeedbackEvent_AgentNotFound_Both() public {
-        vm.prank(alice);
-        uint256 aliceId = identityRegistry.newAgent(aliceDomain, alice);
-        assertEq(aliceId, 1);
-
-        vm.prank(bob);
-        vm.expectRevert(abi.encodeWithSignature("AgentNotFound(uint256)", 2));
-        reputationRegistry.acceptFeedback(2, 3);
-    }
-
-    function test_Constructor_InvalidIdentityRegistryAddress() public {
-        vm.expectRevert(abi.encodeWithSignature("InvalidIdentityRegistryAddress()"));
-        new ReputationRegistry(address(0));
-    }
-
-    function test_Constructor_ValidIdentityRegistryAddress() public {
-        ReputationRegistry repReg = new ReputationRegistry(address(identityRegistry));
-        assertEq(address(repReg.identityRegistry()), address(identityRegistry));
+        (uint64 count, uint8 average) =
+            reputationRegistry.getSummary(agentId, new address[](0), "a", "");
+        assertEq(count, 2);
+        assertEq(average, 70);
     }
 }

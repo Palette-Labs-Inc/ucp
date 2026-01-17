@@ -34,14 +34,14 @@ build UCP-compliant applications in JavaScript and TypeScript.
 To install the SDK in your project, run:
 
 ```bash
-npm install @ucp-js/sdk
+pnpm add @ucp-js/sdk
 ```
 
 ## Development
 
 ### Prerequisites
 
-This project uses `npm` for package management and `typescript` for building.
+This project uses `pnpm` for package management and `typescript` for building.
 
 ### Generating Models
 
@@ -54,11 +54,11 @@ To regenerate the models, you first need a local copy of the [UCP specification]
 git clone https://github.com/Universal-Commerce-Protocol/ucp.git
 ```
 
-Then, run `npm run generate` pointing to the `spec` folder of the cloned
+Then, run `pnpm run generate` pointing to the `spec` folder of the cloned
 repository, e.g.:
 
 ```bash
-npm run generate -- ucp/spec
+pnpm run generate -- ucp/spec
 ```
 
 ### Building
@@ -66,7 +66,7 @@ npm run generate -- ucp/spec
 To build the project for both CommonJS and ESM:
 
 ```bash
-npm run build
+pnpm run build
 ```
 
 ## Contributing

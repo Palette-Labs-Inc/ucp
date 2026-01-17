@@ -4,14 +4,30 @@ packages:
   - "spec"
 
 catalog:
-  ox: 0.11.3
+  "@hono/node-server": 1.19.6
+  "@hono/zod-validator": ^0.7.6
   "@indexsupply/indexsupply.js": 2.0.3
   "@indexsupply/shovel-config": 0.0.18
-  abitype: 1.2.3
-  idxs: 0.0.6
-
-  zod: 4.3.5
-  dotenv: 17.2.3
+  "@types/better-sqlite3": ^7.6.9
   "@types/node": 25.0.9
+  "@types/uuid": ^9.0.8
+  "@vitejs/plugin-react": ^5.0.0
+  abitype: 1.2.3
+  better-sqlite3: ^9.4.3
+  dotenv: 17.2.3
+  hono: 4.11.4
+  idxs: 0.0.6
+  json-schema-to-typescript: ^15.0.4
+  json-schema-to-zod: ^2.6.0
+  ox: 0.11.3
+  pino: ^10.1.0
+  pino-http: ^11.0.0
+  pino-http-print: ^4.0.0
+  quicktype: ^23.2.6
+  react: ^19.2.0
+  react-dom: ^19.2.0
   tsx: 4.21.0
   typescript: 5.9.3
+  uuid: ^9.0.1
+  vite: ^6.2.0
+  zod: 4.3.5

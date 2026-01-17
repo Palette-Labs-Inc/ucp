@@ -122,8 +122,8 @@ In a new terminal:
 
 ```bash
 cd a2a/chat-client
-npm install
-npm run dev
+pnpm install
+pnpm run dev
 ```
 
 **Expected output:**

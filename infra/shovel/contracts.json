@@ -15,10 +15,11 @@
       "contract_name": "IdentityRegistry"
     },
     "event": {
-      "name": "AgentRegistered",
+      "name": "Registered",
       "store": {
         "agentId": "agent_id",
-        "agentAddress": "agent_address"
+        "agentURI": "agent_uri",
+        "owner": "owner"
       }
     }
   },

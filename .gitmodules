@@ -17,3 +17,6 @@
 [submodule "contracts/vendor/commerce-payments/lib/solady"]
 	path = contracts/vendor/commerce-payments/lib/solady
 	url = https://github.com/vectorized/solady
+[submodule "contracts/erc8004/lib/openzeppelin-contracts"]
+	path = contracts/erc8004/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
