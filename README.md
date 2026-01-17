@@ -25,6 +25,13 @@ at `spec/`, and orchestration happens from the root using `make` + shell scripts
 
 This repo uses `pnpm` workspaces for `apps/*` and `packages/*`.
 
+`pnpm` is required and enforced via Corepack. If you haven't enabled it yet:
+
+```
+corepack enable
+corepack prepare pnpm@9.12.2 --activate
+```
+
 ## Getting Started
 
 Requirements pulled from the upstream subtree READMEs:

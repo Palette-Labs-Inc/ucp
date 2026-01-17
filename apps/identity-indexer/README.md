@@ -10,7 +10,7 @@ and exposes a small HTTP API for domain-based lookups.
 - An Index Supply-compatible API is available for `idxs` to query (local or remote).
 - `infra/shovel/contracts.json` includes the ERC-8004 `Registered` event with
   `agentURI` stored as `agent_uri`.
-- `SHOVEL_PG_URL` is set in your environment (see `.env.template`).
+- `IDXS_URL` (and `IDXS_API_KEY` if needed) are set in your environment.
 
 ## Development
 

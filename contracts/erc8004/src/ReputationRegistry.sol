@@ -99,8 +99,10 @@ contract ReputationRegistry is IReputationRegistry {
             revert EmptyResponseURI();
         }
 
+        if (responseHash != bytes32(0)) {}
+
         _responseCount[agentId][clientAddress][feedbackIndex][msg.sender] += 1;
-        emit ResponseAppended(agentId, clientAddress, feedbackIndex, msg.sender, responseURI, responseHash);
+        emit ResponseAppended(agentId, clientAddress, feedbackIndex, msg.sender, responseURI);
     }
 
     function getSummary(
@@ -109,26 +111,14 @@ contract ReputationRegistry is IReputationRegistry {
         string calldata tag1,
         string calldata tag2
     ) external view returns (uint64 count, uint8 averageScore) {
-        address[] memory clients = clientAddresses.length > 0
-            ? clientAddresses
-            : _clients[agentId];
-
-        uint256 totalScore = 0;
-        uint64 validCount = 0;
+        address[] memory clients = _resolveClients(agentId, clientAddresses);
         bool filterTag1 = bytes(tag1).length > 0;
         bool filterTag2 = bytes(tag2).length > 0;
+        bytes32 tag1Hash = keccak256(bytes(tag1));
+        bytes32 tag2Hash = keccak256(bytes(tag2));
 
-        for (uint256 i = 0; i < clients.length; i++) {
-            uint64 lastIndex = _lastIndex[agentId][clients[i]];
-            for (uint64 j = 1; j <= lastIndex; j++) {
-                Feedback storage feedback = _feedback[agentId][clients[i]][j];
-                if (feedback.isRevoked) continue;
-                if (filterTag1 && keccak256(bytes(feedback.tag1)) != keccak256(bytes(tag1))) continue;
-                if (filterTag2 && keccak256(bytes(feedback.tag2)) != keccak256(bytes(tag2))) continue;
-                totalScore += feedback.score;
-                validCount += 1;
-            }
-        }
+        (uint64 validCount, uint256 totalScore) =
+            _sumScores(agentId, clients, tag1Hash, tag2Hash, filterTag1, filterTag2);
 
         count = validCount;
         averageScore = validCount > 0 ? uint8(totalScore / validCount) : 0;
@@ -165,9 +155,7 @@ contract ReputationRegistry is IReputationRegistry {
             bool[] memory revokedStatuses
         )
     {
-        address[] memory clients = clientAddresses.length > 0
-            ? clientAddresses
-            : _clients[agentId];
+        address[] memory clients = _resolveClients(agentId, clientAddresses);
 
         uint256 totalCount = _countValidFeedback(agentId, clients, tag1, tag2, includeRevoked);
         clientAddresses_ = new address[](totalCount);
@@ -297,6 +285,47 @@ contract ReputationRegistry is IReputationRegistry {
                 revokedStatuses[idx] = feedback.isRevoked;
                 idx += 1;
             }
+        }
+    }
+
+    function _sumScores(
+        uint256 agentId,
+        address[] memory clients,
+        bytes32 tag1Hash,
+        bytes32 tag2Hash,
+        bool filterTag1,
+        bool filterTag2
+    ) internal view returns (uint64 validCount, uint256 totalScore) {
+        for (uint256 i = 0; i < clients.length; i++) {
+            uint64 lastIndex = _lastIndex[agentId][clients[i]];
+            for (uint64 j = 1; j <= lastIndex; j++) {
+                Feedback storage feedback = _feedback[agentId][clients[i]][j];
+                if (feedback.isRevoked) continue;
+                if (filterTag1 && keccak256(bytes(feedback.tag1)) != tag1Hash) continue;
+                if (filterTag2 && keccak256(bytes(feedback.tag2)) != tag2Hash) continue;
+                totalScore += feedback.score;
+                validCount += 1;
+            }
+        }
+    }
+
+    function _resolveClients(uint256 agentId, address[] calldata clientAddresses)
+        internal
+        view
+        returns (address[] memory clients)
+    {
+        if (clientAddresses.length > 0) {
+            clients = new address[](clientAddresses.length);
+            for (uint256 i = 0; i < clientAddresses.length; i++) {
+                clients[i] = clientAddresses[i];
+            }
+            return clients;
+        }
+
+        address[] storage stored = _clients[agentId];
+        clients = new address[](stored.length);
+        for (uint256 i = 0; i < stored.length; i++) {
+            clients[i] = stored[i];
         }
     }
 }

@@ -41,6 +41,8 @@ contract ValidationRegistry is IValidationRegistry {
         string calldata requestURI,
         bytes32 requestHash
     ) external {
+        require(bytes(requestURI).length > 0, "Empty requestURI");
+        require(requestHash != bytes32(0), "Empty requestHash");
         if (!identityRegistry.agentExists(agentId)) {
             revert AgentNotFound(agentId);
         }
