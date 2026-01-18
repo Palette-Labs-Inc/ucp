@@ -23,6 +23,7 @@
     "abitype": "catalog:"
   },
   "devDependencies": {
+    "@ucp/config": "workspace:*",
     "@types/node": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:"

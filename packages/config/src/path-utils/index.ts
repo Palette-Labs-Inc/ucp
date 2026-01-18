@@ -1,5 +1,5 @@
 export { findUp } from "./find-up.js";
-export { findRepoRoot, repoRoot } from "./repo-root.js";
+export { appRootFromCwd, findRepoRoot, repoRoot } from "./repo-root.js";
 export {
   appRootFromUrl,
   dirnameFromUrl,

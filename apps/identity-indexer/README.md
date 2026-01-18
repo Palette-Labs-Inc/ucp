@@ -20,7 +20,9 @@ cp apps/identity-indexer/.env.local.example apps/identity-indexer/.env.local
 pnpm -C apps/identity-indexer dev
 ```
 
-See `infra/ENV.md` for the repo-wide env strategy and naming conventions.
+See `ENV.md` for the repo-wide env strategy and naming conventions.
+This app resolves its root via `appRootFromCwd({ appPath: "apps/identity-indexer" })`
+so app-local `.env.local` is always loaded.
 
 ## Type generation (optional)
 Generate Kysely types from the live Shovel database:

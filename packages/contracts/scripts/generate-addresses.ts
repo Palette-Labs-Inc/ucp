@@ -1,7 +1,8 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { mkdir, rename, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+
+import { repoRoot } from "@ucp/config/path";
 
 interface DeploymentSpec {
   name: string;
@@ -9,9 +10,8 @@ interface DeploymentSpec {
   contractName: string;
 }
 
-const scriptsDir = resolve(fileURLToPath(new URL(".", import.meta.url)));
-const packageDir = resolve(scriptsDir, "..");
-const repoRoot = resolve(packageDir, "..", "..");
+const repoRootDir = repoRoot();
+const packageDir = resolve(repoRootDir, "packages", "contracts");
 const outputFile = resolve(packageDir, "src", "generated", "addresses.ts");
 
 const deployments: DeploymentSpec[] = [
@@ -38,7 +38,7 @@ function readDeployAddress(args: {
   contractName: string;
 }): string {
   const runPath = resolve(
-    repoRoot,
+    repoRootDir,
     args.broadcastDir,
     String(args.chainId),
     "run-latest.json",
@@ -60,7 +60,7 @@ function readDeployAddress(args: {
 function detectChainIds(): number[] {
   const chainIds = new Set<number>();
   for (const deployment of deployments) {
-    const absDir = resolve(repoRoot, deployment.broadcastDir);
+    const absDir = resolve(repoRootDir, deployment.broadcastDir);
     if (!existsSync(absDir)) continue;
     const dirents = readdirSync(absDir, { withFileTypes: true }).filter(
       (dirent) => dirent.isDirectory(),

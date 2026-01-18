@@ -1,17 +1,17 @@
 import { existsSync, readFileSync } from "node:fs";
 import { mkdir, rename, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+
+import { repoRoot } from "@ucp/config/path";
 
 interface ContractSpec {
   name: string;
   artifactPath: string;
 }
 
-const scriptsDir = resolve(fileURLToPath(new URL(".", import.meta.url)));
-const packageDir = resolve(scriptsDir, "..");
-const repoRoot = resolve(packageDir, "..", "..");
-const erc8004OutDir = resolve(repoRoot, "contracts", "erc8004", "out");
+const repoRootDir = repoRoot();
+const packageDir = resolve(repoRootDir, "packages", "contracts");
+const erc8004OutDir = resolve(repoRootDir, "contracts", "erc8004", "out");
 const outputFile = resolve(packageDir, "src", "generated", "contracts.ts");
 
 const contracts: ContractSpec[] = [

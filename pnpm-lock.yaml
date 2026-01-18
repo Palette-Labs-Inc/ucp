@@ -173,6 +173,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 25.0.9
+      '@ucp/config':
+        specifier: workspace:*
+        version: link:../config
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
