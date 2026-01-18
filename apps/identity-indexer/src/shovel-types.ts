@@ -1,9 +1,9 @@
 import type { Column } from "@indexsupply/shovel-config";
 import type { Abi, ExtractAbiEvent, ExtractAbiEventNames } from "abitype";
 import type { contracts } from "@ucp/contracts";
-import type { Env } from "../env.js";
+import type { AppEnv } from "./env.js";
 
-export type EnvVars = Env;
+export type EnvVars = AppEnv;
 
 export type EventInputNames<
   TAbi extends Abi,

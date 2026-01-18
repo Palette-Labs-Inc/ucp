@@ -3,15 +3,19 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "pnpm run env:generate && tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
+    "env:generate": "tsx scripts/generate-env-schema.ts",
+    "shovel:config": "tsx src/shovel-config.ts -- shovel/generated/ucp.local.json",
     "generate:db-types": "kysely-codegen --dialect postgres --url \"$DATABASE_URL\" --out-file src/db.generated.ts",
     "register-agent": "tsx scripts/register_agent.ts",
-    "verify-agent": "tsx scripts/verify_agent.ts"
+    "verify-agent": "tsx scripts/verify_agent.ts",
+    "postinstall": "pnpm run env:generate"
   },
   "dependencies": {
     "@hono/node-server": "catalog:",
+    "@indexsupply/shovel-config": "catalog:",
     "@ucp/config": "workspace:*",
     "@ucp-js/sdk": "workspace:*",
     "@ucp/contracts": "workspace:*",
@@ -21,7 +25,8 @@
     "kysely": "catalog:",
     "pg": "catalog:",
     "viem": "catalog:",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "abitype": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",

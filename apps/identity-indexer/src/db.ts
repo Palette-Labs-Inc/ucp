@@ -1,6 +1,6 @@
 import { Kysely, PostgresDialect, type Selectable } from "kysely";
 import { Pool } from "pg";
-import type { IndexerEnv } from "./env.js";
+import type { AppEnv } from "./env.js";
 import type { DB } from "./db.generated.js";
 
 type IdentityEventTable = Selectable<DB["erc8004_identity_events"]>;
@@ -23,7 +23,7 @@ export interface IndexerCursor {
   lastLogIdx: IdentityEventRow["log_idx"];
 }
 
-export function createDb(env: IndexerEnv): Kysely<DB> {
+export function createDb(env: AppEnv): Kysely<DB> {
   return new Kysely<DB>({
     dialect: new PostgresDialect({
       pool: new Pool({ connectionString: env.DATABASE_URL })

@@ -24,14 +24,8 @@ ANVIL_PORT ?= 8545
 ANVIL_DOCKER_URL ?= http://anvil:$(ANVIL_PORT)
 CHAIN_ID ?= 31337
 ANVIL_DEPLOYER_KEY ?= 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-SHOVEL_CONFIG_DIR := $(CURDIR)/infra/shovel
-SHOVEL_OUTPUT_DIR := $(SHOVEL_CONFIG_DIR)/generated
-SHOVEL_CONFIG := $(SHOVEL_OUTPUT_DIR)/ucp.local.json
 
-ETH_RPC_URL ?= $(ANVIL_DOCKER_URL)
-SHOVEL_START_BLOCK ?= 0
-
-export CHAIN_ID ETH_RPC_URL SHOVEL_START_BLOCK
+export CHAIN_ID
 
 .PHONY: help
 help:
@@ -48,12 +42,9 @@ help:
 	@echo "  make anvil-fg              - run Anvil in the foreground"
 	@echo "  make anvil-down            - stop Anvil via docker-compose"
 	@echo "  make anvil-logs            - tail Anvil logs"
-	@echo "  make shovel-up             - start Shovel via docker-compose"
-	@echo "  make shovel-down           - stop Shovel via docker-compose"
-	@echo "  make shovel-logs           - tail Shovel logs"
-	@echo "  make infra-up              - boot anvil + deploy + shovel"
-	@echo "  make infra-down            - stop all infra services"
-	@echo "  make infra-clean           - remove .env + generated shovel config"
+	@echo "  make infra-up              - boot anvil + deploy registries"
+	@echo "  make infra-down            - stop infra services"
+	@echo "  make infra-clean           - remove .env"
 	@echo "  make env-init              - create .env from .env.template if missing"
 	@echo "  make test-erc8004          - run ERC-8004 Foundry tests"
 	@echo "  make deploy-identity       - deploy Identity Registry to Anvil"
@@ -65,8 +56,7 @@ help:
 	@echo "  make seed-validation       - write a sample validation entry"
 	@echo "  make seed-erc8004          - register + seed feedback + validation"
 	@echo "  make deploy-commerce-payments - deploy payments escrow to Anvil"
-	@echo "  make infra-check           - build ABIs + typegen + shovel config"
-	@echo "  make shovel-config         - generate shovel config JSON"
+	@echo "  make infra-check           - build ABIs + typegen"
 	@echo "  make build-contract-abis   - build contract ABIs via Foundry"
 	@echo "  make generate-contracts    - generate TS ABIs/types from artifacts"
 	@echo "  make indexer-db-types      - generate Kysely DB types for indexer"
@@ -156,27 +146,6 @@ anvil-down: check-docker env-init
 anvil-logs: check-docker env-init
 	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" logs -f anvil
 
-# --- shovel (docker) ---
-.PHONY: shovel-config
-shovel-config: check-docker env-init
-	@pnpm -C packages/config run generate-shovel-config -- \
-		"$(ENV_FILE)" \
-		"$(SHOVEL_CONFIG)"
-	@python3 -m json.tool "$(SHOVEL_CONFIG)" >/dev/null
-	@echo "OK: valid JSON"
-
-.PHONY: shovel-up
-shovel-up: check-docker env-init shovel-config
-	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" up -d shovel
-
-.PHONY: shovel-logs
-shovel-logs: check-docker env-init
-	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" logs -f shovel
-
-.PHONY: shovel-down
-shovel-down: check-docker env-init
-	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" stop shovel
-
 # --- erc8004 (foundry) ---
 .PHONY: test-erc8004
 test-erc8004: check-docker anvil-wait
@@ -232,7 +201,6 @@ deploy-commerce-payments: check-docker env-init anvil-wait
 infra-check: check-docker env-init
 	@$(MAKE) build-contract-abis
 	@$(MAKE) generate-contracts
-	@$(MAKE) shovel-config
 
 .PHONY: build-contract-abis
 build-contract-abis: check-docker env-init
@@ -245,7 +213,7 @@ generate-contracts:
 	@pnpm -C packages/contracts generate
 
 .PHONY: infra-up
-infra-up: env-init anvil deploy-registries deploy-commerce-payments generate-contracts shovel-config shovel-up
+infra-up: env-init anvil deploy-registries deploy-commerce-payments generate-contracts
 
 .PHONY: infra-down
 infra-down: check-docker env-init
@@ -253,7 +221,7 @@ infra-down: check-docker env-init
 
 .PHONY: infra-clean
 infra-clean:
-	@rm -f "$(ENV_FILE)" "$(SHOVEL_CONFIG)"
+	@rm -f "$(ENV_FILE)"
 
 .PHONY: register-agent
 register-agent: check-docker env-init anvil-wait

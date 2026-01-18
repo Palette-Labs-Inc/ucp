@@ -89,6 +89,9 @@ importers:
       '@ucp/erc8004-specs':
         specifier: workspace:*
         version: link:../../erc8004
+      abitype:
+        specifier: 'catalog:'
+        version: 1.2.3(typescript@5.9.3)(zod@4.3.5)
       dotenv:
         specifier: 'catalog:'
         version: 17.2.3

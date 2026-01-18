@@ -4,12 +4,14 @@ import { env } from "./env.js";
 import { createApp } from "./http.js";
 import { startIndexer } from "./indexer.js";
 import { createStore } from "./store.js";
+import { startShovel } from "./run-shovel.js";
 
 async function main(): Promise<void> {
   const db = createDb(env);
   await ensureSchema(db);
   const store = createStore();
 
+  const stopShovel = await startShovel();
   const { stop } = await startIndexer(db, env, store);
 
   const app = createApp(store);
@@ -17,6 +19,7 @@ async function main(): Promise<void> {
 
   const shutdown = async () => {
     stop();
+    await stopShovel();
     await db.destroy();
     process.exit(0);
   };

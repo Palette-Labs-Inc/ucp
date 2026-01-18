@@ -5,22 +5,15 @@
   "type": "module",
   "exports": {
     "./env": "./src/env-utils/index.ts",
-    "./env/schema": "./_generated/base-env.ts",
     "./path": "./src/path-utils/index.ts"
   },
   "files": [
-    "src",
-    "_generated"
+    "src"
   ],
   "scripts": {
-    "check": "tsc -p tsconfig.json --noEmit",
-    "generate-env-schema": "TSX_DISABLE_CACHE=1 node --import tsx scripts/generate-env-schema.ts",
-    "postinstall": "pnpm run generate-env-schema",
-    "generate-shovel-config": "TSX_DISABLE_CACHE=1 node --import tsx src/infra/shovel-config.ts"
+    "check": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@indexsupply/shovel-config": "catalog:",
-    "@ucp/contracts": "workspace:*",
     "abitype": "catalog:",
     "dotenv": "catalog:",
     "zod": "catalog:"

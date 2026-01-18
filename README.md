@@ -80,7 +80,7 @@ Start a local Anvil node via Docker:
 make anvil
 ```
 
-### Infra env (Anvil + Shovel)
+### Infra env (Anvil)
 
 Copy the repo root template and edit as needed:
 
@@ -88,8 +88,8 @@ Copy the repo root template and edit as needed:
 cp .env.template .env
 ```
 
-This `.env` is used by `make` targets (deploy/seed/shovel-config) and
-the TypeScript Shovel config generator in `packages/config/src/infra/shovel-config.ts`.
+This `.env` is used by `make` targets (deploy/seed) and the identity indexer
+Shovel config generator in `apps/identity-indexer/src/shovel-config.ts`.
 
 Foreground mode and logs:
 
@@ -98,7 +98,7 @@ make anvil-fg
 make anvil-logs
 ```
 
-For the streamlined infra flow (Anvil + Shovel + ABI), see `infra/README.md`.
+For the streamlined infra flow (Anvil + ABI), see `infra/README.md`.
 
 Run ERC-8004 tests or deploy to Anvil:
 

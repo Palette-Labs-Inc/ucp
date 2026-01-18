@@ -7,8 +7,8 @@ export function buildShovelSource(env: EnvVars): Source {
   return {
     name: "local",
     chain_id: env.CHAIN_ID,
-    url: env.RPC_URL,
-    urls: [env.RPC_URL],
+    url: env.ETH_RPC_URL,
+    urls: [env.ETH_RPC_URL],
   };
 }
 

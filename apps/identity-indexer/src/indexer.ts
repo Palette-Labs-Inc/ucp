@@ -1,6 +1,6 @@
 import { AgentUriZodSchema as AgentUriSchema } from "@ucp/erc8004-specs";
 import { UcpDiscoveryProfileSchema } from "@ucp-js/sdk";
-import type { IndexerEnv } from "./env.js";
+import type { AppEnv } from "./env.js";
 import {
   fetchIdentityEvents,
   type IdentityEventRow,
@@ -91,7 +91,7 @@ function buildIndexedAgent(
 
 async function handleRow(
   row: IdentityEventRow,
-  env: IndexerEnv
+  env: AppEnv
 ): Promise<IndexedAgent> {
   if (!row.agent_uri) {
     return buildIndexedAgent(row, {
@@ -151,7 +151,7 @@ async function saveCursor(cursor: IndexerCursor): Promise<void> {
 
 async function processBatch(
   db: Kysely<DB>,
-  env: IndexerEnv,
+  env: AppEnv,
   cursor: IndexerCursor,
   store: IndexerStore
 ): Promise<{ cursor: IndexerCursor; processed: number }> {
@@ -170,7 +170,7 @@ async function processBatch(
 
 export async function startIndexer(
   db: Kysely<DB>,
-  env: IndexerEnv,
+  env: AppEnv,
   store: IndexerStore
 ): Promise<{ stop: () => void }> {
   let cursor = await loadCursor();
