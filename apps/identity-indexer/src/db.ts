@@ -1,9 +1,22 @@
-import { Kysely, PostgresDialect } from "kysely";
+import { Kysely, PostgresDialect, type Selectable } from "kysely";
 import { Pool } from "pg";
 import type { IndexerEnv } from "./env.js";
-import type { DB, IdentityEventRow } from "./db.generated.js";
+import type { DB } from "./db.generated.js";
 
-export type { DB, IdentityEventRow };
+type IdentityEventTable = Selectable<DB["erc8004_identity_events"]>;
+
+export type IdentityEventRow = Pick<
+  IdentityEventTable,
+  | "chain_id"
+  | "block_num"
+  | "log_idx"
+  | "tx_hash"
+  | "registry"
+  | "agent_id"
+  | "agent_uri"
+  | "owner"
+>;
+export type { DB };
 
 export interface IndexerCursor {
   lastBlockNum: IdentityEventRow["block_num"];
@@ -13,7 +26,7 @@ export interface IndexerCursor {
 export function createDb(env: IndexerEnv): Kysely<DB> {
   return new Kysely<DB>({
     dialect: new PostgresDialect({
-      pool: new Pool({ connectionString: env.SHOVEL_PG_URL })
+      pool: new Pool({ connectionString: env.DATABASE_URL })
     })
   });
 }

@@ -1,6 +1,12 @@
 import { Hono, type Context } from "hono";
 import type { IndexerStore } from "./store.js";
 
+function parseLimit(value: string | undefined): number {
+  const parsed = Number(value ?? "50");
+  if (!Number.isFinite(parsed)) return 50;
+  return Math.min(Math.max(parsed, 1), 200);
+}
+
 export function createApp(store: IndexerStore) {
   const app = new Hono();
 
@@ -11,9 +17,9 @@ export function createApp(store: IndexerStore) {
   );
 
   app.get("/businesses", async (c: Context) => {
-    const limit = Math.min(Number(c.req.query("limit") ?? "50"), 200);
+    const limit = parseLimit(c.req.query("limit"));
     return c.json({
-      businesses: store.list(Number.isFinite(limit) ? limit : 50)
+      businesses: store.list(limit)
     });
   });
 

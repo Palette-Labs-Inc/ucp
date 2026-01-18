@@ -1,0 +1,25 @@
+{
+  "active": true,
+  "description": "Sample merchant agent for local UCP discovery testing.",
+  "endpoints": [
+    {
+      "endpoint": "http://localhost:3000/.well-known/ucp",
+      "name": "UCP",
+      "version": "2026-01-11"
+    }
+  ],
+  "image": "https://example.com/agentimage.png",
+  "name": "Sample Merchant Agent",
+  "registrations": [
+    {
+      "agentId": 10,
+      "agentRegistry": "eip155:31337:0x5fbdb2315678afecb367f032d93f642f64180aa3"
+    }
+  ],
+  "supportedTrust": [
+    "reputation",
+    "validation"
+  ],
+  "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
+  "x402Support": false
+}

@@ -37,8 +37,8 @@ make infra-check
 
 The Shovel config generator lives in `packages/config` under the infra namespace
 (`src/infra/shovel-config.ts`), uses `@indexsupply/shovel-config`, and validates
-env via `@ucp/config/env`. Contract addresses are resolved from the generated
-`@ucp/contracts` package.
+env via the local config module in `packages/config/src/env.ts`. Contract
+addresses are resolved from the generated `@ucp/contracts` package.
 
 All Shovel contract indexing share the same `SHOVEL_START_BLOCK`.
 
@@ -53,6 +53,12 @@ If you're using the identity indexer, generate Kysely types from Postgres:
 ```
 make indexer-db-types
 ```
+
+## Postgres env (canonical)
+
+Use `POSTGRES_*` values as the single source of truth for Postgres settings.
+Shovel config is generated from these values, and apps should construct their
+connection URL from the same set.
 
 ## Bring up infra
 

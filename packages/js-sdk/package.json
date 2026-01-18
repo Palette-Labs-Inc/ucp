@@ -16,6 +16,7 @@
   "files": [
     "dist"
   ],
+  "sideEffects": false,
   "scripts": {
     "build": "rm -rf dist && pnpm run build:cjs && pnpm run build:esm && pnpm run build:types",
     "build:cjs": "tsc -p tsconfig.cjs.json",

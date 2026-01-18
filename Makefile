@@ -28,11 +28,10 @@ SHOVEL_CONFIG_DIR := $(CURDIR)/infra/shovel
 SHOVEL_OUTPUT_DIR := $(SHOVEL_CONFIG_DIR)/generated
 SHOVEL_CONFIG := $(SHOVEL_OUTPUT_DIR)/ucp.local.json
 
-SHOVEL_PG_URL ?= postgres://postgres:postgres@postgres:5432/shovel
 ETH_RPC_URL ?= $(ANVIL_DOCKER_URL)
 SHOVEL_START_BLOCK ?= 0
 
-export SHOVEL_PG_URL CHAIN_ID ETH_RPC_URL SHOVEL_START_BLOCK
+export CHAIN_ID ETH_RPC_URL SHOVEL_START_BLOCK
 
 .PHONY: help
 help:
@@ -268,6 +267,13 @@ print(value) if value else (print(f"Missing identity registry address in {path}"
 	  -e ANVIL_DEPLOYER_KEY="$(ANVIL_DEPLOYER_KEY)" \
 	  foundry "cd /repo/contracts/erc8004 && forge script script/SeedAgent.s.sol:SeedAgent \
 	  --rpc-url $(ANVIL_DOCKER_URL) --broadcast --sig 'run(address)' -- $$registry_address"
+
+
+.PHONY: serve-agent-uri
+serve-agent-uri:
+	@mkdir -p "$(CURDIR)/apps/samples/shared"
+	@echo "Serving agent-uri.json at http://localhost:3001/agent-uri.json"
+	@python3 -m http.server 3001 --directory "$(CURDIR)/apps/samples/shared"
 
 .PHONY: seed-reputation
 seed-reputation: check-docker env-init anvil-wait

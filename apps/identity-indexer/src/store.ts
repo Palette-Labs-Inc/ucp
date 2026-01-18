@@ -1,4 +1,4 @@
-import type { IdentityEventRow } from "./db.generated.js";
+import type { IdentityEventRow } from "./db.js";
 
 export interface IndexedAgent {
   chainId: IdentityEventRow["chain_id"];
@@ -25,14 +25,24 @@ function normalize(domain: string): string {
   return domain.trim().toLowerCase();
 }
 
+function buildAgentKey(agent: IndexedAgent): string {
+  return `${agent.chainId}:${agent.agentId}`;
+}
+
 export function createStore(): IndexerStore {
   const byDomain = new Map<string, IndexedAgent>();
   const byUpdated: IndexedAgent[] = [];
+  const byAgentKey = new Map<string, string>();
 
   return {
     upsert(agent) {
       if (!agent.domain) return;
       const key = normalize(agent.domain);
+      const agentKey = buildAgentKey(agent);
+      const previousDomain = byAgentKey.get(agentKey);
+      if (previousDomain && previousDomain !== key) {
+        byDomain.delete(previousDomain);
+      }
       const existing = byDomain.get(key);
       if (existing) {
         const index = byUpdated.findIndex(
@@ -44,6 +54,7 @@ export function createStore(): IndexerStore {
         }
       }
       byDomain.set(key, agent);
+      byAgentKey.set(agentKey, key);
       byUpdated.unshift(agent);
     },
     list(limit) {

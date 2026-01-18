@@ -110,7 +110,12 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+**/.env*
+!**/.env.example
+!**/.env.local.example
+!**/.env.template
+.env.docker
+.env.*.local
 .venv
 .venv*
 .ucp/

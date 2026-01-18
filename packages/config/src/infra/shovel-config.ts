@@ -31,7 +31,7 @@ function buildConfig(env: EnvVars): string {
   });
 
   const config = shovelConfig.makeConfig({
-    pg_url: env.SHOVEL_PG_URL,
+    pg_url: env.DATABASE_URL,
     sources: [source],
     integrations,
   });

@@ -6,16 +6,21 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "generate:db-types": "kysely-codegen --dialect postgres --url \"$SHOVEL_PG_URL\" --out-file src/db.generated.ts"
+    "generate:db-types": "kysely-codegen --dialect postgres --url \"$DATABASE_URL\" --out-file src/db.generated.ts",
+    "register-agent": "tsx scripts/register_agent.ts",
+    "verify-agent": "tsx scripts/verify_agent.ts"
   },
   "dependencies": {
     "@hono/node-server": "catalog:",
     "@ucp/config": "workspace:*",
     "@ucp-js/sdk": "workspace:*",
     "@ucp/contracts": "workspace:*",
+    "@ucp/erc8004-specs": "workspace:*",
+    "dotenv": "catalog:",
     "hono": "catalog:",
     "kysely": "catalog:",
     "pg": "catalog:",
+    "viem": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

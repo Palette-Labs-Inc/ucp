@@ -4,19 +4,18 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./env": "./src/env.ts",
-    "./infra/shovel-types": "./src/infra/shovel-types.ts",
-    "./infra/shovel-utils": "./src/infra/shovel-utils.ts",
-    "./infra/shovel-integrations": "./src/infra/shovel-integrations.ts",
-    "./infra/shovel-config": "./src/infra/shovel-config.ts",
-    ".": "./src/index.ts"
+    "./env": "./src/env-utils/index.ts",
+    "./env/schema": "./_generated/base-env.ts",
+    "./path": "./src/path-utils/index.ts"
   },
-  "types": "./src/index.ts",
   "files": [
-    "src"
+    "src",
+    "_generated"
   ],
   "scripts": {
     "check": "tsc -p tsconfig.json --noEmit",
+    "generate-env-schema": "TSX_DISABLE_CACHE=1 node --import tsx scripts/generate-env-schema.ts",
+    "postinstall": "pnpm run generate-env-schema",
     "generate-shovel-config": "TSX_DISABLE_CACHE=1 node --import tsx src/infra/shovel-config.ts"
   },
   "dependencies": {
@@ -24,7 +23,6 @@
     "@ucp/contracts": "workspace:*",
     "abitype": "catalog:",
     "dotenv": "catalog:",
-    "ox": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

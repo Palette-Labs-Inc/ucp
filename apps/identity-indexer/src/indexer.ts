@@ -1,4 +1,4 @@
-import { AgentUriSchema } from "./agent-uri.js";
+import { AgentUriZodSchema as AgentUriSchema } from "@ucp/erc8004-specs";
 import { UcpDiscoveryProfileSchema } from "@ucp-js/sdk";
 import type { IndexerEnv } from "./env.js";
 import {
@@ -14,7 +14,7 @@ import { resolve } from "node:path";
 
 const DEFAULT_CURSOR: IndexerCursor = {
   lastBlockNum: "0",
-  lastLogIdx: "0"
+  lastLogIdx: 0
 };
 
 const ACTIVE_DELAY_MS = 250;
@@ -35,9 +35,28 @@ async function fetchJson(url: string, timeoutMs: number): Promise<unknown> {
   }
 }
 
+function extractUcpProfileUrl(agentUri: unknown): string {
+  const parsed = AgentUriSchema.parse(agentUri);
+  const endpoint = parsed.endpoints.find(
+    (entry) => entry.name.toLowerCase() === "ucp"
+  );
+  if (!endpoint) {
+    throw new Error("Missing UCP endpoint in agentURI");
+  }
+  return endpoint.endpoint;
+}
+
+function extractDomain(ucpProfileUrl: string): string {
+  return new URL(ucpProfileUrl).hostname;
+}
+
 async function resolveAgentUri(agentUri: string, timeoutMs: number) {
   const payload = await fetchJson(agentUri, timeoutMs);
-  return AgentUriSchema.parse(payload);
+  const ucpProfileUrl = extractUcpProfileUrl(payload);
+  return {
+    domain: extractDomain(ucpProfileUrl),
+    ucpProfileUrl
+  };
 }
 
 async function resolveUcpProfile(ucpProfileUrl: string, timeoutMs: number) {
@@ -84,14 +103,17 @@ async function handleRow(
   }
 
   try {
-    const agentUri = await resolveAgentUri(row.agent_uri, env.INDEXER_FETCH_TIMEOUT_MS);
+    const agentUri = await resolveAgentUri(
+      row.agent_uri,
+      env.INDEXER_FETCH_TIMEOUT_MS
+    );
     const discoveryJson = await resolveUcpProfile(
-      agentUri.business.ucpProfileUrl,
+      agentUri.ucpProfileUrl,
       env.INDEXER_FETCH_TIMEOUT_MS
     );
     return buildIndexedAgent(row, {
-      domain: agentUri.business.domain,
-      ucpProfileUrl: agentUri.business.ucpProfileUrl,
+      domain: agentUri.domain,
+      ucpProfileUrl: agentUri.ucpProfileUrl,
       discoveryJson,
       fetchedAt: new Date()
     });
@@ -113,7 +135,9 @@ async function loadCursor(): Promise<IndexerCursor> {
   try {
     const payload = await readFile(getCursorPath(), "utf8");
     const parsed = JSON.parse(payload) as IndexerCursor;
-    if (!parsed.lastBlockNum || !parsed.lastLogIdx) return DEFAULT_CURSOR;
+    if (parsed.lastBlockNum == null || parsed.lastLogIdx == null) {
+      return DEFAULT_CURSOR;
+    }
     return parsed;
   } catch {
     return DEFAULT_CURSOR;

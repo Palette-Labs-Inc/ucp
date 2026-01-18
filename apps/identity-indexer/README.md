@@ -9,17 +9,20 @@ and serves results from an in-memory cache.
 - Shovel is running and writing to Postgres.
 - The Shovel config generator includes the ERC-8004 `Registered` event with
   `agentURI` stored as `agent_uri`.
-- `SHOVEL_PG_URL` is set in your environment (see `.env.template`).
+- `DATABASE_URL` is set (host apps typically use `127.0.0.1`).
+  - Use `apps/identity-indexer/.env.local` for local overrides.
 
 ## Development
 
 ```bash
 pnpm -C apps/identity-indexer install
+cp apps/identity-indexer/.env.local.example apps/identity-indexer/.env.local
 pnpm -C apps/identity-indexer dev
 ```
 
-## Type generation (optional)
+See `infra/ENV.md` for the repo-wide env strategy and naming conventions.
 
+## Type generation (optional)
 Generate Kysely types from the live Shovel database:
 
 ```bash

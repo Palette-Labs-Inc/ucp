@@ -4,12 +4,11 @@ import type { AnyContractIntegrationConfig, EnvVars } from "./shovel-types.js";
 import { contractAddresses } from "@ucp/contracts";
 
 export function buildShovelSource(env: EnvVars): Source {
-  const rpcUrl = env.ETH_RPC_URL ?? env.ANVIL_RPC_URL;
   return {
     name: "local",
     chain_id: env.CHAIN_ID,
-    url: rpcUrl,
-    urls: [rpcUrl],
+    url: env.RPC_URL,
+    urls: [env.RPC_URL],
   };
 }
 
