@@ -44,44 +44,7 @@
         "intervals": {
           "type": "array",
           "items": {
-            "type": "object",
-            "required": [
-              "day",
-              "from_hour",
-              "from_minute",
-              "to_hour",
-              "to_minute"
-            ],
-            "properties": {
-              "day": {
-                "type": "string",
-                "description": "Day of week."
-              },
-              "from_hour": {
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 23,
-                "description": "Start hour (0-23)."
-              },
-              "from_minute": {
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 59,
-                "description": "Start minute (0-59)."
-              },
-              "to_hour": {
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 23,
-                "description": "End hour (0-23)."
-              },
-              "to_minute": {
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 59,
-                "description": "End minute (0-59)."
-              }
-            }
+            "$ref": "menu_hours_interval.json"
           }
         }
       }
@@ -90,36 +53,7 @@
       "type": "array",
       "description": "Additional charges applied to orders from this menu.",
       "items": {
-        "type": "object",
-        "properties": {
-          "charge_type": {
-            "type": "string",
-            "description": "Charge type identifier."
-          },
-          "flat_charge": {
-            "type": "object",
-            "properties": {
-              "currency_code": {
-                "type": "string",
-                "description": "ISO 4217 currency code."
-              },
-              "amount": {
-                "type": "number",
-                "description": "Charge amount in major units."
-              }
-            }
-          },
-          "percentage_charge": {
-            "type": "object",
-            "properties": {
-              "decimal_value": {
-                "type": "number",
-                "minimum": 0,
-                "description": "Charge percentage as a decimal."
-              }
-            }
-          }
-        }
+        "$ref": "menu_additional_charge.json"
       }
     }
   }

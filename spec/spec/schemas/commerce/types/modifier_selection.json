@@ -16,28 +16,7 @@
     "selections": {
       "type": "array",
       "items": {
-        "type": "object",
-        "required": [
-          "item_id"
-        ],
-        "properties": {
-          "item_id": {
-            "type": "string",
-            "description": "Selected modifier item identifier."
-          },
-          "quantity": {
-            "type": "integer",
-            "minimum": 1,
-            "description": "Selected quantity for this modifier option."
-          },
-          "child_selections": {
-            "type": "array",
-            "items": {
-              "$ref": "modifier_selection.json"
-            },
-            "description": "Nested modifier selections triggered by this option."
-          }
-        }
+        "$ref": "modifier_item_selection.json"
       },
       "description": "Selections made within the modifier group."
     }

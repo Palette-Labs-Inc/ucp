@@ -335,6 +335,36 @@ export type CheckoutWithFulfillmentResponse = CheckoutResponse & {
   fulfillment?: FulfillmentResponse;
   [k: string]: unknown;
 };
+/**
+ * Payment instrument for Localprotocol commerce auth/capture escrow flows.
+ */
+export type LocalprotocolCommerceAuthCaptureInstrument = PaymentInstrumentBase & {
+  /**
+   * Indicates this is a Localprotocol commerce auth/capture instrument.
+   */
+  type: 'localprotocol_auth_capture';
+  /**
+   * Authorization identifier returned by the escrow protocol.
+   */
+  authorization_id: string;
+  /**
+   * Transaction hash for the authorization onchain.
+   */
+  authorize_tx_hash: string;
+  /**
+   * EVM chain ID where the authorization was created.
+   */
+  chain_id: number;
+  /**
+   * AuthCaptureEscrow contract address.
+   */
+  escrow_contract: string;
+  /**
+   * Merchant payout address used for capture.
+   */
+  merchant_payout_address?: string;
+  [k: string]: unknown;
+};
 
 /**
  * Schema for UCP capabilities and extensions. Extensions are capabilities with an 'extends' field. Uses reverse-domain naming for governance.
@@ -413,21 +443,25 @@ export declare interface MenuModifierSelection {
   /**
    * Selections made within the modifier group.
    */
-  selections: Array<{
-    /**
-     * Selected modifier item identifier.
-     */
-    item_id: string;
-    /**
-     * Selected quantity for this modifier option.
-     */
-    quantity?: number;
-    /**
-     * Nested modifier selections triggered by this option.
-     */
-    child_selections?: MenuModifierSelection[];
-    [k: string]: unknown;
-  }>;
+  selections: MenuModifierItemSelection[];
+  [k: string]: unknown;
+}
+/**
+ * Selected modifier item and nested selections within a modifier group.
+ */
+export declare interface MenuModifierItemSelection {
+  /**
+   * Selected modifier item identifier.
+   */
+  item_id: string;
+  /**
+   * Selected quantity for this modifier option.
+   */
+  quantity?: number;
+  /**
+   * Nested modifier selections triggered by this option.
+   */
+  child_selections?: MenuModifierSelection[];
   [k: string]: unknown;
 }
 /**
@@ -1374,60 +1408,68 @@ export declare interface Menu1 {
   /**
    * Menu availability hours.
    */
-  hours?: Array<{
-    intervals?: {
-      /**
-       * Day of week.
-       */
-      day: string;
-      /**
-       * Start hour (0-23).
-       */
-      from_hour: number;
-      /**
-       * Start minute (0-59).
-       */
-      from_minute: number;
-      /**
-       * End hour (0-23).
-       */
-      to_hour: number;
-      /**
-       * End minute (0-59).
-       */
-      to_minute: number;
-      [k: string]: unknown;
-    }>;
+  hours?: {
+    intervals?: MenuHoursInterval[];
     [k: string]: unknown;
   };
   /**
    * Additional charges applied to orders from this menu.
    */
-  additional_charges?: {
+  additional_charges?: MenuAdditionalCharge[];
+  [k: string]: unknown;
+}
+/**
+ * A single menu availability interval for a day of the week.
+ */
+export declare interface MenuHoursInterval {
+  /**
+   * Day of week.
+   */
+  day: string;
+  /**
+   * Start hour (0-23).
+   */
+  from_hour: number;
+  /**
+   * Start minute (0-59).
+   */
+  from_minute: number;
+  /**
+   * End hour (0-23).
+   */
+  to_hour: number;
+  /**
+   * End minute (0-59).
+   */
+  to_minute: number;
+  [k: string]: unknown;
+}
+/**
+ * An additional charge applied to orders from a menu.
+ */
+export declare interface MenuAdditionalCharge {
+  /**
+   * Charge type identifier.
+   */
+  charge_type?: string;
+  flat_charge?: {
     /**
-     * Charge type identifier.
+     * ISO 4217 currency code.
      */
-    charge_type?: string;
-    flat_charge?: {
-      /**
-       * ISO 4217 currency code.
-       */
-      currency_code?: string;
-      /**
-       * Charge amount in major units.
-       */
-      amount?: number;
-      [k: string]: unknown;
-    };
-    percentage_charge?: {
-      /**
-       * Charge percentage as a decimal.
-       */
-      decimal_value?: number;
-      [k: string]: unknown;
-    };
+    currency_code?: string;
+    /**
+     * Charge amount in major units.
+     */
+    amount?: number;
     [k: string]: unknown;
-  }[];
+  };
+  percentage_charge?: {
+    /**
+     * Charge percentage as a decimal.
+     */
+    decimal_value?: number;
+    [k: string]: unknown;
+  };
   [k: string]: unknown;
 }
 /**
@@ -2763,5 +2805,35 @@ export declare interface UCPDiscoveryProfile {
    * Supported capabilities and extensions.
    */
   capabilities: CapabilityDiscovery[];
+  [k: string]: unknown;
+}
+/**
+ * Configuration for the Localprotocol commerce auth/capture escrow handler.
+ */
+export declare interface LocalprotocolCommerceAuthCaptureHandlerConfig {
+  /**
+   * EVM chain ID (e.g., 8453 for Base).
+   */
+  chain_id: number;
+  /**
+   * AuthCaptureEscrow contract address.
+   */
+  escrow_contract: string;
+  /**
+   * Merchant payout address for captured funds.
+   */
+  merchant_payout_address: string;
+  /**
+   * Authorization mechanisms supported by the handler.
+   */
+  token_collectors: string[];
+  /**
+   * Authorization expiration window in seconds.
+   */
+  authorization_expiry_seconds: number;
+  /**
+   * Execution environment for the handler.
+   */
+  environment?: 'sandbox' | 'production';
   [k: string]: unknown;
 }

@@ -159,7 +159,7 @@ export async function upsertIndexedAgent(
   db: Kysely<IndexerDb>,
   agent: IndexedAgent
 ): Promise<void> {
-  if (!agent.agentUri) return;
+  if (!agent.agentUri || !agent.agentUriJson) return;
   await db
     .insertInto("identity_indexer_agents")
     .values({

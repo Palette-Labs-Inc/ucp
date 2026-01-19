@@ -27,11 +27,12 @@ implement the UCP specifications for shopping, checkout, and order management.
 
 ## Setup
 
-1.  **Clone this repo**
+1.  **Use this repo**
+
+    From the UCP monorepo root:
 
     ```shell
-    git clone https://github.com/Universal-Commerce-Protocol/samples.git
-    cd samples/rest/nodejs
+    cd apps/samples/rest/nodejs
     ```
 
 2.  **Install Dependencies**
@@ -84,28 +85,22 @@ http://localhost:3000/.well-known/ucp
 ## Running Conformance Tests
 
 To verify that this server implementation complies with the UCP specifications,
-use the official UCP Conformance Test Suite.
+use the in-repo conformance package.
 
-1.  **Get the Conformance Tests**
-
-    Clone the conformance repository:
+1.  **Run the sample server** (from repo root):
 
     ```bash
-    git clone https://github.com/Universal-Commerce-Protocol/conformance.git
-    cd conformance
+    make run-samples-server
     ```
 
-2.  **Run the Tests**
+2.  **Run conformance** (from repo root):
 
-    Follow the instructions in the conformance repository to install its
-    dependencies. Then, run the tests against this local server implementation.
-
-    Assuming the conformance suite uses a configuration file or environment
-    variables to target the server, ensure it is pointing to:
-
+    ```bash
+    make test-conformance
     ```
-    http://localhost:3000
-    ```
+
+This uses `packages/conformance` and targets the local sample server on
+`http://localhost:3000`.
 
 ## Project Structure
 

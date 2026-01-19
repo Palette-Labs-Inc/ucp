@@ -1,5 +1,13 @@
 import * as z from "zod";
 
+// Key usage. Should be 'sig' for signing keys.
+
+export const UseSchema = z.enum([
+    "enc",
+    "sig",
+]);
+export type Use = z.infer<typeof UseSchema>;
+
 // The type of card number. Network tokens are preferred with fallback to FPAN. See PCI
 // Scope for more details.
 
@@ -171,6 +179,30 @@ export const MessageWarningTypeSchema = z.enum([
 ]);
 export type MessageWarningType = z.infer<typeof MessageWarningTypeSchema>;
 
+export const PaymentHandlerResponseSchema = z.object({
+    "config": z.record(z.string(), z.any()),
+    "config_schema": z.string(),
+    "id": z.string(),
+    "instrument_schemas": z.array(z.string()),
+    "name": z.string(),
+    "spec": z.string(),
+    "version": z.string(),
+});
+export type PaymentHandlerResponse = z.infer<typeof PaymentHandlerResponseSchema>;
+
+export const SigningKeySchema = z.object({
+    "alg": z.string().optional(),
+    "crv": z.string().optional(),
+    "e": z.string().optional(),
+    "kid": z.string(),
+    "kty": z.string(),
+    "n": z.string().optional(),
+    "use": UseSchema.optional(),
+    "x": z.string().optional(),
+    "y": z.string().optional(),
+});
+export type SigningKey = z.infer<typeof SigningKeySchema>;
+
 export const CapabilityDiscoverySchema = z.object({
     "config": z.record(z.string(), z.any()).optional(),
     "extends": z.string().optional(),
@@ -297,17 +329,6 @@ export const OrderClassSchema = z.object({
 });
 export type OrderClass = z.infer<typeof OrderClassSchema>;
 
-export const PaymentHandlerResponseSchema = z.object({
-    "config": z.record(z.string(), z.any()),
-    "config_schema": z.string(),
-    "id": z.string(),
-    "instrument_schemas": z.array(z.string()),
-    "name": z.string(),
-    "spec": z.string(),
-    "version": z.string(),
-});
-export type PaymentHandlerResponse = z.infer<typeof PaymentHandlerResponseSchema>;
-
 export const CapabilityResponseElementSchema = z.object({
     "config": z.record(z.string(), z.any()).optional(),
     "extends": z.string().optional(),
@@ -329,14 +350,14 @@ export const PercentageChargeSchema = z.object({
 });
 export type PercentageCharge = z.infer<typeof PercentageChargeSchema>;
 
-export const IntervalSchema = z.object({
+export const MenuHoursIntervalSchema = z.object({
     "day": z.string(),
     "from_hour": z.number(),
     "from_minute": z.number(),
     "to_hour": z.number(),
     "to_minute": z.number(),
 });
-export type Interval = z.infer<typeof IntervalSchema>;
+export type MenuHoursInterval = z.infer<typeof MenuHoursIntervalSchema>;
 
 export const MessageSchema = z.object({
     "code": z.string().optional(),
@@ -1022,6 +1043,11 @@ export const VariantSellerClassSchema = z.object({
 });
 export type VariantSellerClass = z.infer<typeof VariantSellerClassSchema>;
 
+export const PaymentSchema = z.object({
+    "handlers": z.array(PaymentHandlerResponseSchema).optional(),
+});
+export type Payment = z.infer<typeof PaymentSchema>;
+
 export const UcpServiceSchema = z.object({
     "a2a": A2ASchema.optional(),
     "embedded": EmbeddedSchema.optional(),
@@ -1066,15 +1092,15 @@ export const UcpClassSchema = z.object({
 });
 export type UcpClass = z.infer<typeof UcpClassSchema>;
 
-export const AdditionalChargeSchema = z.object({
+export const MenuAdditionalChargeSchema = z.object({
     "charge_type": z.string().optional(),
     "flat_charge": FlatChargeSchema.optional(),
     "percentage_charge": PercentageChargeSchema.optional(),
 });
-export type AdditionalCharge = z.infer<typeof AdditionalChargeSchema>;
+export type MenuAdditionalCharge = z.infer<typeof MenuAdditionalChargeSchema>;
 
 export const HoursSchema = z.object({
-    "intervals": z.array(IntervalSchema).optional(),
+    "intervals": z.array(MenuHoursIntervalSchema).optional(),
 });
 export type Hours = z.infer<typeof HoursSchema>;
 
@@ -1437,12 +1463,12 @@ export const VariantSchema = z.object({
 });
 export type Variant = z.infer<typeof VariantSchema>;
 
-export const UcpDiscoveryProfileSchema = z.object({
+export const UcpDiscoveryMetadataSchema = z.object({
     "capabilities": z.array(CapabilityDiscoverySchema),
     "services": z.record(z.string(), UcpServiceSchema),
     "version": z.string(),
 });
-export type UcpDiscoveryProfile = z.infer<typeof UcpDiscoveryProfileSchema>;
+export type UcpDiscoveryMetadata = z.infer<typeof UcpDiscoveryMetadataSchema>;
 
 export const PaymentClassSchema = z.object({
     "instruments": z.array(PaymentInstrumentSchema).optional(),
@@ -1451,7 +1477,7 @@ export const PaymentClassSchema = z.object({
 export type PaymentClass = z.infer<typeof PaymentClassSchema>;
 
 export const MenuSchema = z.object({
-    "additional_charges": z.array(AdditionalChargeSchema).optional(),
+    "additional_charges": z.array(MenuAdditionalChargeSchema).optional(),
     "category_ids": z.array(z.string()),
     "description": z.string().optional(),
     "fulfillment_modes": z.array(z.string()).optional(),
@@ -1588,6 +1614,13 @@ export const FulfillmentClassSchema = z.object({
     "expectations": z.array(ExpectationElementSchema).optional(),
 });
 export type FulfillmentClass = z.infer<typeof FulfillmentClassSchema>;
+
+export const UcpDiscoveryProfileSchema = z.object({
+    "payment": PaymentSchema.optional(),
+    "signing_keys": z.array(SigningKeySchema).optional(),
+    "ucp": UcpDiscoveryMetadataSchema,
+});
+export type UcpDiscoveryProfile = z.infer<typeof UcpDiscoveryProfileSchema>;
 
 export const GetItemResponseSchema = z.object({
     "messages": z.array(MessageSchema).optional(),

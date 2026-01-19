@@ -65,7 +65,7 @@ containers.
 
 ### Add a new Shovel integration
 
-Add a new entry in `src/shovel-integrations.ts` using `defineEventIntegration`.
+Add a new entry in `shovel/shovel-integrations.ts` using `defineEventIntegration`.
 Example:
 
 ```ts

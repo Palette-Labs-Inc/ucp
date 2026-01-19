@@ -724,6 +724,59 @@ def define_env(env):
 
     return "\n".join(output)
 
+  @env.macro
+  def handler_schema_reference(
+    base_dir="spec/source/handlers", spec_file_name="reference"
+  ):
+    """Scan handler schema directories and generate documentation tables."""
+    base_path = Path(base_dir)
+    if not base_path.is_dir():
+      return f"<p><em>Handler schema directory not found: {base_path}</em></p>"
+
+    output = []
+    handler_dirs = sorted([d for d in base_path.iterdir() if d.is_dir()])
+    if not handler_dirs:
+      return f"<p><em>No handler schema directories found in {base_path}</em></p>"
+
+    for handler_dir in handler_dirs:
+      schema_files = sorted(handler_dir.rglob("*.json"))
+      if not schema_files:
+        continue
+
+      handler_title = handler_dir.name.replace("_", " ").title()
+      output.append(f"### {handler_title}\n")
+
+      for schema_file in schema_files:
+        try:
+          with schema_file.open(encoding="utf-8") as f:
+            schema_data = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+          output.append(
+            f"<p><em>Error loading schema '{schema_file}': {e}</em></p>\n"
+          )
+          continue
+
+        # Skip OpenAPI specs under handlers (not schemas).
+        if "openapi" in schema_data:
+          continue
+
+        schema_title = schema_data.get(
+          "title", schema_file.stem.replace("_", " ").title()
+        )
+        output.append(f"#### {schema_title}\n")
+        file_loader = _create_file_loader(schema_file)
+        resolved_schema = schema_utils.resolve_schema(
+          schema_data, schema_data, file_loader
+        )
+        output.append(
+          _render_table_from_schema(resolved_schema, spec_file_name)
+        )
+        output.append("\n")
+
+      output.append("\n---\n")
+
+    return "\n".join(output)
+
   # --- MACRO 2: For Standalone JSON Extensions ---
   @env.macro
   def extension_fields(entity_name, spec_file_name):

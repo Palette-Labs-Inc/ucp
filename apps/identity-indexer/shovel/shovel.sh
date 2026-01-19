@@ -33,14 +33,15 @@ COMPOSE_FILES=(
   -f "${APP_DIR}/shovel/docker-compose.yml"
 )
 
-SHOVEL_DIR="${SHOVEL_DIR}" docker compose \
-  "${ENV_ARGS[@]}" \
-  "${COMPOSE_FILES[@]}" \
-  "${COMMAND}" -d shovel
-
 if [[ "$COMMAND" == "logs" ]]; then
   SHOVEL_DIR="${SHOVEL_DIR}" docker compose \
     "${ENV_ARGS[@]}" \
     "${COMPOSE_FILES[@]}" \
     logs -f shovel
+  exit 0
 fi
+
+SHOVEL_DIR="${SHOVEL_DIR}" docker compose \
+  "${ENV_ARGS[@]}" \
+  "${COMPOSE_FILES[@]}" \
+  "${COMMAND}" -d shovel

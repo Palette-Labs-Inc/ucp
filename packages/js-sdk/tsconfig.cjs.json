@@ -3,8 +3,11 @@
   "compilerOptions": {
     "module": "CommonJS",
     "outDir": "dist/cjs",
-    "declaration": false
+    "declaration": false,
+    "declarationMap": false,
+    "moduleResolution": "Node",
+    "verbatimModuleSyntax": false
   },
-  "include": ["index.ts", "src/**/*.ts"],
+  "include": ["index.ts", "generated/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

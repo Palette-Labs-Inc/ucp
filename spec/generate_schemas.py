@@ -774,22 +774,6 @@ def main() -> None:
     )
     generated_count += ecp_count
 
-  # Mirror shopping service specs into services/menu to avoid destructive moves.
-  service_src_dir = Path(SPEC_DIR) / "services/shopping"
-  service_dst_dir = Path(SPEC_DIR) / "services/menu"
-  service_files = [
-    "rest.openapi.json",
-    "mcp.openrpc.json",
-    "embedded.openrpc.json",
-  ]
-  if service_src_dir.exists():
-    service_dst_dir.mkdir(parents=True, exist_ok=True)
-    for filename in service_files:
-      src_path = service_src_dir / filename
-      dst_path = service_dst_dir / filename
-      if src_path.exists():
-        shutil.copy2(src_path, dst_path)
-
   print()
   if all_errors:
     print(f"{schema_utils.Colors.RED}Errors:{schema_utils.Colors.RESET}")

@@ -17,7 +17,7 @@
       }
     },
     "discovery_profile": {
-      "title": "UCP Discovery Profile",
+      "title": "UCP Discovery Metadata",
       "description": "Full UCP metadata for /.well-known/ucp discovery.",
       "type": "object",
       "required": [

@@ -1,6 +1,7 @@
 packages:
   - "apps/*"
   - "apps/samples/*"
+  - "apps/samples/*/*"
   - "packages/*"
   - "spec"
   - "erc8004"
