@@ -40,7 +40,7 @@ async function generate() {
     title: WRAPPER_NAME,
     type: 'object',
     properties,
-    additionalProperties: false
+    additionalProperties: false,
   };
 
   try {
@@ -77,9 +77,9 @@ async function generate() {
 
               clean(json);
               return json;
-            }
-          }
-        }
+            },
+          },
+        },
       },
       bannerComment: `
 /* tslint:disable:enforce-comments-on-exported-symbols */
@@ -95,7 +95,7 @@ async function generate() {
       declareExternallyReferenced: true,
       enableConstEnums: false,
       unreachableDefinitions: true,
-      strictIndexSignatures: false
+      strictIndexSignatures: false,
     });
 
     const wrapperRegex = new RegExp(
@@ -103,8 +103,8 @@ async function generate() {
       'g'
     );
     ts = ts.replace(wrapperRegex, '').replace(/export interface/g, 'export declare interface');
-    ts = ts.replace(/:\s*\(([^)]+)\)\[\]/g, ': Array<$1>');
-    ts = ts.replace(/:\s*(\{[^}]+\})\[\]/g, ': Array<$1>');
+    ts = ts.replace(/:\\s*\\(([^)]+)\\)\\[\\]/g, ': Array<$1>');
+    ts = ts.replace(/:\\s*(\\{[^}]+\\})\\[\\]/g, ': Array<$1>');
 
     fs.writeFileSync(OUTPUT_FILE, ts.trim());
     console.log(`Success! Types written to ${OUTPUT_FILE}`);

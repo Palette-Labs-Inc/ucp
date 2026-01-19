@@ -3,6 +3,7 @@ import { identity_registry_abi } from "@ucp/contracts/generated/contracts";
 import { contractAddresses } from "@ucp/contracts/generated/addresses";
 import { createPublicClient, createWalletClient, http } from "viem";
 import * as Address from "ox/Address";
+import * as Hex from "ox/Hex";
 import { privateKeyToAccount } from "viem/accounts";
 import { env } from "../src/env.js";
 import { log } from "../src/logger.js";
@@ -61,7 +62,9 @@ function buildAgentUriPayload(args: {
 
 function createClients() {
   const rpcUrl = `http://${env.ANVIL_HOST}:${env.ANVIL_PORT}`;
-  const account = privateKeyToAccount(env.ANVIL_DEPLOYER_KEY as `0x${string}`);
+  Hex.assert(env.ANVIL_DEPLOYER_KEY, { strict: true });
+  const deployerKey = env.ANVIL_DEPLOYER_KEY;
+  const account = privateKeyToAccount(deployerKey);
   const publicClient = createPublicClient({ transport: http(rpcUrl) });
   const walletClient = createWalletClient({ account, transport: http(rpcUrl) });
   return { account, publicClient, walletClient };
@@ -73,7 +76,7 @@ async function registerAgent(args: {
   account: ReturnType<typeof privateKeyToAccount>;
   registryAddress: Address.Address;
   agentUriDataUrl: string;
-}): Promise<Address.Address> {
+}): Promise<Hex.Hex> {
   const { request } = await args.publicClient.simulateContract({
     address: args.registryAddress,
     abi: identity_registry_abi,

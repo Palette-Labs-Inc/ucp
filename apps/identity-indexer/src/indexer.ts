@@ -1,4 +1,8 @@
-import { AgentUriZodSchema as AgentUriSchema } from "@ucp/erc8004-specs";
+import {
+  AgentUriZodSchema as AgentUriSchema,
+  EndpointElementSchema,
+  type AgentUriZod,
+} from "@ucp/erc8004-specs";
 import * as Hex from "ox/Hex";
 import type { AppEnv } from "./env.js";
 import {
@@ -37,12 +41,22 @@ async function fetchJson(url: string, timeoutMs: number): Promise<unknown> {
   }
 }
 
+function requireUcpEndpoint(agentUri: AgentUriZod) {
+  const endpoint = agentUri.endpoints.find((entry) => entry.name === "UCP");
+  if (!endpoint) {
+    throw new Error("Missing UCP endpoint in agentURI");
+  }
+  return EndpointElementSchema.parse(endpoint);
+}
+
 async function resolveAgentUri(
   agentUri: string,
   timeoutMs: number
-): Promise<Json> {
+): Promise<AgentUriZod> {
   const payload = await fetchJson(agentUri, timeoutMs);
-  return AgentUriSchema.parse(payload) as Json;
+  const parsed = AgentUriSchema.parse(payload);
+  requireUcpEndpoint(parsed);
+  return parsed;
 }
 
 function buildIndexedAgent(
@@ -78,7 +92,13 @@ async function handleRow(
       env.INDEXER_FETCH_TIMEOUT_MS
     );
     return buildIndexedAgent(row, { agentUriJson });
-  } catch {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    log.warn("indexer.agent.uri.invalid", {
+      agentId: row.agent_id,
+      chainId: row.chain_id,
+      error: message,
+    });
     return buildIndexedAgent(row, { agentUriJson: null });
     }
 }
@@ -94,10 +114,18 @@ async function processBatch(
   let nextCursor = cursor;
   for (const row of rows) {
     const indexed = await handleRow(row, env);
-    await upsertIndexedAgent(db, indexed);
     const parsedAgentUri = indexed.agentUriJson
       ? AgentUriSchema.parse(indexed.agentUriJson)
       : null;
+    if (!parsedAgentUri) {
+      log.warn("indexer.agent.skipped", {
+        chainId: indexed.chainId,
+        agentId: indexed.agentId,
+        reason: "invalid_or_missing_agent_uri",
+      });
+      continue;
+    }
+    await upsertIndexedAgent(db, indexed);
     log.info("indexer.row.processed", {
       chainId: indexed.chainId,
       agentId: indexed.agentId,
