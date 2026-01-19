@@ -1,7 +1,7 @@
 import { Kysely, PostgresDialect, sql, type Selectable } from "kysely";
 import { Pool } from "pg";
 import type { AppEnv } from "./env.js";
-import type { DB, Json } from "./_generated/db-types.js";
+import type { DB } from "./_generated/db-types.js";
 
 type IdentityEventTable = Selectable<DB["erc8004_identity_events"]>;
 
@@ -16,18 +16,23 @@ export type IdentityEventRow = Pick<
   | "agent_uri"
   | "owner"
 >;
-export type { DB, Json };
+export type { DB };
 
 export interface IndexedAgent {
   chainId: IdentityEventRow["chain_id"];
   agentId: IdentityEventRow["agent_id"];
   agentUri: string;
-  agentUriJson: Json | null;
   owner: IdentityEventRow["owner"];
   registry: IdentityEventRow["registry"];
   sourceBlockNum: IdentityEventRow["block_num"];
   sourceLogIdx: IdentityEventRow["log_idx"];
   sourceTxHash: IdentityEventRow["tx_hash"];
+}
+
+export interface IndexedAgentUcpRow {
+  chain_id: IndexerAgentRow["chain_id"];
+  agent_id: IndexerAgentRow["agent_id"];
+  agent_uri: IndexerAgentRow["agent_uri"];
 }
 
 interface IndexerAgentRow {
@@ -36,7 +41,6 @@ interface IndexerAgentRow {
   registry: IdentityEventRow["registry"];
   owner: IdentityEventRow["owner"];
   agent_uri: string;
-  agent_uri_json: Json | null;
   source_block_num: IdentityEventRow["block_num"];
   source_log_idx: IdentityEventRow["log_idx"];
   source_tx_hash: IdentityEventRow["tx_hash"];
@@ -98,7 +102,6 @@ export async function ensureSchema(db: Kysely<IndexerDb>): Promise<void> {
     .addColumn("registry", "bytea", (col) => col.notNull())
     .addColumn("owner", "bytea", (col) => col.notNull())
     .addColumn("agent_uri", "text", (col) => col.notNull())
-    .addColumn("agent_uri_json", "jsonb")
     .addColumn("source_block_num", "numeric", (col) => col.notNull())
     .addColumn("source_log_idx", "integer", (col) => col.notNull())
     .addColumn("source_tx_hash", "bytea", (col) => col.notNull())
@@ -155,11 +158,21 @@ export async function fetchIdentityEvents(
     .execute();
 }
 
+export async function fetchIndexedAgentsForUcp(
+  db: Kysely<IndexerDb>
+): Promise<IndexedAgentUcpRow[]> {
+  return await db
+    .selectFrom("identity_indexer_agents")
+    .select(["chain_id", "agent_id", "agent_uri"])
+    .where("agent_uri", "like", "%/.well-known/ucp")
+    .execute();
+}
+
 export async function upsertIndexedAgent(
   db: Kysely<IndexerDb>,
   agent: IndexedAgent
 ): Promise<void> {
-  if (!agent.agentUri || !agent.agentUriJson) return;
+  if (!agent.agentUri) return;
   await db
     .insertInto("identity_indexer_agents")
     .values({
@@ -168,7 +181,6 @@ export async function upsertIndexedAgent(
       registry: agent.registry,
       owner: agent.owner,
       agent_uri: agent.agentUri,
-      agent_uri_json: agent.agentUriJson,
       source_block_num: agent.sourceBlockNum,
       source_log_idx: agent.sourceLogIdx,
       source_tx_hash: agent.sourceTxHash,
@@ -179,7 +191,6 @@ export async function upsertIndexedAgent(
         registry: agent.registry,
         owner: agent.owner,
         agent_uri: agent.agentUri,
-        agent_uri_json: agent.agentUriJson,
         source_block_num: agent.sourceBlockNum,
         source_log_idx: agent.sourceLogIdx,
         source_tx_hash: agent.sourceTxHash,

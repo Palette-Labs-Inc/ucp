@@ -1,4 +1,3 @@
-import type { AgentUriZod } from "@ucp/erc8004-specs";
 import * as Hex from "ox/Hex";
 import type { AppEnv } from "./env.js";
 import {
@@ -21,11 +20,6 @@ const DEFAULT_CURSOR: IndexerCursor = {
 
 const ACTIVE_DELAY_MS = 250;
 
-interface RowResult {
-  indexed: IndexedAgent;
-  parsedAgentUri: AgentUriZod | null;
-}
-
 async function processBatch(
   db: Kysely<IndexerDb>,
   env: AppEnv,
@@ -36,23 +30,23 @@ async function processBatch(
 
   let nextCursor = cursor;
   for (const row of rows) {
-    const { indexed, parsedAgentUri } = await handleRow(row, env);
-    if (!parsedAgentUri) {
+    const indexed = handleRow(row);
+    if (!indexed.agentUri) {
       log.warn("indexer.agent.skipped", {
         chainId: indexed.chainId,
         agentId: indexed.agentId,
-        reason: "invalid_or_missing_agent_uri",
+        reason: "missing_agent_uri",
       });
     } else {
       await upsertIndexedAgent(db, indexed);
       log.info("indexer.row.processed", {
         chainId: indexed.chainId,
         agentId: indexed.agentId,
+        agentUri: indexed.agentUri,
         blockNum: indexed.sourceBlockNum,
         logIdx: indexed.sourceLogIdx,
         txHash: indexed.sourceTxHash ? Hex.fromBytes(indexed.sourceTxHash) : null,
       });
-      log.info("indexer.agent.uri", parsedAgentUri);
     }
     nextCursor = { lastBlockNum: row.block_num, lastLogIdx: row.log_idx };
     await saveCursor(db, nextCursor);
