@@ -18,13 +18,13 @@ export const AppEnvSchema = z.object({
   POSTGRES_PASSWORD: z.string().min(1).default("postgres"),
   POSTGRES_DB: z.string().min(1).default("shovel"),
   POSTGRES_PORT: z.coerce.number().int().default(5432),
-  POSTGRES_HOST: z.string().min(1).default("127.0.0.1"),
+  POSTGRES_HOST: z.string().min(1).default("postgres"),
   // --- shovel ---
   ETH_RPC_URL: z.string().min(1).default("http://anvil:8545"),
   SHOVEL_START_BLOCK: z.coerce.number().int().default(0),
   SHOVEL_IMAGE: z.string().min(1).default("indexsupply/shovel:latest"),
   // --- indexer ---
-  DATABASE_URL: z.string().min(1).default("postgresql://postgres:postgres@127.0.0.1:5432/shovel"),
+  DATABASE_URL: z.string().min(1).default("postgresql://postgres:postgres@postgres:5432/shovel"),
   INDEXER_PORT: z.coerce.number().int().default(4000),
   INDEXER_POLL_INTERVAL_MS: z.coerce.number().int().default(3000),
   INDEXER_FETCH_TIMEOUT_MS: z.coerce.number().int().default(8000),

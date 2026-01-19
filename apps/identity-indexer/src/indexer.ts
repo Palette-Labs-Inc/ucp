@@ -1,16 +1,19 @@
 import { AgentUriZodSchema as AgentUriSchema } from "@ucp/erc8004-specs";
-import { UcpDiscoveryProfileSchema } from "@ucp-js/sdk";
+import * as Hex from "ox/Hex";
 import type { AppEnv } from "./env.js";
 import {
   fetchIdentityEvents,
+  loadCursor,
+  saveCursor,
+  upsertIndexedAgent,
   type IdentityEventRow,
+  type IndexedAgent,
+  type Json,
   type IndexerCursor,
 } from "./db.js";
 import type { Kysely } from "kysely";
-import type { DB } from "./db.js";
-import type { IndexedAgent, IndexerStore } from "./store.js";
-import { readFile, writeFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import type { IndexerDb } from "./db.js";
+import { log } from "./logger.js";
 
 const DEFAULT_CURSOR: IndexerCursor = {
   lastBlockNum: "0",
@@ -18,7 +21,6 @@ const DEFAULT_CURSOR: IndexerCursor = {
 };
 
 const ACTIVE_DELAY_MS = 250;
-const CURSOR_FILE = "identity-indexer.cursor.json";
 
 async function fetchJson(url: string, timeoutMs: number): Promise<unknown> {
   const controller = new AbortController();
@@ -35,54 +37,27 @@ async function fetchJson(url: string, timeoutMs: number): Promise<unknown> {
   }
 }
 
-function extractUcpProfileUrl(agentUri: unknown): string {
-  const parsed = AgentUriSchema.parse(agentUri);
-  const endpoint = parsed.endpoints.find(
-    (entry) => entry.name.toLowerCase() === "ucp"
-  );
-  if (!endpoint) {
-    throw new Error("Missing UCP endpoint in agentURI");
-  }
-  return endpoint.endpoint;
-}
-
-function extractDomain(ucpProfileUrl: string): string {
-  return new URL(ucpProfileUrl).hostname;
-}
-
-async function resolveAgentUri(agentUri: string, timeoutMs: number) {
+async function resolveAgentUri(
+  agentUri: string,
+  timeoutMs: number
+): Promise<Json> {
   const payload = await fetchJson(agentUri, timeoutMs);
-  const ucpProfileUrl = extractUcpProfileUrl(payload);
-  return {
-    domain: extractDomain(ucpProfileUrl),
-    ucpProfileUrl
-  };
-}
-
-async function resolveUcpProfile(ucpProfileUrl: string, timeoutMs: number) {
-  const payload = await fetchJson(ucpProfileUrl, timeoutMs);
-  return UcpDiscoveryProfileSchema.parse(payload);
+  return AgentUriSchema.parse(payload) as Json;
 }
 
 function buildIndexedAgent(
   row: IdentityEventRow,
   resolved: {
-    domain: string | null;
-    ucpProfileUrl: string | null;
-    discoveryJson: unknown | null;
-    fetchedAt: Date | null;
+    agentUriJson: Json | null;
   }
 ): IndexedAgent {
   return {
     chainId: row.chain_id,
     agentId: row.agent_id,
     agentUri: row.agent_uri ?? "",
+    agentUriJson: resolved.agentUriJson,
     owner: row.owner,
     registry: row.registry,
-    domain: resolved.domain,
-    ucpProfileUrl: resolved.ucpProfileUrl,
-    discoveryJson: resolved.discoveryJson,
-    fetchedAt: resolved.fetchedAt,
     sourceBlockNum: row.block_num,
     sourceLogIdx: row.log_idx,
     sourceTxHash: row.tx_hash
@@ -94,66 +69,24 @@ async function handleRow(
   env: AppEnv
 ): Promise<IndexedAgent> {
   if (!row.agent_uri) {
-    return buildIndexedAgent(row, {
-      domain: null,
-      ucpProfileUrl: null,
-      discoveryJson: null,
-      fetchedAt: null
-    });
+    return buildIndexedAgent(row, { agentUriJson: null });
   }
 
   try {
-    const agentUri = await resolveAgentUri(
+    const agentUriJson = await resolveAgentUri(
       row.agent_uri,
       env.INDEXER_FETCH_TIMEOUT_MS
     );
-    const discoveryJson = await resolveUcpProfile(
-      agentUri.ucpProfileUrl,
-      env.INDEXER_FETCH_TIMEOUT_MS
-    );
-    return buildIndexedAgent(row, {
-      domain: agentUri.domain,
-      ucpProfileUrl: agentUri.ucpProfileUrl,
-      discoveryJson,
-      fetchedAt: new Date()
-    });
+    return buildIndexedAgent(row, { agentUriJson });
   } catch {
-    return buildIndexedAgent(row, {
-      domain: null,
-      ucpProfileUrl: null,
-      discoveryJson: null,
-      fetchedAt: null
-    });
-  }
-}
-
-function getCursorPath(): string {
-  return resolve(process.cwd(), CURSOR_FILE);
-}
-
-async function loadCursor(): Promise<IndexerCursor> {
-  try {
-    const payload = await readFile(getCursorPath(), "utf8");
-    const parsed = JSON.parse(payload) as IndexerCursor;
-    if (parsed.lastBlockNum == null || parsed.lastLogIdx == null) {
-      return DEFAULT_CURSOR;
+    return buildIndexedAgent(row, { agentUriJson: null });
     }
-    return parsed;
-  } catch {
-    return DEFAULT_CURSOR;
-  }
-}
-
-async function saveCursor(cursor: IndexerCursor): Promise<void> {
-  const payload = JSON.stringify(cursor);
-  await writeFile(getCursorPath(), payload, "utf8");
 }
 
 async function processBatch(
-  db: Kysely<DB>,
+  db: Kysely<IndexerDb>,
   env: AppEnv,
-  cursor: IndexerCursor,
-  store: IndexerStore
+  cursor: IndexerCursor
 ): Promise<{ cursor: IndexerCursor; processed: number }> {
   const rows = await fetchIdentityEvents(db, cursor, env.INDEXER_BATCH_SIZE);
   if (rows.length === 0) return { cursor, processed: 0 };
@@ -161,7 +94,18 @@ async function processBatch(
   let nextCursor = cursor;
   for (const row of rows) {
     const indexed = await handleRow(row, env);
-    store.upsert(indexed);
+    await upsertIndexedAgent(db, indexed);
+    const parsedAgentUri = indexed.agentUriJson
+      ? AgentUriSchema.parse(indexed.agentUriJson)
+      : null;
+    log.info("indexer.row.processed", {
+      chainId: indexed.chainId,
+      agentId: indexed.agentId,
+      blockNum: indexed.sourceBlockNum,
+      logIdx: indexed.sourceLogIdx,
+      txHash: indexed.sourceTxHash ? Hex.fromBytes(indexed.sourceTxHash) : null,
+    });
+    log.info("indexer.agent.uri", parsedAgentUri);
     nextCursor = { lastBlockNum: row.block_num, lastLogIdx: row.log_idx };
   }
 
@@ -169,11 +113,11 @@ async function processBatch(
 }
 
 export async function startIndexer(
-  db: Kysely<DB>,
-  env: AppEnv,
-  store: IndexerStore
+  db: Kysely<IndexerDb>,
+  env: AppEnv
 ): Promise<{ stop: () => void }> {
-  let cursor = await loadCursor();
+  let cursor = await loadCursor(db, DEFAULT_CURSOR);
+  log.info("indexer.cursor.loaded", cursor);
   let isRunning = true;
   let isProcessing = false;
   let lastProcessed = 0;
@@ -182,11 +126,11 @@ export async function startIndexer(
     if (!isRunning || isProcessing) return;
     isProcessing = true;
     try {
-      const result = await processBatch(db, env, cursor, store);
+      const result = await processBatch(db, env, cursor);
       cursor = result.cursor;
       lastProcessed = result.processed;
       if (result.processed > 0) {
-        await saveCursor(cursor);
+        await saveCursor(db, cursor);
       }
     } finally {
       isProcessing = false;

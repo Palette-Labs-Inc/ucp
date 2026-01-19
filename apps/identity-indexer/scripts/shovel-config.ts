@@ -1,13 +1,13 @@
 import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import shovelConfig from "@indexsupply/shovel-config";
-import { shovelIntegrations } from "./shovel-integrations.js";
-import type { EnvVars } from "./shovel-types.js";
+import { shovelIntegrations } from "../src/shovel-integrations.js";
+import type { EnvVars } from "../src/shovel-types.js";
 import {
   buildEventIntegration,
   buildShovelSource,
   readDeployAddress,
-} from "./shovel-utils.js";
+} from "../src/shovel-utils.js";
 
 function parseArgs(argv: string[] = process.argv.slice(2)): string[] {
   if (argv[0] === "--") return argv.slice(1);
@@ -49,7 +49,7 @@ async function main(): Promise<void> {
     throw new Error("Usage: shovel-config.ts <output>");
   }
 
-  const { env } = (await import("./env.js")) as { env: EnvVars };
+  const { env } = (await import("../src/env.js")) as { env: EnvVars };
 
   if (shovelIntegrations.length === 0) {
     throw new Error("No shovel integrations configured.");

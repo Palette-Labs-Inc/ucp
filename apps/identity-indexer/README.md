@@ -1,8 +1,10 @@
 # Identity Indexer
 
+> Run `make infra-up` from the repo root before anything else.
+
 Reads ERC-8004 registrations from Shovel tables (Postgres + Kysely), resolves
-each `agentURI` (from the registry ABI), fetches the referenced UCP discovery
-profile (`/.well-known/ucp`), and serves results from an in-memory cache.
+each `agentURI` (from the registry ABI), validates it against the ERC-8004
+spec, and persists the agent URI JSON to Postgres.
 
 ## Requirements
 
@@ -13,14 +15,27 @@ profile (`/.well-known/ucp`), and serves results from an in-memory cache.
 ## Getting started
 
 ```bash
-pnpm install
 cp .env.local.example .env.local
+pnpm install # post install script generates env schema
+pnpm run infra:check
+pnpm run shovel:up
+pnpm generate:db-types
 pnpm run dev
 ```
 
 See `ENV.md` for the repo-wide env strategy and naming conventions. Runtime
 values come from root `.env` + app `.env.local`, and types are generated from
 root `.env.template` + app `.env.local.example`.
+
+The indexer depends on generated contract ABIs/types for Shovel config. Run
+`pnpm run infra:check` before `pnpm run dev` to ensure contract
+types/addresses are up to date.
+
+Shovel expects Anvil to be running on the shared `ucp` Docker network (from
+`make -C ../.. anvil`).
+
+Shovel connects to Postgres via the Docker service name `postgres`. The app
+continues to use `DATABASE_URL` for local access (typically `127.0.0.1`).
 
 ## Commands
 
@@ -30,6 +45,9 @@ pnpm run build
 pnpm run start
 pnpm run env:generate
 pnpm run shovel:config
+pnpm run shovel:up
+pnpm run shovel:down
+pnpm run shovel:logs
 pnpm run generate:db-types
 pnpm run register-agent
 pnpm run verify-agent
@@ -37,7 +55,7 @@ pnpm run verify-agent
 
 ## Shovel
 
-Shovel is started by the indexer process and runs via Docker Compose with the
+Shovel is managed via the app scripts and runs via Docker Compose with the
 app-level config in `shovel/docker-compose.yml`.
 
 ### Postgres env
@@ -73,17 +91,11 @@ Then regenerate the config (or restart the indexer to auto-generate):
 pnpm run shovel:config
 ```
 
-## API
-
-- `GET /health`
-- `GET /businesses?limit=50`
-- `GET /businesses/:domain`
 
 ## Notes
 
-- The indexer polls the Shovel table `erc8004_identity_events` (decoded via ABI)
-  and keeps an in-memory cache of resolved agents (recomputed on restart).
-- The poller persists its cursor to `identity-indexer.cursor.json` in the
-  working directory for fast resume.
+- The indexer polls `erc8004_identity_events` and writes resolved agent URIs to
+  `identity_indexer_agents`.
+- The poller persists its cursor in Postgres (`identity_indexer_cursor`).
 - If `agentURI` is unreachable or invalid, the record is skipped and retried on
   the next poll.

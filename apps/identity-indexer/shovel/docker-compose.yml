@@ -16,16 +16,23 @@ services:
       interval: 1s
       timeout: 2s
       retries: 30
+    networks:
+      - ucp
 
   shovel:
     image: ${SHOVEL_IMAGE}
     depends_on:
       postgres:
         condition: service_healthy
-      anvil:
-        condition: service_healthy
     volumes:
-      - ./:/shovel
+      - ${SHOVEL_DIR}:/shovel
     command: >
       shovel -config /shovel/generated/ucp.local.json
     restart: unless-stopped
+    networks:
+      - ucp
+
+networks:
+  ucp:
+    external: true
+    name: ucp

@@ -6,9 +6,6 @@ settings:
 
 catalogs:
   default:
-    '@hono/node-server':
-      specifier: 1.19.6
-      version: 1.19.6
     '@indexsupply/shovel-config':
       specifier: 0.0.18
       version: 0.0.18
@@ -24,9 +21,6 @@ catalogs:
     dotenv:
       specifier: 17.2.3
       version: 17.2.3
-    hono:
-      specifier: 4.11.4
-      version: 4.11.4
     json-schema-to-typescript:
       specifier: ^15.0.4
       version: 15.0.4
@@ -36,6 +30,9 @@ catalogs:
     kysely-codegen:
       specifier: ^0.15.0
       version: 0.15.0
+    ox:
+      specifier: 0.11.3
+      version: 0.11.3
     pg:
       specifier: ^8.12.0
       version: 8.17.1
@@ -74,12 +71,9 @@ importers:
 
   apps/identity-indexer:
     dependencies:
-      '@hono/node-server':
+      '@indexsupply/shovel-config':
         specifier: 'catalog:'
-        version: 1.19.6(hono@4.11.4)
-      '@ucp-js/sdk':
-        specifier: workspace:*
-        version: link:../../packages/js-sdk
+        version: 0.0.18
       '@ucp/config':
         specifier: workspace:*
         version: link:../../packages/config
@@ -95,15 +89,18 @@ importers:
       dotenv:
         specifier: 'catalog:'
         version: 17.2.3
-      hono:
-        specifier: 'catalog:'
-        version: 4.11.4
       kysely:
         specifier: 'catalog:'
         version: 0.27.6
+      ox:
+        specifier: 'catalog:'
+        version: 0.11.3(typescript@5.9.3)(zod@4.3.5)
       pg:
         specifier: 'catalog:'
         version: 8.17.1
+      postgres-interval:
+        specifier: ^4.0.2
+        version: 4.0.2
       viem:
         specifier: 'catalog:'
         version: 2.44.4(typescript@5.9.3)(zod@4.3.5)
@@ -141,12 +138,6 @@ importers:
 
   packages/config:
     dependencies:
-      '@indexsupply/shovel-config':
-        specifier: 'catalog:'
-        version: 0.0.18
-      '@ucp/contracts':
-        specifier: workspace:*
-        version: link:../contracts
       abitype:
         specifier: 'catalog:'
         version: 1.2.3(typescript@5.9.3)(zod@4.3.5)
@@ -382,12 +373,6 @@ packages:
 
   '@glideapps/ts-necessities@2.4.0':
     resolution: {integrity: sha512-mDC+qosuNa4lxR3ioMBb6CD0XLRsQBplU+zRPUYiMLXKeVPZ6UYphdNG/EGReig0YyfnVlBKZEXl1wzTotYmPA==}
-
-  '@hono/node-server@1.19.6':
-    resolution: {integrity: sha512-Shz/KjlIeAhfiuE93NDKVdZ7HdBVLQAfdbaXEaoAVO3ic9ibRSLGIQGkcBbFyuLr+7/1D5ZCINM8B+6IvXeMtw==}
-    engines: {node: '>=18.14.1'}
-    peerDependencies:
-      hono: ^4
 
   '@indexsupply/shovel-config@0.0.18':
     resolution: {integrity: sha512-LknGxa3QOCWdxbwOHj6Vs+Cm7CQ4/1fxm6HbnyJTsbhlEHVQcyX7frHnuHcp+feOLcIX4tPhIFJHr3G5167Rkw==}
@@ -681,10 +666,6 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
-  hono@4.11.4:
-    resolution: {integrity: sha512-U7tt8JsyrxSRKspfhtLET79pU8K+tInj5QZXs1jSugO1Vq5dFj3kmZsRldo29mTBfcjDRVRXrEZ6LS63Cog9ZA==}
-    engines: {node: '>=16.9.0'}
-
   ieee754@1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
 
@@ -900,6 +881,10 @@ packages:
   postgres-interval@1.2.0:
     resolution: {integrity: sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==}
     engines: {node: '>=0.10.0'}
+
+  postgres-interval@4.0.2:
+    resolution: {integrity: sha512-EMsphSQ1YkQqKZL2cuG0zHkmjCCzQqQ71l2GXITqRwjhRleCdv00bDk/ktaSi0LnlaPzAc3535KTrjXsTdtx7A==}
+    engines: {node: '>=12'}
 
   prettier@3.8.0:
     resolution: {integrity: sha512-yEPsovQfpxYfgWNhCfECjG5AQaO+K3dp6XERmOepyPDVqcJm+bjyCVO3pmU+nAPe0N5dDvekfGezt/EIiRe1TA==}
@@ -1251,10 +1236,6 @@ snapshots:
 
   '@glideapps/ts-necessities@2.4.0': {}
 
-  '@hono/node-server@1.19.6(hono@4.11.4)':
-    dependencies:
-      hono: 4.11.4
-
   '@indexsupply/shovel-config@0.0.18': {}
 
   '@jridgewell/resolve-uri@3.1.2': {}
@@ -1546,8 +1527,6 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hono@4.11.4: {}
-
   ieee754@1.2.1: {}
 
   inflight@1.0.6:
@@ -1717,6 +1696,8 @@ snapshots:
   postgres-interval@1.2.0:
     dependencies:
       xtend: 4.0.2
+
+  postgres-interval@4.0.2: {}
 
   prettier@3.8.0: {}
 

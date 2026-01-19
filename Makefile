@@ -123,7 +123,7 @@ env-init:
 
 .PHONY: anvil
 anvil: check-docker env-init
-	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" up -d postgres anvil
+	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" up -d anvil
 
 .PHONY: anvil-wait
 anvil-wait: check-docker env-init
@@ -136,7 +136,7 @@ anvil-wait: check-docker env-init
 
 .PHONY: anvil-fg
 anvil-fg: check-docker env-init
-	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" up postgres anvil
+	@docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" up anvil
 
 .PHONY: anvil-down
 anvil-down: check-docker env-init

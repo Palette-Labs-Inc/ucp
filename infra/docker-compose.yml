@@ -24,6 +24,8 @@ services:
       interval: 1s
       timeout: 1s
       retries: 30
+    networks:
+      - ucp
 
   foundry:
     image: ${FOUNDRY_IMAGE}
@@ -35,4 +37,10 @@ services:
     depends_on:
       anvil:
         condition: service_healthy
+    networks:
+      - ucp
+
+networks:
+  ucp:
+    name: ucp
 

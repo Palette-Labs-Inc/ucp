@@ -45,6 +45,9 @@ This boots Postgres + Anvil, deploys all ERC-8004 registries, and deploys the
 payments escrow. ABI/typegen is not run in `infra-up`; use `make infra-check`
 or `make generate-contracts` if you need to refresh generated types/addresses.
 
+Infra services run on a shared `ucp` Docker network so app-level services
+(like the identity indexer’s Shovel) can connect to `anvil`.
+
 ## Logs
 ```
 make anvil-logs
