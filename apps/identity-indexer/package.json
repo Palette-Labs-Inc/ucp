@@ -24,6 +24,8 @@
     "@ucp/contracts": "workspace:*",
     "@ucp-js/sdk": "workspace:*",
     "@ucp/erc8004-specs": "workspace:*",
+    "@hono/node-server": "catalog:",
+    "hono": "catalog:",
     "abitype": "catalog:",
     "dotenv": "catalog:",
     "kysely": "catalog:",

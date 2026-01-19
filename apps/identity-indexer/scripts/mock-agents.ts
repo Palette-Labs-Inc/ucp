@@ -31,16 +31,44 @@ const AGENT_PATHS = {
 
 const UCP_SPEC = {
   shopping: {
-    spec: "https://ucp.dev/specification/shopping",
-    restSchema: "https://ucp.dev/services/shopping/rest.openapi.json",
+    spec: "https://ucp.dev/specs/shopping",
+    restSchema: "https://ucp.dev/services/shopping/openapi.json",
   },
   catalog: {
-    spec: "https://ucp.dev/specification/shopping/catalog",
+    spec: "https://ucp.dev/specs/shopping/catalog",
     schema: "https://ucp.dev/schemas/shopping/catalog.json",
   },
   checkout: {
-    spec: "https://ucp.dev/specification/shopping/checkout",
+    spec: "https://ucp.dev/specs/shopping/checkout",
     schema: "https://ucp.dev/schemas/shopping/checkout.json",
+  },
+  order: {
+    spec: "https://ucp.dev/specs/shopping/order",
+    schema: "https://ucp.dev/schemas/shopping/order.json",
+  },
+  refund: {
+    spec: "https://ucp.dev/specs/shopping/refund",
+    schema: "https://ucp.dev/schemas/shopping/refund.json",
+  },
+  return: {
+    spec: "https://ucp.dev/specs/shopping/return",
+    schema: "https://ucp.dev/schemas/shopping/return.json",
+  },
+  dispute: {
+    spec: "https://ucp.dev/specs/shopping/dispute",
+    schema: "https://ucp.dev/schemas/shopping/dispute.json",
+  },
+  discount: {
+    spec: "https://ucp.dev/specs/shopping/discount",
+    schema: "https://ucp.dev/schemas/shopping/discount.json",
+  },
+  fulfillment: {
+    spec: "https://ucp.dev/specs/shopping/fulfillment",
+    schema: "https://ucp.dev/schemas/shopping/fulfillment.json",
+  },
+  buyerConsent: {
+    spec: "https://ucp.dev/specs/shopping/buyer_consent",
+    schema: "https://ucp.dev/schemas/shopping/buyer_consent.json",
   },
 } as const;
 
@@ -100,29 +128,125 @@ function buildUcpDiscoveryProfile(
 ): UcpDiscoveryProfile {
   const endpointBase = stripWellKnownUcp(agent.ucpProfileUrl);
   return UcpDiscoveryProfileSchema.parse({
-    version,
-    services: {
-      "dev.ucp.shopping.rest": {
-        version,
-        spec: UCP_SPEC.shopping.spec,
-        rest: {
-          schema: UCP_SPEC.shopping.restSchema,
-          endpoint: endpointBase,
+    ucp: {
+      version,
+      services: {
+        "dev.ucp.shopping": {
+          version,
+          spec: UCP_SPEC.shopping.spec,
+          rest: {
+            schema: UCP_SPEC.shopping.restSchema,
+            endpoint: endpointBase,
+          },
         },
       },
+      capabilities: [
+        {
+          name: "dev.ucp.shopping.catalog",
+          version,
+          spec: UCP_SPEC.catalog.spec,
+          schema: UCP_SPEC.catalog.schema,
+        },
+        {
+          name: "dev.ucp.shopping.checkout",
+          version,
+          spec: UCP_SPEC.checkout.spec,
+          schema: UCP_SPEC.checkout.schema,
+        },
+        {
+          name: "dev.ucp.shopping.order",
+          version,
+          spec: UCP_SPEC.order.spec,
+          schema: UCP_SPEC.order.schema,
+        },
+        {
+          name: "dev.ucp.shopping.refund",
+          version,
+          spec: UCP_SPEC.refund.spec,
+          schema: UCP_SPEC.refund.schema,
+          extends: "dev.ucp.shopping.order",
+        },
+        {
+          name: "dev.ucp.shopping.return",
+          version,
+          spec: UCP_SPEC.return.spec,
+          schema: UCP_SPEC.return.schema,
+          extends: "dev.ucp.shopping.order",
+        },
+        {
+          name: "dev.ucp.shopping.dispute",
+          version,
+          spec: UCP_SPEC.dispute.spec,
+          schema: UCP_SPEC.dispute.schema,
+          extends: "dev.ucp.shopping.order",
+        },
+        {
+          name: "dev.ucp.shopping.discount",
+          version,
+          spec: UCP_SPEC.discount.spec,
+          schema: UCP_SPEC.discount.schema,
+          extends: "dev.ucp.shopping.checkout",
+        },
+        {
+          name: "dev.ucp.shopping.fulfillment",
+          version,
+          spec: UCP_SPEC.fulfillment.spec,
+          schema: UCP_SPEC.fulfillment.schema,
+          extends: "dev.ucp.shopping.checkout",
+        },
+        {
+          name: "dev.ucp.shopping.buyer_consent",
+          version,
+          spec: UCP_SPEC.buyerConsent.spec,
+          schema: UCP_SPEC.buyerConsent.schema,
+          extends: "dev.ucp.shopping.checkout",
+        },
+      ],
     },
-    capabilities: [
+    payment: {
+      handlers: [
+        {
+          id: "shop_pay",
+          name: "com.shopify.shop_pay",
+          version,
+          spec: "https://shopify.dev/ucp/handlers/shop_pay",
+          config_schema: "https://shopify.dev/ucp/handlers/shop_pay/config.json",
+          instrument_schemas: [
+            "https://shopify.dev/ucp/handlers/shop_pay/instrument.json",
+          ],
+          config: {
+            shop_id: "test-shop-id",
+          },
+        },
+        {
+          id: "google_pay",
+          name: "google.pay",
+          version: "1.0",
+          spec: "https://example.com/spec",
+          config_schema: "https://example.com/schema",
+          instrument_schemas: [],
+          config: {},
+        },
+        {
+          id: "mock_payment_handler",
+          name: "dev.ucp.mock_payment",
+          version: "1.0",
+          spec: "https://ucp.dev/specs/mock",
+          config_schema: "https://ucp.dev/schemas/mock.json",
+          instrument_schemas: [
+            "https://ucp.dev/schemas/shopping/types/card_payment_instrument.json",
+          ],
+          config: {
+            supported_tokens: ["success_token", "fail_token"],
+          },
+        },
+      ],
+    },
+    signing_keys: [
       {
-        name: "dev.ucp.shopping.catalog",
-        version,
-        spec: UCP_SPEC.catalog.spec,
-        schema: UCP_SPEC.catalog.schema,
-      },
-      {
-        name: "dev.ucp.shopping.checkout",
-        version,
-        spec: UCP_SPEC.checkout.spec,
-        schema: UCP_SPEC.checkout.schema,
+        kid: "mock-signing-key",
+        kty: "RSA",
+        use: "sig",
       },
     ],
   });

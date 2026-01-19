@@ -116,6 +116,9 @@ importers:
 
   apps/identity-indexer:
     dependencies:
+      '@hono/node-server':
+        specifier: 'catalog:'
+        version: 1.19.6(hono@4.11.4)
       '@indexsupply/shovel-config':
         specifier: 'catalog:'
         version: 0.0.18
@@ -137,6 +140,9 @@ importers:
       dotenv:
         specifier: 'catalog:'
         version: 17.2.3
+      hono:
+        specifier: 'catalog:'
+        version: 4.11.4
       kysely:
         specifier: 'catalog:'
         version: 0.27.6
