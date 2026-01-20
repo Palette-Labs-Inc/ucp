@@ -185,6 +185,9 @@ print(value) if value else (print(f"Missing identity registry address in {path}"
 	  foundry "cd /repo/contracts/erc8004 && forge script script/DeployValidationRegistry.s.sol:DeployValidationRegistry \
 	  --rpc-url $(ANVIL_DOCKER_URL) --broadcast --sig 'run(address)' -- $$registry_address"
 
+.PHONY: deploy-registries
+deploy-registries: deploy-identity deploy-reputation deploy-validation
+
 
 .PHONY: deploy-commerce-payments
 deploy-commerce-payments: check-docker env-init anvil-wait

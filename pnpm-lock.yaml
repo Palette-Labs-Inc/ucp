@@ -211,12 +211,18 @@ importers:
       '@hono/zod-validator':
         specifier: 'catalog:'
         version: 0.7.6(hono@4.11.4)(zod@4.3.5)
+      '@ucp/config':
+        specifier: workspace:*
+        version: link:../../../../packages/config
       '@ucp/contracts':
         specifier: workspace:*
         version: link:../../../../packages/contracts
       better-sqlite3:
         specifier: 'catalog:'
         version: 9.6.0
+      dotenv:
+        specifier: 'catalog:'
+        version: 17.2.3
       hono:
         specifier: 'catalog:'
         version: 4.11.4

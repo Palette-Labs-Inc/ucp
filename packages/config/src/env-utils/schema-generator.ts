@@ -40,6 +40,17 @@ function buildZodForValue(value: string): string {
     return `z.coerce.boolean().default(${defaultValue})`;
   }
   if (/^-?\d+$/.test(normalized)) {
+    try {
+      const asBigInt = BigInt(normalized);
+      if (
+        asBigInt > BigInt(Number.MAX_SAFE_INTEGER) ||
+        asBigInt < BigInt(Number.MIN_SAFE_INTEGER)
+      ) {
+        return `z.string().min(1).default(${JSON.stringify(normalized)})`;
+      }
+    } catch {
+      return `z.string().min(1).default(${JSON.stringify(normalized)})`;
+    }
     return `z.coerce.number().int().default(${normalized})`;
   }
   if (/^-?\d*\.\d+$/.test(normalized)) {

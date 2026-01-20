@@ -5,7 +5,7 @@ import {z} from 'zod';
 
 import {getCheckoutSession, getIdempotencyRecord, getInventory, getOrder, getProduct, logRequest, releaseStock, reserveStock, saveCheckout, saveIdempotencyRecord, saveOrder} from '../data';
 import {CheckoutResponseStatusSchema, type Expectation, type ExpectationLineItem, type ExtendedCheckoutCreateRequest, type ExtendedCheckoutResponse, type ExtendedCheckoutUpdateRequest, ExtendedPaymentCredentialSchema, ExtendedPaymentDataSchema, type FulfillmentDestinationRequest, type FulfillmentDestinationResponse, type FulfillmentOptionResponse, type FulfillmentRequest, type FulfillmentResponse, type LineItemCreateRequest, type LineItemResponse, LocalprotocolAuthCaptureInstrumentSchema, type Order, type OrderLineItem, type PaymentCreateRequest, type PostalAddress} from '../models';
-import {authorizeEscrow, buildPaymentInfo, captureEscrow, getEscrowConfigFromEnv, readPaymentInfoHash, toBigInt} from '../utils/escrow';
+import {authorizeEscrow, buildPaymentInfo, captureEscrow, getEscrowConfigFromEnv, readPaymentInfoHash, toBigInt, waitForEscrowReceipt} from '../utils/escrow';
 
 /**
  * Schema for the request body when completing a checkout session.
@@ -33,9 +33,9 @@ export class CheckoutService {
       receiver: instrument.receiver as `0x${string}`,
       token: instrument.token as `0x${string}`,
       maxAmount: toBigInt(instrument.max_amount),
-      preApprovalExpiry: toBigInt(instrument.pre_approval_expiry),
-      authorizationExpiry: toBigInt(instrument.authorization_expiry),
-      refundExpiry: toBigInt(instrument.refund_expiry),
+      preApprovalExpiry: instrument.pre_approval_expiry,
+      authorizationExpiry: instrument.authorization_expiry,
+      refundExpiry: instrument.refund_expiry,
       minFeeBps: instrument.min_fee_bps,
       maxFeeBps: instrument.max_fee_bps,
       feeReceiver: instrument.fee_receiver as `0x${string}`,
@@ -665,7 +665,7 @@ export class CheckoutService {
               400,
           );
         }
-        const escrowConfig = getEscrowConfigFromEnv();
+        const escrowConfig = getEscrowConfigFromEnv(parsedInstrument.data.chain_id);
         const paymentInfo =
             this.buildPaymentInfoFromInstrument(parsedInstrument.data);
         const authorizeTxHash = await authorizeEscrow({
@@ -675,6 +675,7 @@ export class CheckoutService {
           tokenCollector: parsedInstrument.data.token_collector as `0x${string}`,
           collectorData: parsedInstrument.data.collector_data as `0x${string}`,
         });
+        await waitForEscrowReceipt(escrowConfig, authorizeTxHash);
         const authorizationId = await readPaymentInfoHash({
           config: escrowConfig,
           paymentInfo,
@@ -687,7 +688,7 @@ export class CheckoutService {
         if (!checkout.payment) {
           checkout.payment = {handlers: []};
         }
-        checkout.payment.instruments = [updatedInstrument];
+        checkout.payment.instruments = [updatedInstrument as any];
         checkout.payment.selected_instrument_id = updatedInstrument.id;
       } else {
         const credential = selectedInstrument.credential;
@@ -948,7 +949,7 @@ export class CheckoutService {
       const parsedInstrument =
           LocalprotocolAuthCaptureInstrumentSchema.safeParse(selected);
       if (parsedInstrument.success) {
-        const escrowConfig = getEscrowConfigFromEnv();
+        const escrowConfig = getEscrowConfigFromEnv(parsedInstrument.data.chain_id);
         const paymentInfo =
             this.buildPaymentInfoFromInstrument(parsedInstrument.data);
         await captureEscrow({
