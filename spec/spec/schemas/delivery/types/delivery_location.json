@@ -4,7 +4,9 @@
   "title": "Delivery Location",
   "description": "A postal address with optional geocoordinates.",
   "allOf": [
-    { "$ref": "../../shopping/types/postal_address.json" },
+    {
+      "$ref": "../../shopping/types/postal_address.json"
+    },
     {
       "type": "object",
       "properties": {

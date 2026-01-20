@@ -4,7 +4,12 @@
   "title": "Delivery",
   "description": "Delivery object with status updates.",
   "type": "object",
-  "required": ["id", "status", "quote_id", "created_at"],
+  "required": [
+    "id",
+    "quote_id",
+    "status",
+    "created_at"
+  ],
   "properties": {
     "id": {
       "type": "string",

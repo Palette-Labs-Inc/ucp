@@ -18,6 +18,18 @@
 
 from __future__ import annotations
 
-from ._internal_1 import MenuModifierSelection
+from pydantic import ConfigDict
+from . import location as location_1
+from ...shopping.types.postal_address import PostalAddress
 
-__all__ = ["MenuModifierSelection"]
+
+class DeliveryLocation(PostalAddress):
+  """A postal address with optional geocoordinates."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  location: location_1.Location | None = None
+  """
+    Geographic coordinates for this address.
+    """

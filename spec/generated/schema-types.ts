@@ -150,6 +150,156 @@ export type CheckoutWithMenuModifiersResponse = CheckoutResponse & {
  */
 export type Message = MessageError | MessageWarning | MessageInfo;
 /**
+ * A postal address with optional geocoordinates.
+ *
+ * This interface was referenced by `DeliveryQuoteCapability`'s JSON-Schema
+ * via the `definition` "delivery_location".
+ */
+export type DeliveryLocation = PostalAddress & {
+  location?: Location;
+  [k: string]: unknown;
+};
+/**
+ * Inputs required to create a delivery from a quote.
+ *
+ * This interface was referenced by `DeliveryRequestCapability`'s JSON-Schema
+ * via the `definition` "request_delivery".
+ */
+export type RequestDelivery =
+  | {
+      /**
+       * Associated delivery quote identifier.
+       */
+      quote_id: string;
+      /**
+       * Optional external identifier for idempotency or correlation.
+       */
+      external_id?: string;
+      [k: string]: unknown;
+    }
+  | DeliveryRequest;
+/**
+ * Checkout extended with a delivery quote identifier inside fulfillment.
+ *
+ * This interface was referenced by `DeliveryFulfillmentExtensionCreateRequest`'s JSON-Schema
+ * via the `definition` "checkout".
+ */
+export type CheckoutWithDeliveryQuoteIdentifierCreateRequest = CheckoutWithFulfillmentCreateRequest & {
+  fulfillment?:
+    | {
+        /**
+         * Delivery quote identifier for this checkout.
+         */
+        quote_id?: string;
+        [k: string]: unknown;
+      }
+    | {
+        delivery_request?: DeliveryRequest;
+        [k: string]: unknown;
+      };
+  [k: string]: unknown;
+};
+/**
+ * Checkout extended with hierarchical fulfillment.
+ *
+ * This interface was referenced by `FulfillmentExtensionCreateRequest`'s JSON-Schema
+ * via the `definition` "checkout".
+ */
+export type CheckoutWithFulfillmentCreateRequest = CheckoutCreateRequest & {
+  fulfillment?: FulfillmentRequest;
+  [k: string]: unknown;
+};
+/**
+ * A destination for fulfillment.
+ */
+export type FulfillmentDestinationRequest = ShippingDestinationRequest | RetailLocationRequest;
+/**
+ * Shipping destination.
+ */
+export type ShippingDestinationRequest = PostalAddress & {
+  /**
+   * ID specific to this shipping destination.
+   */
+  id?: string;
+  [k: string]: unknown;
+};
+/**
+ * Checkout extended with a delivery quote identifier inside fulfillment.
+ *
+ * This interface was referenced by `DeliveryFulfillmentExtensionUpdateRequest`'s JSON-Schema
+ * via the `definition` "checkout".
+ */
+export type CheckoutWithDeliveryQuoteIdentifierUpdateRequest = CheckoutWithFulfillmentUpdateRequest & {
+  fulfillment?:
+    | {
+        /**
+         * Delivery quote identifier for this checkout.
+         */
+        quote_id?: string;
+        [k: string]: unknown;
+      }
+    | {
+        delivery_request?: DeliveryRequest;
+        [k: string]: unknown;
+      };
+  [k: string]: unknown;
+};
+/**
+ * Checkout extended with hierarchical fulfillment.
+ *
+ * This interface was referenced by `FulfillmentExtensionUpdateRequest`'s JSON-Schema
+ * via the `definition` "checkout".
+ */
+export type CheckoutWithFulfillmentUpdateRequest = CheckoutUpdateRequest & {
+  fulfillment?: FulfillmentRequest;
+  [k: string]: unknown;
+};
+/**
+ * Checkout extended with a delivery quote identifier inside fulfillment.
+ *
+ * This interface was referenced by `DeliveryFulfillmentExtensionResponse`'s JSON-Schema
+ * via the `definition` "checkout".
+ */
+export type CheckoutWithDeliveryQuoteIdentifierResponse = CheckoutWithFulfillmentResponse & {
+  fulfillment?:
+    | {
+        /**
+         * Delivery quote identifier for this checkout.
+         */
+        quote_id: string;
+        [k: string]: unknown;
+      }
+    | {
+        delivery_request: DeliveryRequest;
+        [k: string]: unknown;
+      };
+  [k: string]: unknown;
+};
+/**
+ * Checkout extended with hierarchical fulfillment.
+ *
+ * This interface was referenced by `FulfillmentExtensionResponse`'s JSON-Schema
+ * via the `definition` "checkout".
+ */
+export type CheckoutWithFulfillmentResponse = CheckoutResponse & {
+  fulfillment?: FulfillmentResponse;
+  [k: string]: unknown;
+};
+/**
+ * A destination for fulfillment.
+ */
+export type FulfillmentDestinationResponse = ShippingDestinationResponse | RetailLocationResponse;
+/**
+ * Shipping destination.
+ */
+export type ShippingDestinationResponse = PostalAddress & {
+  /**
+   * ID specific to this shipping destination.
+   */
+  id: string;
+  [k: string]: unknown;
+};
+/**
  * JWS Detached Content signature (RFC 7515 Appendix F) over the checkout response body (excluding ap2 field). Format: `<base64url-header>..<base64url-signature>`. The header MUST contain 'alg' (ES256/ES384/ES512) and 'kid' claims. The signature covers both the header and JCS-canonicalized checkout payload.
  *
  * This interface was referenced by `AP2MandateExtension`'s JSON-Schema
@@ -275,64 +425,6 @@ export type CheckoutWithDiscountUpdateRequest = CheckoutUpdateRequest & {
  */
 export type CheckoutWithDiscountResponse = CheckoutResponse & {
   discounts?: DiscountsObject2;
-  [k: string]: unknown;
-};
-/**
- * A destination for fulfillment.
- */
-export type FulfillmentDestinationRequest = ShippingDestinationRequest | RetailLocationRequest;
-/**
- * Shipping destination.
- */
-export type ShippingDestinationRequest = PostalAddress & {
-  /**
-   * ID specific to this shipping destination.
-   */
-  id?: string;
-  [k: string]: unknown;
-};
-/**
- * Checkout extended with hierarchical fulfillment.
- *
- * This interface was referenced by `FulfillmentExtensionCreateRequest`'s JSON-Schema
- * via the `definition` "checkout".
- */
-export type CheckoutWithFulfillmentCreateRequest = CheckoutCreateRequest & {
-  fulfillment?: FulfillmentRequest;
-  [k: string]: unknown;
-};
-/**
- * Checkout extended with hierarchical fulfillment.
- *
- * This interface was referenced by `FulfillmentExtensionUpdateRequest`'s JSON-Schema
- * via the `definition` "checkout".
- */
-export type CheckoutWithFulfillmentUpdateRequest = CheckoutUpdateRequest & {
-  fulfillment?: FulfillmentRequest;
-  [k: string]: unknown;
-};
-/**
- * A destination for fulfillment.
- */
-export type FulfillmentDestinationResponse = ShippingDestinationResponse | RetailLocationResponse;
-/**
- * Shipping destination.
- */
-export type ShippingDestinationResponse = PostalAddress & {
-  /**
-   * ID specific to this shipping destination.
-   */
-  id: string;
-  [k: string]: unknown;
-};
-/**
- * Checkout extended with hierarchical fulfillment.
- *
- * This interface was referenced by `FulfillmentExtensionResponse`'s JSON-Schema
- * via the `definition` "checkout".
- */
-export type CheckoutWithFulfillmentResponse = CheckoutResponse & {
-  fulfillment?: FulfillmentResponse;
   [k: string]: unknown;
 };
 /**
@@ -1473,6 +1565,429 @@ export declare interface MenuAdditionalCharge {
   [k: string]: unknown;
 }
 /**
+ * Delivery request capability. Defines delivery creation and retrieval resources.
+ */
+export declare interface DeliveryRequestCapability {
+  [k: string]: unknown;
+}
+/**
+ * Delivery object with status updates.
+ *
+ * This interface was referenced by `DeliveryRequestCapability`'s JSON-Schema
+ * via the `definition` "delivery".
+ */
+export declare interface Delivery {
+  /**
+   * Delivery identifier.
+   */
+  id: string;
+  /**
+   * Associated delivery quote identifier.
+   */
+  quote_id: string;
+  /**
+   * Delivery status.
+   */
+  status: 'pending' | 'pickup' | 'pickup_complete' | 'dropoff' | 'delivered' | 'canceled' | 'returned' | 'failed';
+  /**
+   * RFC 3339 creation timestamp.
+   */
+  created_at: string;
+  /**
+   * RFC 3339 last update timestamp.
+   */
+  updated_at?: string;
+  pickup?: DeliveryLocation;
+  dropoff?: DeliveryLocation;
+  price?: Price;
+  /**
+   * Estimated pickup time.
+   */
+  pickup_eta?: string;
+  /**
+   * Estimated dropoff time.
+   */
+  dropoff_eta?: string;
+  tracking?: Tracking;
+  courier?: Courier;
+  [k: string]: unknown;
+}
+/**
+ * Geographic coordinates in decimal degrees.
+ */
+export declare interface Location {
+  /**
+   * Latitude in decimal degrees.
+   */
+  lat?: number;
+  /**
+   * Longitude in decimal degrees.
+   */
+  lng?: number;
+  [k: string]: unknown;
+}
+/**
+ * Tracking details for a delivery.
+ */
+export declare interface Tracking {
+  /**
+   * Tracking URL for this delivery.
+   */
+  url?: string;
+  /**
+   * Carrier tracking number when available.
+   */
+  number?: string;
+  /**
+   * Provider-specific tracking status.
+   */
+  status?: string;
+  /**
+   * RFC 3339 timestamp for the last tracking update.
+   */
+  updated_at?: string;
+  [k: string]: unknown;
+}
+/**
+ * Courier details for a delivery.
+ */
+export declare interface Courier {
+  /**
+   * Courier name.
+   */
+  name?: string;
+  /**
+   * Courier phone number.
+   */
+  phone_number?: string;
+  /**
+   * Courier vehicle type.
+   */
+  vehicle_type?: string;
+  location?: Location;
+  [k: string]: unknown;
+}
+/**
+ * Inputs required to create a delivery without a precomputed quote.
+ *
+ * This interface was referenced by `DeliveryRequestCapability`'s JSON-Schema
+ * via the `definition` "delivery_request".
+ *
+ * This interface was referenced by `DeliveryQuoteCapability`'s JSON-Schema
+ * via the `definition` "delivery_request".
+ *
+ * This interface was referenced by `DeliveryQuoteCapability`'s JSON-Schema
+ * via the `definition` "request_quote".
+ */
+export declare interface DeliveryRequest {
+  pickup: DeliveryLocation;
+  dropoff: DeliveryLocation;
+  /**
+   * RFC 3339 timestamp when pickup can begin.
+   */
+  pickup_ready_dt?: string;
+  /**
+   * RFC 3339 timestamp after which pickup is no longer valid.
+   */
+  pickup_deadline_dt?: string;
+  /**
+   * RFC 3339 timestamp when dropoff can begin.
+   */
+  dropoff_ready_dt?: string;
+  /**
+   * RFC 3339 timestamp after which dropoff is no longer valid.
+   */
+  dropoff_deadline_dt?: string;
+  manifest_total_value: Price;
+  /**
+   * Optional store identifier for routing or pricing.
+   */
+  external_store_id?: string;
+  /**
+   * Optional external identifier for idempotency or correlation.
+   */
+  external_id?: string;
+  [k: string]: unknown;
+}
+/**
+ * Response wrapper for delivery operations.
+ *
+ * This interface was referenced by `DeliveryRequestCapability`'s JSON-Schema
+ * via the `definition` "response_delivery".
+ */
+export declare interface ResponseDelivery {
+  ucp: UCPResponseMetadata;
+  delivery: Delivery;
+  [k: string]: unknown;
+}
+/**
+ * Extends shopping fulfillment with a delivery quote identifier on checkout.fulfillment.
+ */
+export declare interface DeliveryFulfillmentExtensionCreateRequest {
+  [k: string]: unknown;
+}
+/**
+ * Container for fulfillment methods and availability.
+ *
+ * This interface was referenced by `FulfillmentExtensionCreateRequest`'s JSON-Schema
+ * via the `definition` "fulfillment".
+ *
+ * This interface was referenced by `FulfillmentExtensionUpdateRequest`'s JSON-Schema
+ * via the `definition` "fulfillment".
+ */
+export declare interface FulfillmentRequest {
+  /**
+   * Fulfillment methods for cart items.
+   */
+  methods?: FulfillmentMethodCreateRequest[];
+  [k: string]: unknown;
+}
+/**
+ * A fulfillment method (shipping or pickup) with destinations and groups.
+ *
+ * This interface was referenced by `FulfillmentExtensionCreateRequest`'s JSON-Schema
+ * via the `definition` "fulfillment_method".
+ */
+export declare interface FulfillmentMethodCreateRequest {
+  /**
+   * Fulfillment method type.
+   */
+  type: 'shipping' | 'pickup';
+  /**
+   * Line item IDs fulfilled via this method.
+   */
+  line_item_ids?: string[];
+  /**
+   * Available destinations. For shipping: addresses. For pickup: retail locations.
+   */
+  destinations?: FulfillmentDestinationRequest[];
+  /**
+   * ID of the selected destination.
+   */
+  selected_destination_id?: string | null;
+  /**
+   * Fulfillment groups for selecting options. Agent sets selected_option_id on groups to choose shipping method.
+   */
+  groups?: FulfillmentGroupCreateRequest[];
+  [k: string]: unknown;
+}
+/**
+ * A pickup location (retail store, locker, etc.).
+ */
+export declare interface RetailLocationRequest {
+  /**
+   * Location name (e.g., store name).
+   */
+  name: string;
+  address?: PostalAddress;
+  [k: string]: unknown;
+}
+/**
+ * A merchant-generated package/group of line items with fulfillment options.
+ *
+ * This interface was referenced by `FulfillmentExtensionCreateRequest`'s JSON-Schema
+ * via the `definition` "fulfillment_group".
+ */
+export declare interface FulfillmentGroupCreateRequest {
+  /**
+   * ID of the selected fulfillment option for this group.
+   */
+  selected_option_id?: string | null;
+  [k: string]: unknown;
+}
+/**
+ * Extends shopping fulfillment with a delivery quote identifier on checkout.fulfillment.
+ */
+export declare interface DeliveryFulfillmentExtensionUpdateRequest {
+  [k: string]: unknown;
+}
+/**
+ * Extends shopping fulfillment with a delivery quote identifier on checkout.fulfillment.
+ */
+export declare interface DeliveryFulfillmentExtensionResponse {
+  [k: string]: unknown;
+}
+/**
+ * Container for fulfillment methods and availability.
+ *
+ * This interface was referenced by `FulfillmentExtensionResponse`'s JSON-Schema
+ * via the `definition` "fulfillment".
+ */
+export declare interface FulfillmentResponse {
+  /**
+   * Fulfillment methods for cart items.
+   */
+  methods?: FulfillmentMethodResponse[];
+  /**
+   * Inventory availability hints.
+   */
+  available_methods?: FulfillmentAvailableMethodResponse[];
+  [k: string]: unknown;
+}
+/**
+ * A fulfillment method (shipping or pickup) with destinations and groups.
+ *
+ * This interface was referenced by `FulfillmentExtensionResponse`'s JSON-Schema
+ * via the `definition` "fulfillment_method".
+ */
+export declare interface FulfillmentMethodResponse {
+  /**
+   * Unique fulfillment method identifier.
+   */
+  id: string;
+  /**
+   * Fulfillment method type.
+   */
+  type: 'shipping' | 'pickup';
+  /**
+   * Line item IDs fulfilled via this method.
+   */
+  line_item_ids: string[];
+  /**
+   * Available destinations. For shipping: addresses. For pickup: retail locations.
+   */
+  destinations?: FulfillmentDestinationResponse[];
+  /**
+   * ID of the selected destination.
+   */
+  selected_destination_id?: string | null;
+  /**
+   * Fulfillment groups for selecting options. Agent sets selected_option_id on groups to choose shipping method.
+   */
+  groups?: FulfillmentGroupResponse[];
+  [k: string]: unknown;
+}
+/**
+ * A merchant-generated package/group of line items with fulfillment options.
+ *
+ * This interface was referenced by `FulfillmentExtensionResponse`'s JSON-Schema
+ * via the `definition` "fulfillment_group".
+ */
+export declare interface FulfillmentGroupResponse {
+  /**
+   * Group identifier for referencing merchant-generated groups in updates.
+   */
+  id: string;
+  /**
+   * Line item IDs included in this group/package.
+   */
+  line_item_ids: string[];
+  /**
+   * Available fulfillment options for this group.
+   */
+  options?: FulfillmentOptionResponse[];
+  /**
+   * ID of the selected fulfillment option for this group.
+   */
+  selected_option_id?: string | null;
+  [k: string]: unknown;
+}
+/**
+ * A fulfillment option within a group (e.g., Standard Shipping $5, Express $15).
+ *
+ * This interface was referenced by `FulfillmentExtensionResponse`'s JSON-Schema
+ * via the `definition` "fulfillment_option".
+ */
+export declare interface FulfillmentOptionResponse {
+  /**
+   * Unique fulfillment option identifier.
+   */
+  id: string;
+  /**
+   * Short label (e.g., 'Express Shipping', 'Curbside Pickup').
+   */
+  title: string;
+  /**
+   * Complete context for buyer decision (e.g., 'Arrives Dec 12-15 via FedEx').
+   */
+  description?: string;
+  /**
+   * Carrier name (for shipping).
+   */
+  carrier?: string;
+  /**
+   * Earliest fulfillment date.
+   */
+  earliest_fulfillment_time?: string;
+  /**
+   * Latest fulfillment date.
+   */
+  latest_fulfillment_time?: string;
+  /**
+   * Fulfillment option totals breakdown.
+   */
+  totals: TotalResponse[];
+  [k: string]: unknown;
+}
+/**
+ * Inventory availability hint for a fulfillment method type.
+ *
+ * This interface was referenced by `FulfillmentExtensionResponse`'s JSON-Schema
+ * via the `definition` "fulfillment_available_method".
+ */
+export declare interface FulfillmentAvailableMethodResponse {
+  /**
+   * Fulfillment method type this availability applies to.
+   */
+  type: 'shipping' | 'pickup';
+  /**
+   * Line items available for this fulfillment method.
+   */
+  line_item_ids: string[];
+  /**
+   * 'now' for immediate availability, or ISO 8601 date for future (preorders, transfers).
+   */
+  fulfillable_on?: string | null;
+  /**
+   * Human-readable availability info (e.g., 'Available for pickup at Downtown Store today').
+   */
+  description?: string;
+  [k: string]: unknown;
+}
+/**
+ * Delivery capability with quote and delivery resources. Checkout integration is optional via a separate fulfillment extension.
+ */
+export declare interface DeliveryQuoteCapability {
+  [k: string]: unknown;
+}
+/**
+ * Quoted delivery price with expiration.
+ *
+ * This interface was referenced by `DeliveryQuoteCapability`'s JSON-Schema
+ * via the `definition` "delivery_quote".
+ */
+export declare interface DeliveryQuote {
+  /**
+   * Internal quote identifier.
+   */
+  quote_id: string;
+  /**
+   * RFC 3339 expiration timestamp for this quote.
+   */
+  expires_at: string;
+  price: Price;
+  /**
+   * Estimated pickup time.
+   */
+  pickup_eta?: string;
+  /**
+   * Estimated dropoff time.
+   */
+  dropoff_eta?: string;
+  [k: string]: unknown;
+}
+/**
+ * Response wrapper for delivery quote operations.
+ *
+ * This interface was referenced by `DeliveryQuoteCapability`'s JSON-Schema
+ * via the `definition` "response_quote".
+ */
+export declare interface ResponseQuote {
+  ucp: UCPResponseMetadata;
+  delivery_quote: DeliveryQuote;
+  [k: string]: unknown;
+}
+/**
  * Extends Checkout with cryptographic mandate support for non-repudiable authorization per the AP2 protocol. Uses embedded signature model with ap2 namespace.
  */
 export declare interface AP2MandateExtension {
@@ -2116,59 +2631,6 @@ export declare interface FulfillmentOptionRequest {
   [k: string]: unknown;
 }
 /**
- * A merchant-generated package/group of line items with fulfillment options.
- *
- * This interface was referenced by `FulfillmentExtensionCreateRequest`'s JSON-Schema
- * via the `definition` "fulfillment_group".
- */
-export declare interface FulfillmentGroupCreateRequest {
-  /**
-   * ID of the selected fulfillment option for this group.
-   */
-  selected_option_id?: string | null;
-  [k: string]: unknown;
-}
-/**
- * A fulfillment method (shipping or pickup) with destinations and groups.
- *
- * This interface was referenced by `FulfillmentExtensionCreateRequest`'s JSON-Schema
- * via the `definition` "fulfillment_method".
- */
-export declare interface FulfillmentMethodCreateRequest {
-  /**
-   * Fulfillment method type.
-   */
-  type: 'shipping' | 'pickup';
-  /**
-   * Line item IDs fulfilled via this method.
-   */
-  line_item_ids?: string[];
-  /**
-   * Available destinations. For shipping: addresses. For pickup: retail locations.
-   */
-  destinations?: FulfillmentDestinationRequest[];
-  /**
-   * ID of the selected destination.
-   */
-  selected_destination_id?: string | null;
-  /**
-   * Fulfillment groups for selecting options. Agent sets selected_option_id on groups to choose shipping method.
-   */
-  groups?: FulfillmentGroupCreateRequest[];
-  [k: string]: unknown;
-}
-/**
- * A pickup location (retail store, locker, etc.).
- */
-export declare interface RetailLocationRequest {
-  /**
-   * Location name (e.g., store name).
-   */
-  name: string;
-  address?: PostalAddress;
-  [k: string]: unknown;
-}
-/**
  * Inventory availability hint for a fulfillment method type.
  *
  * This interface was referenced by `FulfillmentExtensionCreateRequest`'s JSON-Schema
@@ -2178,22 +2640,6 @@ export declare interface RetailLocationRequest {
  * via the `definition` "fulfillment_available_method".
  */
 export declare interface FulfillmentAvailableMethodRequest {
-  [k: string]: unknown;
-}
-/**
- * Container for fulfillment methods and availability.
- *
- * This interface was referenced by `FulfillmentExtensionCreateRequest`'s JSON-Schema
- * via the `definition` "fulfillment".
- *
- * This interface was referenced by `FulfillmentExtensionUpdateRequest`'s JSON-Schema
- * via the `definition` "fulfillment".
- */
-export declare interface FulfillmentRequest {
-  /**
-   * Fulfillment methods for cart items.
-   */
-  methods?: FulfillmentMethodCreateRequest[];
   [k: string]: unknown;
 }
 /**
@@ -2252,143 +2698,6 @@ export declare interface FulfillmentMethodUpdateRequest {
  * Extends Checkout with fulfillment support using methods, destinations, and groups.
  */
 export declare interface FulfillmentExtensionResponse {
-  [k: string]: unknown;
-}
-/**
- * A fulfillment option within a group (e.g., Standard Shipping $5, Express $15).
- *
- * This interface was referenced by `FulfillmentExtensionResponse`'s JSON-Schema
- * via the `definition` "fulfillment_option".
- */
-export declare interface FulfillmentOptionResponse {
-  /**
-   * Unique fulfillment option identifier.
-   */
-  id: string;
-  /**
-   * Short label (e.g., 'Express Shipping', 'Curbside Pickup').
-   */
-  title: string;
-  /**
-   * Complete context for buyer decision (e.g., 'Arrives Dec 12-15 via FedEx').
-   */
-  description?: string;
-  /**
-   * Carrier name (for shipping).
-   */
-  carrier?: string;
-  /**
-   * Earliest fulfillment date.
-   */
-  earliest_fulfillment_time?: string;
-  /**
-   * Latest fulfillment date.
-   */
-  latest_fulfillment_time?: string;
-  /**
-   * Fulfillment option totals breakdown.
-   */
-  totals: TotalResponse[];
-  [k: string]: unknown;
-}
-/**
- * A merchant-generated package/group of line items with fulfillment options.
- *
- * This interface was referenced by `FulfillmentExtensionResponse`'s JSON-Schema
- * via the `definition` "fulfillment_group".
- */
-export declare interface FulfillmentGroupResponse {
-  /**
-   * Group identifier for referencing merchant-generated groups in updates.
-   */
-  id: string;
-  /**
-   * Line item IDs included in this group/package.
-   */
-  line_item_ids: string[];
-  /**
-   * Available fulfillment options for this group.
-   */
-  options?: FulfillmentOptionResponse[];
-  /**
-   * ID of the selected fulfillment option for this group.
-   */
-  selected_option_id?: string | null;
-  [k: string]: unknown;
-}
-/**
- * A fulfillment method (shipping or pickup) with destinations and groups.
- *
- * This interface was referenced by `FulfillmentExtensionResponse`'s JSON-Schema
- * via the `definition` "fulfillment_method".
- */
-export declare interface FulfillmentMethodResponse {
-  /**
-   * Unique fulfillment method identifier.
-   */
-  id: string;
-  /**
-   * Fulfillment method type.
-   */
-  type: 'shipping' | 'pickup';
-  /**
-   * Line item IDs fulfilled via this method.
-   */
-  line_item_ids: string[];
-  /**
-   * Available destinations. For shipping: addresses. For pickup: retail locations.
-   */
-  destinations?: FulfillmentDestinationResponse[];
-  /**
-   * ID of the selected destination.
-   */
-  selected_destination_id?: string | null;
-  /**
-   * Fulfillment groups for selecting options. Agent sets selected_option_id on groups to choose shipping method.
-   */
-  groups?: FulfillmentGroupResponse[];
-  [k: string]: unknown;
-}
-/**
- * Inventory availability hint for a fulfillment method type.
- *
- * This interface was referenced by `FulfillmentExtensionResponse`'s JSON-Schema
- * via the `definition` "fulfillment_available_method".
- */
-export declare interface FulfillmentAvailableMethodResponse {
-  /**
-   * Fulfillment method type this availability applies to.
-   */
-  type: 'shipping' | 'pickup';
-  /**
-   * Line items available for this fulfillment method.
-   */
-  line_item_ids: string[];
-  /**
-   * 'now' for immediate availability, or ISO 8601 date for future (preorders, transfers).
-   */
-  fulfillable_on?: string | null;
-  /**
-   * Human-readable availability info (e.g., 'Available for pickup at Downtown Store today').
-   */
-  description?: string;
-  [k: string]: unknown;
-}
-/**
- * Container for fulfillment methods and availability.
- *
- * This interface was referenced by `FulfillmentExtensionResponse`'s JSON-Schema
- * via the `definition` "fulfillment".
- */
-export declare interface FulfillmentResponse {
-  /**
-   * Fulfillment methods for cart items.
-   */
-  methods?: FulfillmentMethodResponse[];
-  /**
-   * Inventory availability hints.
-   */
-  available_methods?: FulfillmentAvailableMethodResponse[];
   [k: string]: unknown;
 }
 /**
@@ -2792,7 +3101,7 @@ export declare interface UCPService {
  * This interface was referenced by `UCPMetadata`'s JSON-Schema
  * via the `definition` "discovery_profile".
  */
-export declare interface UCPDiscoveryProfile {
+export declare interface UCPDiscoveryMetadata {
   /**
    * UCP protocol version in YYYY-MM-DD format.
    *

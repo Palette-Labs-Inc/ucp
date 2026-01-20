@@ -4,7 +4,11 @@
   "title": "Delivery Request",
   "description": "Inputs required to create a delivery without a precomputed quote.",
   "type": "object",
-  "required": ["pickup", "dropoff", "manifest_total_value"],
+  "required": [
+    "pickup",
+    "dropoff",
+    "manifest_total_value"
+  ],
   "properties": {
     "pickup": {
       "$ref": "delivery_location.json",

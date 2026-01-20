@@ -16,8 +16,3 @@
 # pylint: disable=all
 # pyformat: disable
 
-from __future__ import annotations
-
-from ._internal_1 import MenuModifierSelection
-
-__all__ = ["MenuModifierSelection"]

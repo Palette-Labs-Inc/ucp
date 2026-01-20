@@ -4,7 +4,11 @@
   "title": "Delivery Quote",
   "description": "Quoted delivery price with expiration.",
   "type": "object",
-  "required": ["quote_id", "expires_at", "price"],
+  "required": [
+    "quote_id",
+    "expires_at",
+    "price"
+  ],
   "properties": {
     "quote_id": {
       "type": "string",

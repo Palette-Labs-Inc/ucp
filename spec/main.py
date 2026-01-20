@@ -46,6 +46,7 @@ def define_env(env):
   openapi_dirs = [
     "spec/services/shopping/",
     "spec/services/commerce/",
+    "spec/services/delivery/",
   ]
   schemas_dirs = [
     "spec/handlers/google_pay/",

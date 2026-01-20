@@ -18,6 +18,28 @@
 
 from __future__ import annotations
 
-from ._internal_1 import MenuModifierSelection
+from pydantic import AnyUrl, AwareDatetime, BaseModel, ConfigDict
 
-__all__ = ["MenuModifierSelection"]
+
+class Tracking(BaseModel):
+  """Tracking details for a delivery."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  url: AnyUrl | None = None
+  """
+    Tracking URL for this delivery.
+    """
+  number: str | None = None
+  """
+    Carrier tracking number when available.
+    """
+  status: str | None = None
+  """
+    Provider-specific tracking status.
+    """
+  updated_at: AwareDatetime | None = None
+  """
+    RFC 3339 timestamp for the last tracking update.
+    """

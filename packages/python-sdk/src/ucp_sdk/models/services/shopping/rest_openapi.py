@@ -18,6 +18,9 @@
 
 from __future__ import annotations
 
-from ._internal_1 import MenuModifierSelection
+from typing import Any
+from pydantic import RootModel
 
-__all__ = ["MenuModifierSelection"]
+
+class Model(RootModel[Any]):
+  root: Any

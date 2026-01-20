@@ -20,7 +20,9 @@
       "oneOf": [
         {
           "type": "object",
-          "required": ["quote_id"],
+          "required": [
+            "quote_id"
+          ],
           "properties": {
             "quote_id": {
               "type": "string",
@@ -41,7 +43,10 @@
       "title": "Response Delivery",
       "description": "Response wrapper for delivery operations.",
       "type": "object",
-      "required": ["ucp", "delivery"],
+      "required": [
+        "ucp",
+        "delivery"
+      ],
       "properties": {
         "ucp": {
           "$ref": "../ucp.json#/$defs/response"

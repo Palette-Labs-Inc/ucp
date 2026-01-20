@@ -19,51 +19,36 @@
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
-from . import menu_additional_charge, menu_hours_interval
+from typing import Literal
 
 
-class Hours(BaseModel):
-  """Menu availability hours."""
-
-  model_config = ConfigDict(
-    extra="allow",
-  )
-  intervals: list[menu_hours_interval.MenuHoursInterval] | None = None
-
-
-class Menu(BaseModel):
-  """A menu containing categories and fulfillment configuration."""
+class LocalprotocolCommerceAuthCaptureHandlerConfig(BaseModel):
+  """Configuration for the Localprotocol commerce auth/capture escrow handler."""
 
   model_config = ConfigDict(
     extra="allow",
   )
-  id: str
+  chain_id: int
   """
-    Menu identifier.
+    EVM chain ID (e.g., 8453 for Base).
     """
-  name: str
+  escrow_contract: str
   """
-    Menu name.
+    AuthCaptureEscrow contract address.
     """
-  category_ids: list[str] = Field(..., min_length=1)
+  merchant_payout_address: str
   """
-    Category identifiers included in this menu.
+    Merchant payout address for captured funds.
     """
-  fulfillment_modes: list[str] | None = None
+  token_collectors: list[str]
   """
-    Fulfillment modes supported by this menu.
+    Authorization mechanisms supported by the handler.
     """
-  description: str | None = None
+  authorization_expiry_seconds: int = Field(..., ge=1)
   """
-    Menu description.
+    Authorization expiration window in seconds.
     """
-  hours: Hours | None = None
+  environment: Literal["sandbox", "production"] | None = None
   """
-    Menu availability hours.
-    """
-  additional_charges: (
-    list[menu_additional_charge.MenuAdditionalCharge] | None
-  ) = None
-  """
-    Additional charges applied to orders from this menu.
+    Execution environment for the handler.
     """

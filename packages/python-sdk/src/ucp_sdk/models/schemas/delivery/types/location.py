@@ -18,6 +18,20 @@
 
 from __future__ import annotations
 
-from ._internal_1 import MenuModifierSelection
+from pydantic import BaseModel, ConfigDict, Field
 
-__all__ = ["MenuModifierSelection"]
+
+class Location(BaseModel):
+  """Geographic coordinates in decimal degrees."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  lat: float | None = Field(None, ge=-90.0, le=90.0)
+  """
+    Latitude in decimal degrees.
+    """
+  lng: float | None = Field(None, ge=-180.0, le=180.0)
+  """
+    Longitude in decimal degrees.
+    """

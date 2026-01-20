@@ -18,6 +18,33 @@
 
 from __future__ import annotations
 
-from ._internal_1 import MenuModifierSelection
+from pydantic import AwareDatetime, BaseModel, ConfigDict
+from ...shopping.types import price as price_1
 
-__all__ = ["MenuModifierSelection"]
+
+class DeliveryQuote(BaseModel):
+  """Quoted delivery price with expiration."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  quote_id: str
+  """
+    Internal quote identifier.
+    """
+  expires_at: AwareDatetime
+  """
+    RFC 3339 expiration timestamp for this quote.
+    """
+  price: price_1.Price
+  """
+    Estimated delivery fee.
+    """
+  pickup_eta: AwareDatetime | None = None
+  """
+    Estimated pickup time.
+    """
+  dropoff_eta: AwareDatetime | None = None
+  """
+    Estimated dropoff time.
+    """

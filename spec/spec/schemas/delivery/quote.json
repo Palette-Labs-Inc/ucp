@@ -23,7 +23,10 @@
       "title": "Response Quote",
       "description": "Response wrapper for delivery quote operations.",
       "type": "object",
-      "required": ["ucp", "delivery_quote"],
+      "required": [
+        "ucp",
+        "delivery_quote"
+      ],
       "properties": {
         "ucp": {
           "$ref": "../ucp.json#/$defs/response"

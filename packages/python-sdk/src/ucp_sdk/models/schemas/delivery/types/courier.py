@@ -18,6 +18,29 @@
 
 from __future__ import annotations
 
-from ._internal_1 import MenuModifierSelection
+from pydantic import BaseModel, ConfigDict
+from . import location as location_1
 
-__all__ = ["MenuModifierSelection"]
+
+class Courier(BaseModel):
+  """Courier details for a delivery."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  name: str | None = None
+  """
+    Courier name.
+    """
+  phone_number: str | None = None
+  """
+    Courier phone number.
+    """
+  vehicle_type: str | None = None
+  """
+    Courier vehicle type.
+    """
+  location: location_1.Location | None = None
+  """
+    Courier location.
+    """
