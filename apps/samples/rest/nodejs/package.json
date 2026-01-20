@@ -10,12 +10,14 @@
   "dependencies": {
     "@hono/node-server": "catalog:",
     "@hono/zod-validator": "catalog:",
+    "@ucp/contracts": "workspace:*",
     "better-sqlite3": "catalog:",
     "hono": "catalog:",
     "pino": "catalog:",
     "pino-http": "catalog:",
     "pino-http-print": "catalog:",
     "uuid": "catalog:",
+    "viem": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

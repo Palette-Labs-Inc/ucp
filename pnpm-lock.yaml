@@ -119,6 +119,9 @@ importers:
       '@hono/node-server':
         specifier: 'catalog:'
         version: 1.19.6(hono@4.11.4)
+      '@hono/zod-validator':
+        specifier: 'catalog:'
+        version: 0.7.6(hono@4.11.4)(zod@4.3.5)
       '@indexsupply/shovel-config':
         specifier: 'catalog:'
         version: 0.0.18
@@ -208,6 +211,9 @@ importers:
       '@hono/zod-validator':
         specifier: 'catalog:'
         version: 0.7.6(hono@4.11.4)(zod@4.3.5)
+      '@ucp/contracts':
+        specifier: workspace:*
+        version: link:../../../../packages/contracts
       better-sqlite3:
         specifier: 'catalog:'
         version: 9.6.0
@@ -226,6 +232,9 @@ importers:
       uuid:
         specifier: 'catalog:'
         version: 9.0.1
+      viem:
+        specifier: 'catalog:'
+        version: 2.44.4(typescript@5.9.3)(zod@4.3.5)
       zod:
         specifier: 'catalog:'
         version: 4.3.5

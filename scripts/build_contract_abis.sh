@@ -11,3 +11,6 @@ fi
 
 docker compose --env-file "$env_file" -f "$compose_file" run --no-deps --rm foundry \
   "cd /repo/contracts/erc8004 && forge build"
+
+docker compose --env-file "$env_file" -f "$compose_file" run --no-deps --rm foundry \
+  "cd /repo/contracts/vendor/commerce-payments && forge build"

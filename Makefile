@@ -24,6 +24,8 @@ ANVIL_PORT ?= 8545
 ANVIL_DOCKER_URL ?= http://anvil:$(ANVIL_PORT)
 CHAIN_ID ?= 31337
 ANVIL_DEPLOYER_KEY ?= 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+ANVIL_BUYER_KEY ?= 0x59c6995e998f97a5a0044966f0945385d3dbb0b5f4e3b499d4f7b7f2d4b7f19b
+ANVIL_BUYER_MINT ?= 1000000000
 
 export CHAIN_ID
 
@@ -52,6 +54,7 @@ help:
 	@echo "  make deploy-validation     - deploy Validation Registry to Anvil"
 	@echo "  make deploy-registries     - deploy all ERC-8004 registries"
 	@echo "  make deploy-commerce-payments - deploy payments escrow to Anvil"
+	@echo "  make deploy-commerce-mock-token - deploy mock ERC3009 token to Anvil"
 	@echo "  make infra-check           - build ABIs + typegen"
 	@echo "  make build-contract-abis   - build contract ABIs via Foundry"
 	@echo "  make generate-contracts    - generate TS ABIs/types from artifacts"
@@ -191,6 +194,18 @@ deploy-commerce-payments: check-docker env-init anvil-wait
 		"$(ANVIL_DOCKER_URL)" \
 		"$(ANVIL_DEPLOYER_KEY)"
 
+.PHONY: deploy-commerce-mock-token
+deploy-commerce-mock-token: check-docker env-init anvil-wait
+	@buyer_address=$$(docker compose $(DOCKER_ENV_FILE) -f "$(ANVIL_COMPOSE_FILE)" run --rm \
+	  foundry "cast wallet address $(ANVIL_BUYER_KEY)"); \
+	./scripts/deploy_commerce_mock_token.sh \
+		"$(ANVIL_COMPOSE_FILE)" \
+		"$(ENV_FILE)" \
+		"$(ANVIL_DOCKER_URL)" \
+		"$(ANVIL_DEPLOYER_KEY)" \
+		"$$buyer_address" \
+		"$(ANVIL_BUYER_MINT)"
+
 .PHONY: infra-check
 infra-check: check-docker env-init
 	@$(MAKE) build-contract-abis
@@ -207,7 +222,7 @@ generate-contracts:
 	@pnpm -C packages/contracts generate
 
 .PHONY: infra-up
-infra-up: env-init anvil deploy-registries deploy-commerce-payments generate-contracts
+infra-up: env-init anvil deploy-registries deploy-commerce-payments deploy-commerce-mock-token generate-contracts
 
 .PHONY: infra-down
 infra-down: check-docker env-init

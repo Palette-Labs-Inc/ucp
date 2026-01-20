@@ -30,6 +30,41 @@ const deployments: DeploymentSpec[] = [
     broadcastDir: "contracts/erc8004/broadcast/DeployValidationRegistry.s.sol",
     contractName: "ValidationRegistry",
   },
+  {
+    name: "AuthCaptureEscrow",
+    broadcastDir: "contracts/vendor/commerce-payments/broadcast/Deploy.s.sol",
+    contractName: "AuthCaptureEscrow",
+  },
+  {
+    name: "ERC3009PaymentCollector",
+    broadcastDir: "contracts/vendor/commerce-payments/broadcast/Deploy.s.sol",
+    contractName: "ERC3009PaymentCollector",
+  },
+  {
+    name: "Permit2PaymentCollector",
+    broadcastDir: "contracts/vendor/commerce-payments/broadcast/Deploy.s.sol",
+    contractName: "Permit2PaymentCollector",
+  },
+  {
+    name: "PreApprovalPaymentCollector",
+    broadcastDir: "contracts/vendor/commerce-payments/broadcast/Deploy.s.sol",
+    contractName: "PreApprovalPaymentCollector",
+  },
+  {
+    name: "SpendPermissionPaymentCollector",
+    broadcastDir: "contracts/vendor/commerce-payments/broadcast/Deploy.s.sol",
+    contractName: "SpendPermissionPaymentCollector",
+  },
+  {
+    name: "OperatorRefundCollector",
+    broadcastDir: "contracts/vendor/commerce-payments/broadcast/Deploy.s.sol",
+    contractName: "OperatorRefundCollector",
+  },
+  {
+    name: "MockERC3009Token",
+    broadcastDir: "contracts/vendor/commerce-payments/broadcast/DeployMockToken.s.sol",
+    contractName: "MockERC3009Token",
+  },
 ];
 
 function readDeployAddress(args: {

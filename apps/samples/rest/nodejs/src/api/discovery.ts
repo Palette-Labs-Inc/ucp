@@ -132,6 +132,25 @@ export class DiscoveryService {
               supported_tokens: ['success_token', 'fail_token'],
             },
           },
+          {
+            id: 'localprotocol_auth_capture',
+            name: 'xyz.localprotocol.commerce.auth_capture',
+            version: '2026-01-11',
+            spec: 'https://github.com/base/commerce-payments',
+            config_schema:
+              'https://ucp.dev/handlers/localprotocol_auth_capture/config.json',
+            instrument_schemas: [
+              'https://ucp.dev/handlers/localprotocol_auth_capture/instrument.json',
+            ],
+            config: {
+              chain_id: 8453,
+              escrow_contract: '0xAuthCaptureEscrow',
+              token_collectors: ['erc3009', 'permit2'],
+              merchant_payout_address: '0xMerchantPayout',
+              authorization_expiry_seconds: 1800,
+              environment: 'sandbox',
+            },
+          },
         ],
       },
     };

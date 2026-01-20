@@ -10,5 +10,12 @@ export const contractAddresses: ContractAddressBook = {
     IdentityRegistry: "0x5fbdb2315678afecb367f032d93f642f64180aa3",
     ReputationRegistry: "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
     ValidationRegistry: "0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0",
+    AuthCaptureEscrow: "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+    ERC3009PaymentCollector: "0x4a679253410272dd5232b3ff7cf5dbb88f295319",
+    Permit2PaymentCollector: "0x7a2088a1bfc9d81c55368ae168c2c02570cb814f",
+    PreApprovalPaymentCollector: "0x09635f643e140090a9a8dcd712ed6285858cebef",
+    SpendPermissionPaymentCollector: "0xc5a5c42992decbae36851359345fe25997f5c42d",
+    OperatorRefundCollector: "0x67d269191c92caf3cd7723f116c85e6e9bf55933",
+    MockERC3009Token: "0xe6e340d132b5f46d1e472debcd681b2abc16e57e",
   },
 };

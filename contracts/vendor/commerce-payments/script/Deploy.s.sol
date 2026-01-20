@@ -6,6 +6,10 @@ import {console2} from "forge-std/console2.sol";
 
 import {AuthCaptureEscrow} from "../src/AuthCaptureEscrow.sol";
 import {ERC3009PaymentCollector} from "../src/collectors/ERC3009PaymentCollector.sol";
+import {OperatorRefundCollector} from "../src/collectors/OperatorRefundCollector.sol";
+import {Permit2PaymentCollector} from "../src/collectors/Permit2PaymentCollector.sol";
+import {PreApprovalPaymentCollector} from "../src/collectors/PreApprovalPaymentCollector.sol";
+import {SpendPermissionPaymentCollector} from "../src/collectors/SpendPermissionPaymentCollector.sol";
 
 /**
  * @notice Deploy the AuthCaptureEscrow contract.
@@ -27,6 +31,14 @@ contract Deploy is Script {
         // Deploy AuthCaptureEscrow with known dependencies
         AuthCaptureEscrow authCaptureEscrow = new AuthCaptureEscrow();
         ERC3009PaymentCollector erc3009Collector = new ERC3009PaymentCollector(address(authCaptureEscrow), MULTICALL3);
+        Permit2PaymentCollector permit2Collector =
+            new Permit2PaymentCollector(address(authCaptureEscrow), PERMIT2, MULTICALL3);
+        PreApprovalPaymentCollector preApprovalCollector =
+            new PreApprovalPaymentCollector(address(authCaptureEscrow));
+        SpendPermissionPaymentCollector spendPermissionCollector =
+            new SpendPermissionPaymentCollector(address(authCaptureEscrow), SPEND_PERMISSION_MANAGER);
+        OperatorRefundCollector operatorRefundCollector =
+            new OperatorRefundCollector(address(authCaptureEscrow));
 
         vm.stopBroadcast();
 
@@ -34,6 +46,10 @@ contract Deploy is Script {
         console2.log("Deployed addresses:");
         console2.log("AuthCaptureEscrow:", address(authCaptureEscrow));
         console2.log("ERC3009PaymentCollector:", address(erc3009Collector));
+        console2.log("Permit2PaymentCollector:", address(permit2Collector));
+        console2.log("PreApprovalPaymentCollector:", address(preApprovalCollector));
+        console2.log("SpendPermissionPaymentCollector:", address(spendPermissionCollector));
+        console2.log("OperatorRefundCollector:", address(operatorRefundCollector));
 
         // Log known addresses used
         console2.log("\nKnown addresses used:");

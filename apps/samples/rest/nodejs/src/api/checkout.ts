@@ -4,7 +4,8 @@ import {v4 as uuidv4} from 'uuid';
 import {z} from 'zod';
 
 import {getCheckoutSession, getIdempotencyRecord, getInventory, getOrder, getProduct, logRequest, releaseStock, reserveStock, saveCheckout, saveIdempotencyRecord, saveOrder} from '../data';
-import {CheckoutResponseStatusSchema, type Expectation, type ExpectationLineItem, type ExtendedCheckoutCreateRequest, type ExtendedCheckoutResponse, type ExtendedCheckoutUpdateRequest, ExtendedPaymentCredentialSchema, type FulfillmentDestinationRequest, type FulfillmentDestinationResponse, type FulfillmentOptionResponse, type FulfillmentRequest, type FulfillmentResponse, type LineItemCreateRequest, type LineItemResponse, type Order, type OrderLineItem, type PaymentCreateRequest, PaymentDataSchema, type PostalAddress} from '../models';
+import {CheckoutResponseStatusSchema, type Expectation, type ExpectationLineItem, type ExtendedCheckoutCreateRequest, type ExtendedCheckoutResponse, type ExtendedCheckoutUpdateRequest, ExtendedPaymentCredentialSchema, ExtendedPaymentDataSchema, type FulfillmentDestinationRequest, type FulfillmentDestinationResponse, type FulfillmentOptionResponse, type FulfillmentRequest, type FulfillmentResponse, type LineItemCreateRequest, type LineItemResponse, LocalprotocolAuthCaptureInstrumentSchema, type Order, type OrderLineItem, type PaymentCreateRequest, type PostalAddress} from '../models';
+import {authorizeEscrow, buildPaymentInfo, captureEscrow, getEscrowConfigFromEnv, readPaymentInfoHash, toBigInt} from '../utils/escrow';
 
 /**
  * Schema for the request body when completing a checkout session.
@@ -12,7 +13,7 @@ import {CheckoutResponseStatusSchema, type Expectation, type ExpectationLineItem
 export const zCompleteCheckoutRequest =
     z.object({
        risk_signals: z.record(z.string(), z.unknown()).optional(),
-     }).extend(PaymentDataSchema.shape);
+     }).extend(ExtendedPaymentDataSchema.shape);
 
 /**
  * Type definition for the complete checkout request body.
@@ -23,6 +24,25 @@ export type CompleteCheckoutRequest = z.infer<typeof zCompleteCheckoutRequest>;
  * Service for managing checkout sessions.
  */
 export class CheckoutService {
+  private buildPaymentInfoFromInstrument(
+      instrument: z.infer<typeof LocalprotocolAuthCaptureInstrumentSchema>,
+      ) {
+    return buildPaymentInfo({
+      operator: instrument.operator as `0x${string}`,
+      payer: instrument.payer as `0x${string}`,
+      receiver: instrument.receiver as `0x${string}`,
+      token: instrument.token as `0x${string}`,
+      maxAmount: toBigInt(instrument.max_amount),
+      preApprovalExpiry: toBigInt(instrument.pre_approval_expiry),
+      authorizationExpiry: toBigInt(instrument.authorization_expiry),
+      refundExpiry: toBigInt(instrument.refund_expiry),
+      minFeeBps: instrument.min_fee_bps,
+      maxFeeBps: instrument.max_fee_bps,
+      feeReceiver: instrument.fee_receiver as `0x${string}`,
+      salt: toBigInt(instrument.salt),
+    });
+  }
+
   private computeHash(data: unknown): string {
     const replacer = (_key: string, value: unknown) =>
         typeof value === 'object' && value !== null && !Array.isArray(value) ?
@@ -634,44 +654,81 @@ export class CheckoutService {
 
     if (selectedInstrument) {
       const handlerId = selectedInstrument.handler_id;
-      const credential = selectedInstrument.credential;
-      if (!credential) {
-        return c.json({detail: 'Missing credentials in instrument'}, 400);
-      }
-
-      if (selectedInstrument.type === 'card' && credential.type === 'card') {
-        // success
-      } else {
-        const parsedCredential =
-            ExtendedPaymentCredentialSchema.safeParse(credential);
-        const token =
-            parsedCredential.success ? parsedCredential.data.token : undefined;
-
-        if (handlerId === 'mock_payment_handler') {
-          if (token === 'success_token') {
-            // Success
-          } else if (token === 'fail_token') {
-            return c.json(
-                {detail: 'Payment Failed: Insufficient Funds (Mock)'},
-                402,
+      if (handlerId === 'localprotocol_auth_capture') {
+        const parsedInstrument =
+            LocalprotocolAuthCaptureInstrumentSchema.safeParse(
+                selectedInstrument,
             );
-          } else if (token === 'fraud_token') {
-            return c.json(
-                {detail: 'Payment Failed: Fraud Detected (Mock)'},
-                403,
-            );
-          } else {
-            return c.json({detail: `Unknown mock token: ${token}`}, 400);
-          }
-        } else if (
-            handlerId === 'google_pay' || handlerId === 'gpay' ||
-            handlerId === 'shop_pay') {
-          // Mock success
-        } else {
+        if (!parsedInstrument.success) {
           return c.json(
-              {detail: `Unsupported payment handler: ${handlerId}`},
+              {detail: 'Invalid auth/capture payment instrument'},
               400,
           );
+        }
+        const escrowConfig = getEscrowConfigFromEnv();
+        const paymentInfo =
+            this.buildPaymentInfoFromInstrument(parsedInstrument.data);
+        const authorizeTxHash = await authorizeEscrow({
+          config: escrowConfig,
+          paymentInfo,
+          amount: toBigInt(parsedInstrument.data.amount),
+          tokenCollector: parsedInstrument.data.token_collector as `0x${string}`,
+          collectorData: parsedInstrument.data.collector_data as `0x${string}`,
+        });
+        const authorizationId = await readPaymentInfoHash({
+          config: escrowConfig,
+          paymentInfo,
+        });
+        const updatedInstrument = {
+          ...parsedInstrument.data,
+          authorize_tx_hash: authorizeTxHash,
+          authorization_id: authorizationId,
+        };
+        if (!checkout.payment) {
+          checkout.payment = {handlers: []};
+        }
+        checkout.payment.instruments = [updatedInstrument];
+        checkout.payment.selected_instrument_id = updatedInstrument.id;
+      } else {
+        const credential = selectedInstrument.credential;
+        if (!credential) {
+          return c.json({detail: 'Missing credentials in instrument'}, 400);
+        }
+
+        if (selectedInstrument.type === 'card' && credential.type === 'card') {
+          // success
+        } else {
+          const parsedCredential =
+              ExtendedPaymentCredentialSchema.safeParse(credential);
+          const token =
+              parsedCredential.success ? parsedCredential.data.token : undefined;
+
+          if (handlerId === 'mock_payment_handler') {
+            if (token === 'success_token') {
+              // Success
+            } else if (token === 'fail_token') {
+              return c.json(
+                  {detail: 'Payment Failed: Insufficient Funds (Mock)'},
+                  402,
+              );
+            } else if (token === 'fraud_token') {
+              return c.json(
+                  {detail: 'Payment Failed: Fraud Detected (Mock)'},
+                  403,
+              );
+            } else {
+              return c.json({detail: `Unknown mock token: ${token}`}, 400);
+            }
+          } else if (
+              handlerId === 'google_pay' || handlerId === 'gpay' ||
+              handlerId === 'shop_pay') {
+            // Mock success
+          } else {
+            return c.json(
+                {detail: `Unsupported payment handler: ${handlerId}`},
+                400,
+            );
+          }
         }
       }
     }
@@ -881,6 +938,29 @@ export class CheckoutService {
       order.fulfillment.events = [];
     }
 
+    const checkout = getCheckoutSession(order.checkout_id);
+    if (checkout?.payment?.selected_instrument_id &&
+        checkout.payment.instruments) {
+      const selected = checkout.payment.instruments.find(
+          (instrument) =>
+              instrument.id === checkout.payment.selected_instrument_id,
+      );
+      const parsedInstrument =
+          LocalprotocolAuthCaptureInstrumentSchema.safeParse(selected);
+      if (parsedInstrument.success) {
+        const escrowConfig = getEscrowConfigFromEnv();
+        const paymentInfo =
+            this.buildPaymentInfoFromInstrument(parsedInstrument.data);
+        await captureEscrow({
+          config: escrowConfig,
+          paymentInfo,
+          amount: toBigInt(parsedInstrument.data.amount),
+          feeBps: parsedInstrument.data.min_fee_bps,
+          feeReceiver: parsedInstrument.data.fee_receiver as `0x${string}`,
+        });
+      }
+    }
+
     order.fulfillment.events.push({
       id: `evt_${uuidv4()}`,
       type: 'shipped',
@@ -890,9 +970,6 @@ export class CheckoutService {
 
     saveOrder(order.id, order);
 
-    const checkout = getCheckoutSession(order.checkout_id);
-    if (checkout) {
-      await this.notifyWebhook(checkout, 'order_shipped');
-    }
+    if (checkout) await this.notifyWebhook(checkout, 'order_shipped');
   };
 }

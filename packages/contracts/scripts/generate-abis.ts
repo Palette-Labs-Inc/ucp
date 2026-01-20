@@ -7,30 +7,89 @@ import { repoRoot } from "@ucp/config/path";
 interface ContractSpec {
   name: string;
   artifactPath: string;
+  artifactRoot: string;
 }
 
 const repoRootDir = repoRoot();
 const packageDir = resolve(repoRootDir, "packages", "contracts");
 const erc8004OutDir = resolve(repoRootDir, "contracts", "erc8004", "out");
+const commercePaymentsOutDir = resolve(
+  repoRootDir,
+  "contracts",
+  "vendor",
+  "commerce-payments",
+  "out",
+);
 const outputFile = resolve(packageDir, "src", "generated", "contracts.ts");
 
 const contracts: ContractSpec[] = [
   {
     name: "IdentityRegistry",
     artifactPath: "IdentityRegistry.sol/IdentityRegistry.json",
+    artifactRoot: erc8004OutDir,
   },
   {
     name: "ReputationRegistry",
     artifactPath: "ReputationRegistry.sol/ReputationRegistry.json",
+    artifactRoot: erc8004OutDir,
   },
   {
     name: "ValidationRegistry",
     artifactPath: "ValidationRegistry.sol/ValidationRegistry.json",
+    artifactRoot: erc8004OutDir,
+  },
+  {
+    name: "AuthCaptureEscrow",
+    artifactPath: "AuthCaptureEscrow.sol/AuthCaptureEscrow.json",
+    artifactRoot: commercePaymentsOutDir,
+  },
+  {
+    name: "TokenCollector",
+    artifactPath: "TokenCollector.sol/TokenCollector.json",
+    artifactRoot: commercePaymentsOutDir,
+  },
+  {
+    name: "ERC6492SignatureHandler",
+    artifactPath: "ERC6492SignatureHandler.sol/ERC6492SignatureHandler.json",
+    artifactRoot: commercePaymentsOutDir,
+  },
+  {
+    name: "ERC3009PaymentCollector",
+    artifactPath: "ERC3009PaymentCollector.sol/ERC3009PaymentCollector.json",
+    artifactRoot: commercePaymentsOutDir,
+  },
+  {
+    name: "Permit2PaymentCollector",
+    artifactPath: "Permit2PaymentCollector.sol/Permit2PaymentCollector.json",
+    artifactRoot: commercePaymentsOutDir,
+  },
+  {
+    name: "PreApprovalPaymentCollector",
+    artifactPath: "PreApprovalPaymentCollector.sol/PreApprovalPaymentCollector.json",
+    artifactRoot: commercePaymentsOutDir,
+  },
+  {
+    name: "SpendPermissionPaymentCollector",
+    artifactPath: "SpendPermissionPaymentCollector.sol/SpendPermissionPaymentCollector.json",
+    artifactRoot: commercePaymentsOutDir,
+  },
+  {
+    name: "OperatorRefundCollector",
+    artifactPath: "OperatorRefundCollector.sol/OperatorRefundCollector.json",
+    artifactRoot: commercePaymentsOutDir,
+  },
+  {
+    name: "MockERC3009Token",
+    artifactPath: "MockERC3009Token.sol/MockERC3009Token.json",
+    artifactRoot: commercePaymentsOutDir,
   },
 ];
 
-function readFoundryAbi(artifactPath: string): unknown[] {
-  const fullPath = resolve(erc8004OutDir, artifactPath);
+function readFoundryAbi(args: {
+  artifactRoot: string;
+  artifactPath: string;
+}): unknown[] {
+  const fullPath = resolve(args.artifactRoot, args.artifactPath);
   if (!existsSync(fullPath)) {
     throw new Error(`Missing Foundry artifact: ${fullPath}`);
   }
@@ -62,7 +121,10 @@ function buildOutput(): string {
   ].join("\n");
 
   const abiBlocks = contracts.map((contract) => {
-    const abi = readFoundryAbi(contract.artifactPath);
+    const abi = readFoundryAbi({
+      artifactRoot: contract.artifactRoot,
+      artifactPath: contract.artifactPath,
+    });
     const constName = `${toConstName(contract.name)}_abi`;
     const typeName = `${contract.name}Abi`;
     const abiJson = JSON.stringify(abi, null, 2);

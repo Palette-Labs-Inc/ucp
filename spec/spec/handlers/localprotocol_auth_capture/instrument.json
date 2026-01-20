@@ -11,6 +11,21 @@
       "type": "object",
       "required": [
         "type",
+        "operator",
+        "payer",
+        "receiver",
+        "token",
+        "amount",
+        "max_amount",
+        "pre_approval_expiry",
+        "authorization_expiry",
+        "refund_expiry",
+        "min_fee_bps",
+        "max_fee_bps",
+        "fee_receiver",
+        "salt",
+        "token_collector",
+        "collector_data",
         "authorization_id",
         "authorize_tx_hash",
         "chain_id",
@@ -21,6 +36,66 @@
           "type": "string",
           "const": "localprotocol_auth_capture",
           "description": "Indicates this is a Localprotocol commerce auth/capture instrument."
+        },
+        "operator": {
+          "type": "string",
+          "description": "Operator address used for the escrow authorization."
+        },
+        "payer": {
+          "type": "string",
+          "description": "Payer address authorizing the escrow."
+        },
+        "receiver": {
+          "type": "string",
+          "description": "Receiver (merchant payout) address for captured funds."
+        },
+        "token": {
+          "type": "string",
+          "description": "ERC-20 token contract address used for the payment."
+        },
+        "amount": {
+          "type": "string",
+          "description": "Amount authorized in the escrow (as a decimal string)."
+        },
+        "max_amount": {
+          "type": "string",
+          "description": "Maximum amount allowed for the authorization (as a decimal string)."
+        },
+        "pre_approval_expiry": {
+          "type": "integer",
+          "description": "Pre-approval expiry timestamp (unix seconds)."
+        },
+        "authorization_expiry": {
+          "type": "integer",
+          "description": "Authorization expiry timestamp (unix seconds)."
+        },
+        "refund_expiry": {
+          "type": "integer",
+          "description": "Refund expiry timestamp (unix seconds)."
+        },
+        "min_fee_bps": {
+          "type": "integer",
+          "description": "Minimum fee in basis points."
+        },
+        "max_fee_bps": {
+          "type": "integer",
+          "description": "Maximum fee in basis points."
+        },
+        "fee_receiver": {
+          "type": "string",
+          "description": "Fee receiver address (use zero address for none)."
+        },
+        "salt": {
+          "type": "string",
+          "description": "Entropy to ensure unique payment hashes (as a decimal string)."
+        },
+        "token_collector": {
+          "type": "string",
+          "description": "Token collector contract address used for authorization."
+        },
+        "collector_data": {
+          "type": "string",
+          "description": "Collector-specific calldata used to authorize tokens."
         },
         "authorization_id": {
           "type": "string",

@@ -6,6 +6,12 @@ Reads ERC-8004 registrations from Shovel tables (Postgres + Kysely), resolves
 each `agentURI` (from the registry ABI), validates it against the ERC-8004
 spec, and persists the agent URI JSON to Postgres.
 
+## Warning (Testing-Only Behavior)
+
+For this sample app, we register the UCP discovery profile URL as the `agentURI`
+instead of the ERC-8004 agent registration JSON. This is **not** spec compliant
+with ERC-8004 and intentionally breaks the spec for testing purposes.
+
 ## Requirements
 
 - Node + pnpm
@@ -17,6 +23,7 @@ spec, and persists the agent URI JSON to Postgres.
 ```bash
 cp .env.local.example .env.local
 pnpm install # post install script generates env schema
+pnpm --filter @ucp-js/sdk build
 pnpm run infra:check
 pnpm run shovel:up
 pnpm generate:db-types
