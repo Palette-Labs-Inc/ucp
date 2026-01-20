@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xyz.localprotocol/schemas/delivery/types/delivery_location.json",
+  "title": "Delivery Location",
+  "description": "A postal address with optional geocoordinates.",
+  "allOf": [
+    { "$ref": "https://ucp.dev/schemas/shopping/types/postal_address.json" },
+    {
+      "type": "object",
+      "properties": {
+        "location": {
+          "$ref": "location.json",
+          "description": "Geographic coordinates for this address."
+        }
+      }
+    }
+  ]
+}
