@@ -68,12 +68,8 @@ function initSchemas(productsDb: Database.Database, transactionsDb: Database.Dat
 
 function main(): void {
   const scriptDir = dirname(fileURLToPath(import.meta.url));
-  const repoRoot =
-    process.env.UCP_REPO_ROOT ?? resolve(scriptDir, '../../../../../');
   const nodejsRoot = resolve(scriptDir, '..');
-  const dataDir =
-    process.env.FLOWER_SHOP_DATA_DIR ??
-    resolve(repoRoot, 'packages', 'conformance', 'test_data', 'flower_shop');
+  const dataDir = resolve(nodejsRoot, 'fixtures');
 
   const productsCsv = resolve(dataDir, 'products.csv');
   const inventoryCsv = resolve(dataDir, 'inventory.csv');

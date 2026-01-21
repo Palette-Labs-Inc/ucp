@@ -1,26 +1,16 @@
-import {Address, Hex} from 'ox';
+import {Address} from 'ox';
 import {mnemonicToAccount} from 'viem/accounts';
 
 import {
   auth_capture_escrow_abi,
-  mock_erc3009_token_abi,
-  pre_approval_payment_collector_abi,
 } from '@ucp/contracts/generated/contracts';
 import {contractAddresses} from '@ucp/contracts/generated/addresses';
 import {env} from '../src/env.js';
 import {createAnvilClients, toPaymentInfo} from '@ucp/onchain';
-
-const emptyHex = Hex.from('0x');
+import {getCollectorConfig} from '../src/utils/collector-utils.js';
 
 function nowSeconds(): number {
   return Math.floor(Date.now() / 1000);
-}
-
-async function writeAndWait(
-  publicClient: ReturnType<typeof createAnvilClients>['publicClient'],
-  hash: `0x${string}`,
-) {
-  await publicClient.waitForTransactionReceipt({hash});
 }
 
 async function readJsonOrThrow<T>(response: Response): Promise<T> {
@@ -70,7 +60,6 @@ async function main(): Promise<void> {
   // PreApprovalPaymentCollector = tokenCollector used by authorize().
   // MockERC3009Token = test token pulled from payer into escrow.
   const escrowAddress = Address.from(addressBook.AuthCaptureEscrow);
-  const collectorAddress = Address.from(addressBook.PreApprovalPaymentCollector);
   const tokenAddress = Address.from(addressBook.MockERC3009Token);
 
   const amount = BigInt(env.AMOUNT);
@@ -98,39 +87,18 @@ async function main(): Promise<void> {
     salt,
   });
 
-  // 1) Buyer approves collector to pull tokens.
-  const approveGas = await publicClient.estimateContractGas({
-    address: tokenAddress,
-    abi: mock_erc3009_token_abi,
-    functionName: 'approve',
-    args: [collectorAddress, maxAmount],
-    account: buyerAccount.address,
+  const collectorConfig = getCollectorConfig({
+    strategy: 'preapproval',
+    chainId,
   });
-  const approveHash = await buyerClient.writeContract({
-    address: tokenAddress,
-    abi: mock_erc3009_token_abi,
-    functionName: 'approve',
-    args: [collectorAddress, maxAmount],
-    gas: approveGas,
+  await collectorConfig.preSteps({
+    publicClient,
+    buyerClient,
+    buyerAddress: buyerAccount.address,
+    tokenAddress,
+    maxAmount,
+    paymentInfo,
   });
-  await writeAndWait(publicClient, approveHash);
-
-  // 2) Buyer pre-approves payment (collector pulls into escrow).
-  const preApproveGas = await publicClient.estimateContractGas({
-    address: collectorAddress,
-    abi: pre_approval_payment_collector_abi,
-    functionName: 'preApprove',
-    args: [paymentInfo],
-    account: buyerAccount.address,
-  });
-  const preApproveHash = await buyerClient.writeContract({
-    address: collectorAddress,
-    abi: pre_approval_payment_collector_abi,
-    functionName: 'preApprove',
-    args: [paymentInfo],
-    gas: preApproveGas,
-  });
-  await writeAndWait(publicClient, preApproveHash);
 
   // 3) Create checkout and submit payment_data to backend.
   const checkoutResponse = await fetch(`${sampleBaseUrl}/checkout-sessions`, {
@@ -167,8 +135,8 @@ async function main(): Promise<void> {
           max_fee_bps: 0,
           fee_receiver: feeReceiver,
           salt: salt.toString(),
-          token_collector: collectorAddress,
-          collector_data: emptyHex,
+          token_collector: collectorConfig.collectorAddress,
+          collector_data: collectorConfig.collectorData,
         },
       }),
     },
