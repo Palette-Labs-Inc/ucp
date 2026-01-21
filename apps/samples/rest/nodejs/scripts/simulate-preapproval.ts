@@ -1,3 +1,6 @@
+import {dirname, resolve} from 'node:path';
+import {fileURLToPath} from 'node:url';
+
 import {Address} from 'ox';
 import {mnemonicToAccount} from 'viem/accounts';
 
@@ -6,6 +9,7 @@ import {
   contractAddresses,
   mock_erc3009_token_abi,
 } from '@ucp/onchain/contracts';
+import {initDbs, listProducts} from '../src/data/index.js';
 import {env} from '../src/env.js';
 import {createAnvilClients, toPaymentInfo} from '@ucp/onchain';
 import {getCollectorConfig} from '../src/utils/collector-utils.js';
@@ -17,6 +21,21 @@ function logStep(step: string): void {
 
 function nowSeconds(): number {
   return Math.floor(Date.now() / 1000);
+}
+
+function getSampleProductId(): string {
+  const scriptDir = dirname(fileURLToPath(import.meta.url));
+  const nodejsRoot = resolve(scriptDir, '..');
+  initDbs(
+    resolve(nodejsRoot, 'databases', 'products.db'),
+    resolve(nodejsRoot, 'databases', 'transactions.db'),
+  );
+
+  const products = listProducts(1);
+  if (products.length === 0) {
+    throw new Error('No products found in database. Run seed:flower-shop.');
+  }
+  return products[0].id;
 }
 
 async function readJsonOrThrow<T>(response: Response): Promise<T> {
@@ -35,7 +54,7 @@ async function readJsonOrThrow<T>(response: Response): Promise<T> {
 
 async function main(): Promise<void> {
   const sampleBaseUrl = env.SAMPLE_BASE_URL;
-  const productId = env.PRODUCT_ID;
+  const productId = getSampleProductId();
   const simulationSecret = env.SIMULATION_SECRET;
 
   logStep(`start base_url=${sampleBaseUrl} product_id=${productId}`);

@@ -14,4 +14,9 @@ generateEnvSchemaFromTemplates({
   outputPath: resolve(appRoot, "src", "_generated", "env.ts"),
   schemaName: "AppEnvSchema",
   interfaceName: "AppEnv",
+  headerComment: [
+    "Defaults are generated from template files only.",
+    "Runtime .env values are not read by this generator.",
+    "Templates: .env.template, .env.local.example",
+  ],
 });

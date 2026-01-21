@@ -1,5 +1,5 @@
+import { createAnvilClients, typedRead } from "@ucp/onchain";
 import { contractAddresses, identity_registry_abi } from "@ucp/onchain/contracts";
-import { createPublicClient, createWalletClient, http } from "viem";
 import * as Address from "ox/Address";
 import * as Hex from "ox/Hex";
 import { privateKeyToAccount } from "viem/accounts";
@@ -20,16 +20,20 @@ function createClients() {
   Hex.assert(env.ANVIL_DEPLOYER_KEY, { strict: true });
   const deployerKey = env.ANVIL_DEPLOYER_KEY;
   const account = privateKeyToAccount(deployerKey);
-  const publicClient = createPublicClient({ transport: http(rpcUrl) });
-  const walletClient = createWalletClient({ account, transport: http(rpcUrl) });
+  const { publicClient, walletClient } = createAnvilClients({
+    rpcUrl,
+    chainId: env.CHAIN_ID,
+    account,
+  });
   return { account, publicClient, walletClient };
 }
 
 async function getNextAgentId(args: {
-  publicClient: ReturnType<typeof createPublicClient>;
+  publicClient: ReturnType<typeof createAnvilClients>["publicClient"];
   registryAddress: Address.Address;
 }): Promise<bigint> {
-  const totalAgents = await args.publicClient.readContract({
+  const totalAgents = await typedRead({
+    publicClient: args.publicClient,
     address: args.registryAddress,
     abi: identity_registry_abi,
     functionName: "totalAgents",
@@ -38,8 +42,8 @@ async function getNextAgentId(args: {
 }
 
 async function registerAgent(args: {
-  publicClient: ReturnType<typeof createPublicClient>;
-  walletClient: ReturnType<typeof createWalletClient>;
+  publicClient: ReturnType<typeof createAnvilClients>["publicClient"];
+  walletClient: ReturnType<typeof createAnvilClients>["walletClient"];
   account: ReturnType<typeof privateKeyToAccount>;
   registryAddress: Address.Address;
   agentUri: string;
@@ -56,7 +60,7 @@ async function registerAgent(args: {
 
 async function main(): Promise<void> {
   const { account, publicClient, walletClient } = createClients();
-  const chainId = await publicClient.getChainId();
+  const chainId = env.CHAIN_ID;
 
   const registryAddress = getRegistryAddress(chainId);
   const nextAgentId = await getNextAgentId({
