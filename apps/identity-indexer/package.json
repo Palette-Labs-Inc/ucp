@@ -14,7 +14,6 @@
     "shovel:logs": "./shovel/shovel.sh logs",
     "generate:db-types": "tsx scripts/generate-db-types.ts",
     "register-agent": "tsx scripts/register_agent.ts",
-    "mock-agents": "tsx scripts/mock-agents.ts",
     "verify-agent": "tsx scripts/verify_agent.ts",
     "postinstall": "pnpm run env:generate"
   },
