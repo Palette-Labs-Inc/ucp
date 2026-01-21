@@ -25,11 +25,7 @@
         "fee_receiver",
         "salt",
         "token_collector",
-        "collector_data",
-        "authorization_id",
-        "authorize_tx_hash",
-        "chain_id",
-        "escrow_contract"
+        "collector_data"
       ],
       "properties": {
         "type": {
@@ -107,11 +103,11 @@
         },
         "chain_id": {
           "type": "integer",
-          "description": "EVM chain ID where the authorization was created."
+          "description": "EVM chain ID where the authorization was created (optional if derived from config)."
         },
         "escrow_contract": {
           "type": "string",
-          "description": "AuthCaptureEscrow contract address."
+          "description": "AuthCaptureEscrow contract address (optional if derived from config)."
         },
         "merchant_payout_address": {
           "type": "string",

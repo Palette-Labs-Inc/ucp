@@ -659,44 +659,44 @@ export class CheckoutService {
         checkout.payment.instruments = [updatedInstrument as any];
         checkout.payment.selected_instrument_id = updatedInstrument.id;
       } else {
-        const credential = selectedInstrument.credential;
-        if (!credential) {
-          return c.json({detail: 'Missing credentials in instrument'}, 400);
-        }
+      const credential = selectedInstrument.credential;
+      if (!credential) {
+        return c.json({detail: 'Missing credentials in instrument'}, 400);
+      }
 
-        if (selectedInstrument.type === 'card' && credential.type === 'card') {
-          // success
-        } else {
-          const parsedCredential =
-              ExtendedPaymentCredentialSchema.safeParse(credential);
-          const token =
-              parsedCredential.success ? parsedCredential.data.token : undefined;
+      if (selectedInstrument.type === 'card' && credential.type === 'card') {
+        // success
+      } else {
+        const parsedCredential =
+            ExtendedPaymentCredentialSchema.safeParse(credential);
+        const token =
+            parsedCredential.success ? parsedCredential.data.token : undefined;
 
-          if (handlerId === 'mock_payment_handler') {
-            if (token === 'success_token') {
-              // Success
-            } else if (token === 'fail_token') {
-              return c.json(
-                  {detail: 'Payment Failed: Insufficient Funds (Mock)'},
-                  402,
-              );
-            } else if (token === 'fraud_token') {
-              return c.json(
-                  {detail: 'Payment Failed: Fraud Detected (Mock)'},
-                  403,
-              );
-            } else {
-              return c.json({detail: `Unknown mock token: ${token}`}, 400);
-            }
-          } else if (
-              handlerId === 'google_pay' || handlerId === 'gpay' ||
-              handlerId === 'shop_pay') {
-            // Mock success
-          } else {
+        if (handlerId === 'mock_payment_handler') {
+          if (token === 'success_token') {
+            // Success
+          } else if (token === 'fail_token') {
             return c.json(
-                {detail: `Unsupported payment handler: ${handlerId}`},
-                400,
+                {detail: 'Payment Failed: Insufficient Funds (Mock)'},
+                402,
             );
+          } else if (token === 'fraud_token') {
+            return c.json(
+                {detail: 'Payment Failed: Fraud Detected (Mock)'},
+                403,
+            );
+          } else {
+            return c.json({detail: `Unknown mock token: ${token}`}, 400);
+          }
+        } else if (
+            handlerId === 'google_pay' || handlerId === 'gpay' ||
+            handlerId === 'shop_pay') {
+          // Mock success
+        } else {
+          return c.json(
+              {detail: `Unsupported payment handler: ${handlerId}`},
+              400,
+          );
           }
         }
       }
