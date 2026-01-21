@@ -1,11 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://xyz.localprotocol/schemas/delivery/types/delivery_location.json",
-  "title": "Delivery Location",
+  "$id": "https://xyz.localprotocol/schemas/delivery/types/delivery_location_req.json",
+  "title": "Delivery Location Request",
   "description": "A postal address with optional geocoordinates.",
   "allOf": [
     {
-      "$ref": "../../shopping/types/postal_address.json"
+      "$ref": "../../shopping/types/shipping_destination_req.json"
     },
     {
       "type": "object",

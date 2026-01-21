@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://localprotocol.xyz/schemas/menu/types/category.json",
+  "$id": "https://localprotocol.xyz/schemas/restaurant/types/category.json",
   "title": "Menu Category",
   "description": "A menu category grouping items for display.",
   "type": "object",

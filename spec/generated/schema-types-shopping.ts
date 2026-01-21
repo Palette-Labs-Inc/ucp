@@ -124,7 +124,7 @@ export type CheckoutWithBuyerConsentCreateRequest = CheckoutCreateRequest & {
  * via the `definition` "buyer".
  */
 export type BuyerWithConsentUpdateRequest = Buyer & {
-  consent?: Consent;
+  consent?: Consent1;
   [k: string]: unknown;
 };
 /**
@@ -144,7 +144,7 @@ export type CheckoutWithBuyerConsentUpdateRequest = CheckoutUpdateRequest & {
  * via the `definition` "buyer".
  */
 export type BuyerWithConsentResponse = Buyer & {
-  consent?: Consent;
+  consent?: Consent2;
   [k: string]: unknown;
 };
 /**
@@ -174,7 +174,7 @@ export type CheckoutWithDiscountCreateRequest = CheckoutCreateRequest & {
  * via the `definition` "checkout".
  */
 export type CheckoutWithDiscountUpdateRequest = CheckoutUpdateRequest & {
-  discounts?: DiscountsObject;
+  discounts?: DiscountsObject1;
   [k: string]: unknown;
 };
 /**
@@ -184,7 +184,7 @@ export type CheckoutWithDiscountUpdateRequest = CheckoutUpdateRequest & {
  * via the `definition` "checkout".
  */
 export type CheckoutWithDiscountResponse = CheckoutResponse & {
-  discounts?: DiscountsObject;
+  discounts?: DiscountsObject2;
   [k: string]: unknown;
 };
 /**
@@ -726,15 +726,9 @@ export declare interface BuyerConsentExtensionCreateRequest {
   [k: string]: unknown;
 }
 /**
- * User consent states for data processing.
+ * User consent states for data processing
  *
  * This interface was referenced by `BuyerConsentExtensionCreateRequest`'s JSON-Schema
- * via the `definition` "consent".
- *
- * This interface was referenced by `BuyerConsentExtensionUpdateRequest`'s JSON-Schema
- * via the `definition` "consent".
- *
- * This interface was referenced by `BuyerConsentExtensionResponse`'s JSON-Schema
  * via the `definition` "consent".
  */
 export declare interface Consent {
@@ -811,6 +805,31 @@ export declare interface BuyerConsentExtensionUpdateRequest {
   [k: string]: unknown;
 }
 /**
+ * User consent states for data processing
+ *
+ * This interface was referenced by `BuyerConsentExtensionUpdateRequest`'s JSON-Schema
+ * via the `definition` "consent".
+ */
+export declare interface Consent1 {
+  /**
+   * Consent for analytics and performance tracking.
+   */
+  analytics?: boolean;
+  /**
+   * Consent for storing user preferences.
+   */
+  preferences?: boolean;
+  /**
+   * Consent for marketing communications.
+   */
+  marketing?: boolean;
+  /**
+   * Consent for selling data to third parties (CCPA).
+   */
+  sale_of_data?: boolean;
+  [k: string]: unknown;
+}
+/**
  * Base checkout schema. Extensions compose onto this using allOf.
  */
 export declare interface CheckoutUpdateRequest {
@@ -871,6 +890,31 @@ export declare interface PaymentUpdateRequest {
  * Extends Checkout with buyer consent tracking for privacy compliance via the buyer object.
  */
 export declare interface BuyerConsentExtensionResponse {
+  [k: string]: unknown;
+}
+/**
+ * User consent states for data processing
+ *
+ * This interface was referenced by `BuyerConsentExtensionResponse`'s JSON-Schema
+ * via the `definition` "consent".
+ */
+export declare interface Consent2 {
+  /**
+   * Consent for analytics and performance tracking.
+   */
+  analytics?: boolean;
+  /**
+   * Consent for storing user preferences.
+   */
+  preferences?: boolean;
+  /**
+   * Consent for marketing communications.
+   */
+  marketing?: boolean;
+  /**
+   * Consent for selling data to third parties (CCPA).
+   */
+  sale_of_data?: boolean;
   [k: string]: unknown;
 }
 /**
@@ -1245,14 +1289,8 @@ export declare interface DiscountExtensionCreateRequest {
  *
  * This interface was referenced by `DiscountExtensionCreateRequest`'s JSON-Schema
  * via the `definition` "allocation".
- *
- * This interface was referenced by `DiscountExtensionUpdateRequest`'s JSON-Schema
- * via the `definition` "allocation".
- *
- * This interface was referenced by `DiscountExtensionResponse`'s JSON-Schema
- * via the `definition` "allocation".
  */
-export declare interface DiscountAllocation {
+export declare interface Allocation {
   /**
    * JSONPath to the allocation target (e.g., '$.line_items[0]', '$.totals.shipping').
    */
@@ -1267,12 +1305,6 @@ export declare interface DiscountAllocation {
  * A discount that was successfully applied.
  *
  * This interface was referenced by `DiscountExtensionCreateRequest`'s JSON-Schema
- * via the `definition` "applied_discount".
- *
- * This interface was referenced by `DiscountExtensionUpdateRequest`'s JSON-Schema
- * via the `definition` "applied_discount".
- *
- * This interface was referenced by `DiscountExtensionResponse`'s JSON-Schema
  * via the `definition` "applied_discount".
  */
 export declare interface AppliedDiscount {
@@ -1303,19 +1335,13 @@ export declare interface AppliedDiscount {
   /**
    * Breakdown of where this discount was allocated. Sum of allocation amounts equals total amount.
    */
-  allocations?: DiscountAllocation[];
+  allocations?: Allocation[];
   [k: string]: unknown;
 }
 /**
  * Discount codes input and applied discounts output.
  *
  * This interface was referenced by `DiscountExtensionCreateRequest`'s JSON-Schema
- * via the `definition` "discounts_object".
- *
- * This interface was referenced by `DiscountExtensionUpdateRequest`'s JSON-Schema
- * via the `definition` "discounts_object".
- *
- * This interface was referenced by `DiscountExtensionResponse`'s JSON-Schema
  * via the `definition` "discounts_object".
  */
 export declare interface DiscountsObject {
@@ -1336,9 +1362,151 @@ export declare interface DiscountExtensionUpdateRequest {
   [k: string]: unknown;
 }
 /**
+ * Breakdown of how a discount amount was allocated to a specific target.
+ *
+ * This interface was referenced by `DiscountExtensionUpdateRequest`'s JSON-Schema
+ * via the `definition` "allocation".
+ */
+export declare interface Allocation1 {
+  /**
+   * JSONPath to the allocation target (e.g., '$.line_items[0]', '$.totals.shipping').
+   */
+  path: string;
+  /**
+   * Amount allocated to this target in minor (cents) currency units.
+   */
+  amount: number;
+  [k: string]: unknown;
+}
+/**
+ * A discount that was successfully applied.
+ *
+ * This interface was referenced by `DiscountExtensionUpdateRequest`'s JSON-Schema
+ * via the `definition` "applied_discount".
+ */
+export declare interface AppliedDiscount1 {
+  /**
+   * The discount code. Omitted for automatic discounts.
+   */
+  code?: string;
+  /**
+   * Human-readable discount name (e.g., 'Summer Sale 20% Off').
+   */
+  title: string;
+  /**
+   * Total discount amount in minor (cents) currency units.
+   */
+  amount: number;
+  /**
+   * True if applied automatically by merchant rules (no code required).
+   */
+  automatic?: boolean;
+  /**
+   * Allocation method. 'each' = applied independently per item. 'across' = split proportionally by value.
+   */
+  method?: 'each' | 'across';
+  /**
+   * Stacking order for discount calculation. Lower numbers applied first (1 = first).
+   */
+  priority?: number;
+  /**
+   * Breakdown of where this discount was allocated. Sum of allocation amounts equals total amount.
+   */
+  allocations?: Allocation1[];
+  [k: string]: unknown;
+}
+/**
+ * Discount codes input and applied discounts output.
+ *
+ * This interface was referenced by `DiscountExtensionUpdateRequest`'s JSON-Schema
+ * via the `definition` "discounts_object".
+ */
+export declare interface DiscountsObject1 {
+  /**
+   * Discount codes to apply. Case-insensitive. Replaces previously submitted codes. Send empty array to clear.
+   */
+  codes?: string[];
+  /**
+   * Discounts successfully applied (code-based and automatic).
+   */
+  applied?: AppliedDiscount1[];
+  [k: string]: unknown;
+}
+/**
  * Extends Checkout with discount code support, enabling agents to apply promotional, loyalty, referral, and other discount codes.
  */
 export declare interface DiscountExtensionResponse {
+  [k: string]: unknown;
+}
+/**
+ * Breakdown of how a discount amount was allocated to a specific target.
+ *
+ * This interface was referenced by `DiscountExtensionResponse`'s JSON-Schema
+ * via the `definition` "allocation".
+ */
+export declare interface Allocation2 {
+  /**
+   * JSONPath to the allocation target (e.g., '$.line_items[0]', '$.totals.shipping').
+   */
+  path: string;
+  /**
+   * Amount allocated to this target in minor (cents) currency units.
+   */
+  amount: number;
+  [k: string]: unknown;
+}
+/**
+ * A discount that was successfully applied.
+ *
+ * This interface was referenced by `DiscountExtensionResponse`'s JSON-Schema
+ * via the `definition` "applied_discount".
+ */
+export declare interface AppliedDiscount2 {
+  /**
+   * The discount code. Omitted for automatic discounts.
+   */
+  code?: string;
+  /**
+   * Human-readable discount name (e.g., 'Summer Sale 20% Off').
+   */
+  title: string;
+  /**
+   * Total discount amount in minor (cents) currency units.
+   */
+  amount: number;
+  /**
+   * True if applied automatically by merchant rules (no code required).
+   */
+  automatic?: boolean;
+  /**
+   * Allocation method. 'each' = applied independently per item. 'across' = split proportionally by value.
+   */
+  method?: 'each' | 'across';
+  /**
+   * Stacking order for discount calculation. Lower numbers applied first (1 = first).
+   */
+  priority?: number;
+  /**
+   * Breakdown of where this discount was allocated. Sum of allocation amounts equals total amount.
+   */
+  allocations?: Allocation2[];
+  [k: string]: unknown;
+}
+/**
+ * Discount codes input and applied discounts output.
+ *
+ * This interface was referenced by `DiscountExtensionResponse`'s JSON-Schema
+ * via the `definition` "discounts_object".
+ */
+export declare interface DiscountsObject2 {
+  /**
+   * Discount codes to apply. Case-insensitive. Replaces previously submitted codes. Send empty array to clear.
+   */
+  codes?: string[];
+  /**
+   * Discounts successfully applied (code-based and automatic).
+   */
+  applied?: AppliedDiscount2[];
   [k: string]: unknown;
 }
 /**

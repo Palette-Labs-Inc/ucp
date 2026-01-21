@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://xyz.localprotocol/schemas/delivery/types/delivery_fulfillment_request.json",
-  "title": "Delivery Fulfillment Request",
+  "$id": "https://xyz.localprotocol/schemas/delivery/types/delivery_fulfillment_request_req.json",
+  "title": "Delivery Fulfillment Request Request",
   "description": "Delivery fulfillment details when no quote is provided.",
   "type": "object",
   "required": [
@@ -9,7 +9,7 @@
   ],
   "properties": {
     "delivery_request": {
-      "$ref": "delivery_request.json",
+      "$ref": "delivery_request_req.json",
       "description": "Delivery request details when no quote is provided."
     }
   }

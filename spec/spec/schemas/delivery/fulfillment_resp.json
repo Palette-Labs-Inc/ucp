@@ -3,12 +3,12 @@
   "$id": "https://xyz.localprotocol/schemas/delivery/fulfillment.json",
   "name": "xyz.localprotocol.delivery.fulfillment",
   "version": "2026-01-19",
-  "title": "Delivery Fulfillment Extension",
+  "title": "Delivery Fulfillment Extension Response",
   "description": "Extends restaurant checkout with delivery fulfillment details.",
   "type": "object",
   "$defs": {
     "checkout": {
-      "title": "Checkout with Delivery Fulfillment",
+      "title": "Checkout with Delivery Fulfillment Response",
       "description": "Checkout extended with delivery fulfillment details.",
       "allOf": [
         {
@@ -24,7 +24,7 @@
                   "$ref": "types/delivery_fulfillment_quote.json"
                 },
                 {
-                  "$ref": "types/delivery_fulfillment_request.json"
+                  "$ref": "types/delivery_fulfillment_request_resp.json"
                 }
               ]
             }

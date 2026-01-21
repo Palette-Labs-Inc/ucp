@@ -18,23 +18,12 @@
       "description": "Merchant display name."
     },
     "description": {
-      "type": "object",
-      "description": "Merchant description in one or more formats. At least one format must be provided.",
-      "properties": {
-        "plain": {
-          "type": "string",
-          "description": "Plain text description."
-        },
-        "html": {
-          "type": "string",
-          "description": "HTML-formatted description."
-        },
-        "markdown": {
-          "type": "string",
-          "description": "Markdown-formatted description."
+      "allOf": [
+        {
+          "$ref": "rich_text.json"
         }
-      },
-      "minProperties": 1
+      ],
+      "description": "Merchant description in one or more formats. At least one format must be provided."
     },
     "url": {
       "type": "string",

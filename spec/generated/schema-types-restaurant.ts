@@ -137,6 +137,22 @@ export type CapabilityResponse = Base & {
  * Container for error, warning, or info messages.
  */
 export type Message = MessageError | MessageWarning | MessageInfo;
+/**
+ * Location and market context for restaurant operations.
+ *
+ * This interface was referenced by `MenuCapability`'s JSON-Schema
+ * via the `definition` "context".
+ *
+ * This interface was referenced by `MerchantCapability`'s JSON-Schema
+ * via the `definition` "context".
+ */
+export type RestaurantContext = Context & {
+  /**
+   * Background context for semantic search (e.g., 'quick lunch nearby', 'family meal under $30').
+   */
+  intent?: string;
+  [k: string]: unknown;
+};
 
 /**
  * Extends checkout with menu modifier selections for restaurant ordering.
@@ -754,21 +770,7 @@ export declare interface MenuItem {
   /**
    * Menu item description in one or more formats. At least one format must be provided.
    */
-  description: {
-    /**
-     * Plain text description.
-     */
-    plain?: string;
-    /**
-     * HTML-formatted description.
-     */
-    html?: string;
-    /**
-     * Markdown-formatted description.
-     */
-    markdown?: string;
-    [k: string]: unknown;
-  };
+  description: RichText;
   price: Price;
   /**
    * Menu item media (images, videos, 3D models).
@@ -784,6 +786,24 @@ export declare interface MenuItem {
   metadata?: {
     [k: string]: unknown;
   };
+  [k: string]: unknown;
+}
+/**
+ * Text content in one or more formats.
+ */
+export declare interface RichText {
+  /**
+   * Plain text.
+   */
+  plain?: string;
+  /**
+   * HTML-formatted text.
+   */
+  html?: string;
+  /**
+   * Markdown-formatted text.
+   */
+  markdown?: string;
   [k: string]: unknown;
 }
 /**
@@ -1035,21 +1055,7 @@ export declare interface Merchant {
   /**
    * Merchant description in one or more formats. At least one format must be provided.
    */
-  description?: {
-    /**
-     * Plain text description.
-     */
-    plain?: string;
-    /**
-     * HTML-formatted description.
-     */
-    html?: string;
-    /**
-     * Markdown-formatted description.
-     */
-    markdown?: string;
-    [k: string]: unknown;
-  };
+  description?: RichText;
   /**
    * Canonical merchant page URL.
    */

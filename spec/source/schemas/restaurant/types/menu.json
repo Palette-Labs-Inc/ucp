@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://localprotocol.xyz/schemas/menu/types/menu.json",
+  "$id": "https://localprotocol.xyz/schemas/restaurant/types/menu.json",
   "title": "Menu",
   "description": "A menu containing categories and fulfillment configuration.",
   "type": "object",

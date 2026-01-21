@@ -1,17 +1,19 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://xyz.localprotocol/schemas/delivery/fulfillment.json",
+  "$id": "https://xyz.localprotocol/schemas/delivery/fulfillment.create_req.json",
   "name": "xyz.localprotocol.delivery.fulfillment",
   "version": "2026-01-19",
-  "title": "Delivery Fulfillment Extension",
+  "title": "Delivery Fulfillment Extension Create Request",
   "description": "Extends restaurant checkout with delivery fulfillment details.",
   "type": "object",
   "$defs": {
     "checkout": {
-      "title": "Checkout with Delivery Fulfillment",
+      "title": "Checkout with Delivery Fulfillment Create Request",
       "description": "Checkout extended with delivery fulfillment details.",
       "allOf": [
-        { "$ref": "../restaurant/checkout.json#/$defs/checkout" },
+        {
+          "$ref": "../restaurant/checkout.create_req.json#/$defs/checkout"
+        },
         {
           "type": "object",
           "properties": {
@@ -22,10 +24,9 @@
                   "$ref": "types/delivery_fulfillment_quote.json"
                 },
                 {
-                  "$ref": "types/delivery_fulfillment_request.json"
+                  "$ref": "types/delivery_fulfillment_request_req.json"
                 }
-              ],
-              "ucp_request": "optional"
+              ]
             }
           }
         }

@@ -14,20 +14,7 @@
       "$ref": "types/category.json"
     },
     "context": {
-      "allOf": [
-        {
-          "$ref": "../shopping/types/context.json"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "intent": {
-              "type": "string",
-              "description": "Background context for semantic search (e.g., 'quick lunch nearby', 'family meal under $30')."
-            }
-          }
-        }
-      ],
+      "$ref": "types/context.json",
       "description": "Location and market context for menu operations. Extends base context with 'intent' for semantic search."
     },
     "search_request": {

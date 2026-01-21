@@ -1,14 +1,15 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://xyz.localprotocol/schemas/delivery/types/delivery_fulfillment_request.json",
-  "title": "Delivery Fulfillment Request",
+  "title": "Delivery Fulfillment Request Response",
   "description": "Delivery fulfillment details when no quote is provided.",
   "type": "object",
-  "ucp_shared_request": true,
-  "required": ["delivery_request"],
+  "required": [
+    "delivery_request"
+  ],
   "properties": {
     "delivery_request": {
-      "$ref": "delivery_request.json",
+      "$ref": "delivery_request_resp.json",
       "description": "Delivery request details when no quote is provided."
     }
   }

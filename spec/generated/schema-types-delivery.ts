@@ -10,33 +10,23 @@
 /**
  * Checkout extended with delivery fulfillment details.
  *
- * This interface was referenced by `DeliveryFulfillmentExtension`'s JSON-Schema
+ * This interface was referenced by `DeliveryFulfillmentExtensionCreateRequest`'s JSON-Schema
  * via the `definition` "checkout".
  */
-export type CheckoutWithDeliveryFulfillment = CheckoutWithMenuModifiersResponse & {
-  fulfillment?: DeliveryFulfillmentQuoteReference | DeliveryFulfillmentRequest;
+export type CheckoutWithDeliveryFulfillmentCreateRequest = CheckoutWithMenuModifiersCreateRequest & {
+  fulfillment?: DeliveryFulfillmentQuoteReference | DeliveryFulfillmentRequestRequest;
   [k: string]: unknown;
 };
 /**
  * Checkout extended with menu modifier selections on line items.
  */
-export type CheckoutWithMenuModifiersResponse = CheckoutResponse & {
+export type CheckoutWithMenuModifiersCreateRequest = CheckoutCreateRequest & {
   /**
    * List of line items being checked out.
    */
-  line_items?: LineItemWithMenuModifiersResponse[];
+  line_items?: LineItemWithMenuModifiersCreateRequest[];
   [k: string]: unknown;
 };
-/**
- * Capability reference in responses. Only name/version required to confirm active capabilities.
- */
-export type CapabilityResponse = Base & {
-  [k: string]: unknown;
-};
-/**
- * Container for error, warning, or info messages.
- */
-export type Message = MessageError | MessageWarning | MessageInfo;
 /**
  * Matches a specific instrument type based on validation logic.
  */
@@ -82,6 +72,93 @@ export type PaymentCredential = TokenCredentialResponse | CardCredential;
 /**
  * Line item extended with menu modifier selections.
  */
+export type LineItemWithMenuModifiersCreateRequest = LineItemCreateRequest & {
+  /**
+   * Selected menu modifiers for this line item, including nested selections.
+   */
+  modifier_selections?: MenuModifierSelection[];
+  [k: string]: unknown;
+};
+/**
+ * A postal address with optional geocoordinates.
+ */
+export type DeliveryLocationRequest = ShippingDestinationRequest & {
+  location?: Location;
+  [k: string]: unknown;
+};
+/**
+ * Shipping destination.
+ */
+export type ShippingDestinationRequest = PostalAddress & {
+  /**
+   * ID specific to this shipping destination.
+   */
+  id?: string;
+  [k: string]: unknown;
+};
+/**
+ * Checkout extended with delivery fulfillment details.
+ *
+ * This interface was referenced by `DeliveryFulfillmentExtensionUpdateRequest`'s JSON-Schema
+ * via the `definition` "checkout".
+ */
+export type CheckoutWithDeliveryFulfillmentUpdateRequest = CheckoutWithMenuModifiersUpdateRequest & {
+  fulfillment?: DeliveryFulfillmentQuoteReference | DeliveryFulfillmentRequestRequest;
+  [k: string]: unknown;
+};
+/**
+ * Checkout extended with menu modifier selections on line items.
+ */
+export type CheckoutWithMenuModifiersUpdateRequest = CheckoutUpdateRequest & {
+  /**
+   * List of line items being checked out.
+   */
+  line_items?: LineItemWithMenuModifiersUpdateRequest[];
+  [k: string]: unknown;
+};
+/**
+ * Line item extended with menu modifier selections.
+ */
+export type LineItemWithMenuModifiersUpdateRequest = LineItemUpdateRequest & {
+  /**
+   * Selected menu modifiers for this line item, including nested selections.
+   */
+  modifier_selections?: MenuModifierSelection[];
+  [k: string]: unknown;
+};
+/**
+ * Checkout extended with delivery fulfillment details.
+ *
+ * This interface was referenced by `DeliveryFulfillmentExtensionResponse`'s JSON-Schema
+ * via the `definition` "checkout".
+ */
+export type CheckoutWithDeliveryFulfillmentResponse = CheckoutWithMenuModifiersResponse & {
+  fulfillment?: DeliveryFulfillmentQuoteReference | DeliveryFulfillmentRequestResponse;
+  [k: string]: unknown;
+};
+/**
+ * Checkout extended with menu modifier selections on line items.
+ */
+export type CheckoutWithMenuModifiersResponse = CheckoutResponse & {
+  /**
+   * List of line items being checked out.
+   */
+  line_items?: LineItemWithMenuModifiersResponse[];
+  [k: string]: unknown;
+};
+/**
+ * Capability reference in responses. Only name/version required to confirm active capabilities.
+ */
+export type CapabilityResponse = Base & {
+  [k: string]: unknown;
+};
+/**
+ * Container for error, warning, or info messages.
+ */
+export type Message = MessageError | MessageWarning | MessageInfo;
+/**
+ * Line item extended with menu modifier selections.
+ */
 export type LineItemWithMenuModifiersResponse = LineItemResponse & {
   /**
    * Selected menu modifiers for this line item, including nested selections.
@@ -92,15 +169,390 @@ export type LineItemWithMenuModifiersResponse = LineItemResponse & {
 /**
  * A postal address with optional geocoordinates.
  */
-export type DeliveryLocation = PostalAddress & {
+export type DeliveryLocationResponse = ShippingDestinationResponse & {
   location?: Location;
+  [k: string]: unknown;
+};
+/**
+ * Shipping destination.
+ */
+export type ShippingDestinationResponse = PostalAddress & {
+  /**
+   * ID specific to this shipping destination.
+   */
+  id: string;
   [k: string]: unknown;
 };
 
 /**
  * Extends restaurant checkout with delivery fulfillment details.
  */
-export declare interface DeliveryFulfillmentExtension {
+export declare interface DeliveryFulfillmentExtensionCreateRequest {
+  [k: string]: unknown;
+}
+/**
+ * Base checkout schema. Extensions compose onto this using allOf.
+ */
+export declare interface CheckoutCreateRequest {
+  /**
+   * List of line items being checked out.
+   */
+  line_items: LineItemCreateRequest[];
+  buyer?: Buyer;
+  /**
+   * ISO 4217 currency code.
+   */
+  currency: string;
+  payment: PaymentCreateRequest;
+  [k: string]: unknown;
+}
+/**
+ * Line item object. Expected to use the currency of the parent object.
+ */
+export declare interface LineItemCreateRequest {
+  item: ItemCreateRequest;
+  /**
+   * Quantity of the item being purchased.
+   */
+  quantity: number;
+  [k: string]: unknown;
+}
+export declare interface ItemCreateRequest {
+  /**
+   * Should be recognized by both the Platform, and the Business. For Google it should match the id provided in the "id" field in the product feed.
+   */
+  id: string;
+  [k: string]: unknown;
+}
+export declare interface Buyer {
+  /**
+   * First name of the buyer.
+   */
+  first_name?: string;
+  /**
+   * Last name of the buyer.
+   */
+  last_name?: string;
+  /**
+   * Optional, buyer's full name (if first_name or last_name fields are present they take precedence).
+   */
+  full_name?: string;
+  /**
+   * Email of the buyer.
+   */
+  email?: string;
+  /**
+   * E.164 standard.
+   */
+  phone_number?: string;
+  [k: string]: unknown;
+}
+/**
+ * Payment configuration containing handlers.
+ */
+export declare interface PaymentCreateRequest {
+  /**
+   * The id of the currently selected payment instrument from the instruments array. Set by the agent when submitting payment, and echoed back by the merchant in finalized state.
+   */
+  selected_instrument_id?: string;
+  /**
+   * The payment instruments available for this payment. Each instrument is associated with a specific handler via the handler_id field. Handlers can extend the base payment_instrument schema to add handler-specific fields.
+   */
+  instruments?: PaymentInstrument[];
+  [k: string]: unknown;
+}
+/**
+ * The base definition for any payment instrument. It links the instrument to a specific Merchant configuration (handler_id) and defines common fields like billing address.
+ */
+export declare interface PaymentInstrumentBase {
+  /**
+   * A unique identifier for this instrument instance, assigned by the Agent. Used to reference this specific instrument in the 'payment.selected_instrument_id' field.
+   */
+  id: string;
+  /**
+   * The unique identifier for the handler instance that produced this instrument. This corresponds to the 'id' field in the Payment Handler definition.
+   */
+  handler_id: string;
+  /**
+   * The broad category of the instrument (e.g., 'card', 'tokenized_card'). Specific schemas will constrain this to a constant value.
+   */
+  type: string;
+  billing_address?: PostalAddress;
+  credential?: PaymentCredential;
+  [k: string]: unknown;
+}
+export declare interface PostalAddress {
+  /**
+   * An address extension such as an apartment number, C/O or alternative name.
+   */
+  extended_address?: string;
+  /**
+   * The street address.
+   */
+  street_address?: string;
+  /**
+   * The locality in which the street address is, and which is in the region. For example, Mountain View.
+   */
+  address_locality?: string;
+  /**
+   * The region in which the locality is, and which is in the country. Required for applicable countries (i.e. state in US, province in CA). For example, California or another appropriate first-level Administrative division.
+   */
+  address_region?: string;
+  /**
+   * The country. Recommended to be in 2-letter ISO 3166-1 alpha-2 format, for example "US". For backward compatibility, a 3-letter ISO 3166-1 alpha-3 country code such as "SGP" or a full country name such as "Singapore" can also be used.
+   */
+  address_country?: string;
+  /**
+   * The postal code. For example, 94043.
+   */
+  postal_code?: string;
+  /**
+   * Optional. First name of the contact associated with the address.
+   */
+  first_name?: string;
+  /**
+   * Optional. Last name of the contact associated with the address.
+   */
+  last_name?: string;
+  /**
+   * Optional. Full name of the contact associated with the address (if first_name or last_name fields are present they take precedence).
+   */
+  full_name?: string;
+  /**
+   * Optional. Phone number of the contact associated with the address.
+   */
+  phone_number?: string;
+  [k: string]: unknown;
+}
+/**
+ * Base token credential schema. Concrete payment handlers may extend this schema with additional fields and define their own constraints.
+ */
+export declare interface TokenCredentialResponse {
+  /**
+   * The specific type of token produced by the handler (e.g., 'stripe_token').
+   */
+  type: string;
+  [k: string]: unknown;
+}
+/**
+ * A card credential containing sensitive payment card details including raw Primary Account Numbers (PANs). This credential type MUST NOT be used for checkout, only with payment handlers that tokenize or encrypt credentials. CRITICAL: Both parties handling CardCredential (sender and receiver) MUST be PCI DSS compliant. Transmission MUST use HTTPS/TLS with strong cipher suites.
+ */
+export declare interface CardCredential {
+  /**
+   * The credential type identifier for card credentials.
+   */
+  type: 'card';
+  /**
+   * The type of card number. Network tokens are preferred with fallback to FPAN. See PCI Scope for more details.
+   */
+  card_number_type: 'fpan' | 'network_token' | 'dpan';
+  /**
+   * Card number.
+   */
+  number?: string;
+  /**
+   * The month of the card's expiration date (1-12).
+   */
+  expiry_month?: number;
+  /**
+   * The year of the card's expiration date.
+   */
+  expiry_year?: number;
+  /**
+   * Cardholder name.
+   */
+  name?: string;
+  /**
+   * Card CVC number.
+   */
+  cvc?: string;
+  /**
+   * Cryptogram provided with network tokens.
+   */
+  cryptogram?: string;
+  /**
+   * Electronic Commerce Indicator / Security Level Indicator provided with network tokens.
+   */
+  eci_value?: string;
+  [k: string]: unknown;
+}
+/**
+ * Selected modifiers for a modifier group, including nested selections.
+ */
+export declare interface MenuModifierSelection {
+  /**
+   * Modifier group identifier for this selection.
+   */
+  modifier_group_id: string;
+  /**
+   * Selections made within the modifier group.
+   */
+  selections: MenuModifierItemSelection[];
+  [k: string]: unknown;
+}
+/**
+ * Selected modifier item and nested selections within a modifier group.
+ */
+export declare interface MenuModifierItemSelection {
+  /**
+   * Selected modifier item identifier.
+   */
+  item_id: string;
+  /**
+   * Selected quantity for this modifier option.
+   */
+  quantity?: number;
+  /**
+   * Nested modifier selections triggered by this option.
+   */
+  child_selections?: MenuModifierSelection[];
+  [k: string]: unknown;
+}
+/**
+ * Delivery fulfillment reference to a previously created quote.
+ */
+export declare interface DeliveryFulfillmentQuoteReference {
+  /**
+   * Delivery quote identifier for this checkout.
+   */
+  quote_id: string;
+  [k: string]: unknown;
+}
+/**
+ * Delivery fulfillment details when no quote is provided.
+ */
+export declare interface DeliveryFulfillmentRequestRequest {
+  delivery_request: DeliveryRequestRequest;
+  [k: string]: unknown;
+}
+/**
+ * Inputs required to create a delivery without a precomputed quote.
+ */
+export declare interface DeliveryRequestRequest {
+  pickup: DeliveryLocationRequest;
+  dropoff: DeliveryLocationRequest;
+  /**
+   * RFC 3339 timestamp when pickup can begin.
+   */
+  pickup_ready_dt?: string;
+  /**
+   * RFC 3339 timestamp after which pickup is no longer valid.
+   */
+  pickup_deadline_dt?: string;
+  /**
+   * RFC 3339 timestamp when dropoff can begin.
+   */
+  dropoff_ready_dt?: string;
+  /**
+   * RFC 3339 timestamp after which dropoff is no longer valid.
+   */
+  dropoff_deadline_dt?: string;
+  manifest_total_value: Price;
+  /**
+   * Optional store identifier for routing or pricing.
+   */
+  external_store_id?: string;
+  /**
+   * Optional external identifier for idempotency or correlation.
+   */
+  external_id?: string;
+  [k: string]: unknown;
+}
+/**
+ * Geographic coordinates in decimal degrees.
+ */
+export declare interface Location {
+  /**
+   * Latitude in decimal degrees.
+   */
+  lat?: number;
+  /**
+   * Longitude in decimal degrees.
+   */
+  lng?: number;
+  [k: string]: unknown;
+}
+/**
+ * Price with explicit currency. Amount is always in minor units (e.g., cents for USD).
+ */
+export declare interface Price {
+  /**
+   * Amount in minor currency units (e.g., 1000 = $10.00 USD). Use 0 for free items.
+   */
+  amount: number;
+  /**
+   * ISO 4217 currency code (e.g., 'USD', 'EUR', 'GBP').
+   */
+  currency: string;
+  [k: string]: unknown;
+}
+/**
+ * Extends restaurant checkout with delivery fulfillment details.
+ */
+export declare interface DeliveryFulfillmentExtensionUpdateRequest {
+  [k: string]: unknown;
+}
+/**
+ * Base checkout schema. Extensions compose onto this using allOf.
+ */
+export declare interface CheckoutUpdateRequest {
+  /**
+   * Unique identifier of the checkout session.
+   */
+  id: string;
+  /**
+   * List of line items being checked out.
+   */
+  line_items: LineItemUpdateRequest[];
+  buyer?: Buyer;
+  /**
+   * ISO 4217 currency code.
+   */
+  currency: string;
+  payment: PaymentUpdateRequest;
+  [k: string]: unknown;
+}
+/**
+ * Line item object. Expected to use the currency of the parent object.
+ */
+export declare interface LineItemUpdateRequest {
+  id?: string;
+  item: ItemUpdateRequest;
+  /**
+   * Quantity of the item being purchased.
+   */
+  quantity: number;
+  /**
+   * Parent line item identifier for any nested structures.
+   */
+  parent_id?: string;
+  [k: string]: unknown;
+}
+export declare interface ItemUpdateRequest {
+  /**
+   * Should be recognized by both the Platform, and the Business. For Google it should match the id provided in the "id" field in the product feed.
+   */
+  id: string;
+  [k: string]: unknown;
+}
+/**
+ * Payment configuration containing handlers.
+ */
+export declare interface PaymentUpdateRequest {
+  /**
+   * The id of the currently selected payment instrument from the instruments array. Set by the agent when submitting payment, and echoed back by the merchant in finalized state.
+   */
+  selected_instrument_id?: string;
+  /**
+   * The payment instruments available for this payment. Each instrument is associated with a specific handler via the handler_id field. Handlers can extend the base payment_instrument schema to add handler-specific fields.
+   */
+  instruments?: PaymentInstrument[];
+  [k: string]: unknown;
+}
+/**
+ * Extends restaurant checkout with delivery fulfillment details.
+ */
+export declare interface DeliveryFulfillmentExtensionResponse {
   [k: string]: unknown;
 }
 /**
@@ -252,29 +704,6 @@ export declare interface TotalResponse {
   amount: number;
   [k: string]: unknown;
 }
-export declare interface Buyer {
-  /**
-   * First name of the buyer.
-   */
-  first_name?: string;
-  /**
-   * Last name of the buyer.
-   */
-  last_name?: string;
-  /**
-   * Optional, buyer's full name (if first_name or last_name fields are present they take precedence).
-   */
-  full_name?: string;
-  /**
-   * Email of the buyer.
-   */
-  email?: string;
-  /**
-   * E.164 standard.
-   */
-  phone_number?: string;
-  [k: string]: unknown;
-}
 export declare interface MessageError {
   /**
    * Message type discriminator.
@@ -412,121 +841,6 @@ export declare interface PaymentHandlerResponse {
   [k: string]: unknown;
 }
 /**
- * The base definition for any payment instrument. It links the instrument to a specific Merchant configuration (handler_id) and defines common fields like billing address.
- */
-export declare interface PaymentInstrumentBase {
-  /**
-   * A unique identifier for this instrument instance, assigned by the Agent. Used to reference this specific instrument in the 'payment.selected_instrument_id' field.
-   */
-  id: string;
-  /**
-   * The unique identifier for the handler instance that produced this instrument. This corresponds to the 'id' field in the Payment Handler definition.
-   */
-  handler_id: string;
-  /**
-   * The broad category of the instrument (e.g., 'card', 'tokenized_card'). Specific schemas will constrain this to a constant value.
-   */
-  type: string;
-  billing_address?: PostalAddress;
-  credential?: PaymentCredential;
-  [k: string]: unknown;
-}
-export declare interface PostalAddress {
-  /**
-   * An address extension such as an apartment number, C/O or alternative name.
-   */
-  extended_address?: string;
-  /**
-   * The street address.
-   */
-  street_address?: string;
-  /**
-   * The locality in which the street address is, and which is in the region. For example, Mountain View.
-   */
-  address_locality?: string;
-  /**
-   * The region in which the locality is, and which is in the country. Required for applicable countries (i.e. state in US, province in CA). For example, California or another appropriate first-level Administrative division.
-   */
-  address_region?: string;
-  /**
-   * The country. Recommended to be in 2-letter ISO 3166-1 alpha-2 format, for example "US". For backward compatibility, a 3-letter ISO 3166-1 alpha-3 country code such as "SGP" or a full country name such as "Singapore" can also be used.
-   */
-  address_country?: string;
-  /**
-   * The postal code. For example, 94043.
-   */
-  postal_code?: string;
-  /**
-   * Optional. First name of the contact associated with the address.
-   */
-  first_name?: string;
-  /**
-   * Optional. Last name of the contact associated with the address.
-   */
-  last_name?: string;
-  /**
-   * Optional. Full name of the contact associated with the address (if first_name or last_name fields are present they take precedence).
-   */
-  full_name?: string;
-  /**
-   * Optional. Phone number of the contact associated with the address.
-   */
-  phone_number?: string;
-  [k: string]: unknown;
-}
-/**
- * Base token credential schema. Concrete payment handlers may extend this schema with additional fields and define their own constraints.
- */
-export declare interface TokenCredentialResponse {
-  /**
-   * The specific type of token produced by the handler (e.g., 'stripe_token').
-   */
-  type: string;
-  [k: string]: unknown;
-}
-/**
- * A card credential containing sensitive payment card details including raw Primary Account Numbers (PANs). This credential type MUST NOT be used for checkout, only with payment handlers that tokenize or encrypt credentials. CRITICAL: Both parties handling CardCredential (sender and receiver) MUST be PCI DSS compliant. Transmission MUST use HTTPS/TLS with strong cipher suites.
- */
-export declare interface CardCredential {
-  /**
-   * The credential type identifier for card credentials.
-   */
-  type: 'card';
-  /**
-   * The type of card number. Network tokens are preferred with fallback to FPAN. See PCI Scope for more details.
-   */
-  card_number_type: 'fpan' | 'network_token' | 'dpan';
-  /**
-   * Card number.
-   */
-  number?: string;
-  /**
-   * The month of the card's expiration date (1-12).
-   */
-  expiry_month?: number;
-  /**
-   * The year of the card's expiration date.
-   */
-  expiry_year?: number;
-  /**
-   * Cardholder name.
-   */
-  name?: string;
-  /**
-   * Card CVC number.
-   */
-  cvc?: string;
-  /**
-   * Cryptogram provided with network tokens.
-   */
-  cryptogram?: string;
-  /**
-   * Electronic Commerce Indicator / Security Level Indicator provided with network tokens.
-   */
-  eci_value?: string;
-  [k: string]: unknown;
-}
-/**
  * Order details available at the time of checkout completion.
  */
 export declare interface OrderConfirmation {
@@ -541,60 +855,18 @@ export declare interface OrderConfirmation {
   [k: string]: unknown;
 }
 /**
- * Selected modifiers for a modifier group, including nested selections.
- */
-export declare interface MenuModifierSelection {
-  /**
-   * Modifier group identifier for this selection.
-   */
-  modifier_group_id: string;
-  /**
-   * Selections made within the modifier group.
-   */
-  selections: MenuModifierItemSelection[];
-  [k: string]: unknown;
-}
-/**
- * Selected modifier item and nested selections within a modifier group.
- */
-export declare interface MenuModifierItemSelection {
-  /**
-   * Selected modifier item identifier.
-   */
-  item_id: string;
-  /**
-   * Selected quantity for this modifier option.
-   */
-  quantity?: number;
-  /**
-   * Nested modifier selections triggered by this option.
-   */
-  child_selections?: MenuModifierSelection[];
-  [k: string]: unknown;
-}
-/**
- * Delivery fulfillment reference to a previously created quote.
- */
-export declare interface DeliveryFulfillmentQuoteReference {
-  /**
-   * Delivery quote identifier for this checkout.
-   */
-  quote_id: string;
-  [k: string]: unknown;
-}
-/**
  * Delivery fulfillment details when no quote is provided.
  */
-export declare interface DeliveryFulfillmentRequest {
-  delivery_request: DeliveryRequest;
+export declare interface DeliveryFulfillmentRequestResponse {
+  delivery_request: DeliveryRequestResponse;
   [k: string]: unknown;
 }
 /**
  * Inputs required to create a delivery without a precomputed quote.
  */
-export declare interface DeliveryRequest {
-  pickup: DeliveryLocation;
-  dropoff: DeliveryLocation;
+export declare interface DeliveryRequestResponse {
+  pickup: DeliveryLocationResponse;
+  dropoff: DeliveryLocationResponse;
   /**
    * RFC 3339 timestamp when pickup can begin.
    */
@@ -620,33 +892,5 @@ export declare interface DeliveryRequest {
    * Optional external identifier for idempotency or correlation.
    */
   external_id?: string;
-  [k: string]: unknown;
-}
-/**
- * Geographic coordinates in decimal degrees.
- */
-export declare interface Location {
-  /**
-   * Latitude in decimal degrees.
-   */
-  lat?: number;
-  /**
-   * Longitude in decimal degrees.
-   */
-  lng?: number;
-  [k: string]: unknown;
-}
-/**
- * Price with explicit currency. Amount is always in minor units (e.g., cents for USD).
- */
-export declare interface Price {
-  /**
-   * Amount in minor currency units (e.g., 1000 = $10.00 USD). Use 0 for free items.
-   */
-  amount: number;
-  /**
-   * ISO 4217 currency code (e.g., 'USD', 'EUR', 'GBP').
-   */
-  currency: string;
   [k: string]: unknown;
 }

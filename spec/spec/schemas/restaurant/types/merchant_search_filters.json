@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://localprotocol.xyz/schemas/menu/types/merchant_search_filters.json",
+  "$id": "https://localprotocol.xyz/schemas/restaurant/types/merchant_search_filters.json",
   "title": "Menu Merchant Search Filters",
   "description": "Filter criteria to narrow menu merchant search results. All specified filters combine with AND logic.",
   "type": "object",

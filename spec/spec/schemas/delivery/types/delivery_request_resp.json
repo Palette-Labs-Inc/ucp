@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://xyz.localprotocol/schemas/delivery/types/delivery_request.json",
-  "title": "Delivery Request",
+  "title": "Delivery Request Response",
   "description": "Inputs required to create a delivery without a precomputed quote.",
   "type": "object",
   "required": [
@@ -11,11 +11,11 @@
   ],
   "properties": {
     "pickup": {
-      "$ref": "delivery_location.json",
+      "$ref": "delivery_location_resp.json",
       "description": "Pickup location."
     },
     "dropoff": {
-      "$ref": "delivery_location.json",
+      "$ref": "delivery_location_resp.json",
       "description": "Dropoff location."
     },
     "pickup_ready_dt": {

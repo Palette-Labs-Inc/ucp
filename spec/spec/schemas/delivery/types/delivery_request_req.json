@@ -1,18 +1,21 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://xyz.localprotocol/schemas/delivery/types/delivery_request.json",
-  "title": "Delivery Request",
+  "$id": "https://xyz.localprotocol/schemas/delivery/types/delivery_request_req.json",
+  "title": "Delivery Request Request",
   "description": "Inputs required to create a delivery without a precomputed quote.",
   "type": "object",
-  "ucp_shared_request": true,
-  "required": ["pickup", "dropoff", "manifest_total_value"],
+  "required": [
+    "pickup",
+    "dropoff",
+    "manifest_total_value"
+  ],
   "properties": {
     "pickup": {
-      "$ref": "delivery_location.json",
+      "$ref": "delivery_location_req.json",
       "description": "Pickup location."
     },
     "dropoff": {
-      "$ref": "delivery_location.json",
+      "$ref": "delivery_location_req.json",
       "description": "Dropoff location."
     },
     "pickup_ready_dt": {

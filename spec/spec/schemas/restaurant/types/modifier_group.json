@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://localprotocol.xyz/schemas/menu/types/modifier_group.json",
+  "$id": "https://localprotocol.xyz/schemas/restaurant/types/modifier_group.json",
   "title": "Menu Modifier Group",
   "description": "Group of modifier options with selection constraints.",
   "type": "object",

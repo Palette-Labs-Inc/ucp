@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://localprotocol.xyz/schemas/menu/types/distance.json",
+  "$id": "https://localprotocol.xyz/schemas/restaurant/types/distance.json",
   "title": "Distance",
   "description": "A distance value with a unit.",
   "type": "object",

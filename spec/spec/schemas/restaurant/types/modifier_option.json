@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://localprotocol.xyz/schemas/menu/types/modifier_option.json",
+  "$id": "https://localprotocol.xyz/schemas/restaurant/types/modifier_option.json",
   "title": "Menu Modifier Option",
   "description": "Selectable option within a modifier group.",
   "type": "object",

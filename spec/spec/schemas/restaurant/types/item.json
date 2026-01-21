@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://localprotocol.xyz/schemas/menu/types/item.json",
+  "$id": "https://localprotocol.xyz/schemas/restaurant/types/item.json",
   "title": "Menu Item",
   "description": "A configurable menu item with modifier groups.",
   "type": "object",
@@ -20,23 +20,12 @@
       "description": "Menu item name."
     },
     "description": {
-      "type": "object",
-      "description": "Menu item description in one or more formats. At least one format must be provided.",
-      "properties": {
-        "plain": {
-          "type": "string",
-          "description": "Plain text description."
-        },
-        "html": {
-          "type": "string",
-          "description": "HTML-formatted description."
-        },
-        "markdown": {
-          "type": "string",
-          "description": "Markdown-formatted description."
+      "allOf": [
+        {
+          "$ref": "rich_text.json"
         }
-      },
-      "minProperties": 1
+      ],
+      "description": "Menu item description in one or more formats. At least one format must be provided."
     },
     "price": {
       "$ref": "../../shopping/types/price.json",
