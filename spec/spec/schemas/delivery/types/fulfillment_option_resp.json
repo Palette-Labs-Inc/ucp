@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xyz.localprotocol/schemas/delivery/types/fulfillment_option.json",
+  "title": "Delivery Fulfillment Option Response",
+  "description": "A fulfillment option within a group (e.g., Standard Delivery, Priority Pickup).",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "totals"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique fulfillment option identifier."
+    },
+    "title": {
+      "type": "string",
+      "description": "Short label for the option."
+    },
+    "description": {
+      "type": "string",
+      "description": "Additional context for buyer decision."
+    },
+    "provider": {
+      "type": "string",
+      "description": "Provider name (for on-demand delivery)."
+    },
+    "earliest_fulfillment_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Earliest fulfillment time."
+    },
+    "latest_fulfillment_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Latest fulfillment time."
+    },
+    "totals": {
+      "type": "array",
+      "items": {
+        "$ref": "total_resp.json"
+      },
+      "description": "Fulfillment option totals breakdown."
+    }
+  }
+}

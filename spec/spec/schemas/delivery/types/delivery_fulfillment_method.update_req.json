@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xyz.localprotocol/schemas/delivery/types/delivery_fulfillment_method.update_req.json",
+  "title": "Delivery Fulfillment Method Update Request",
+  "description": "A fulfillment method for pickup or on-demand delivery.",
+  "type": "object",
+  "required": [
+    "id",
+    "line_item_ids"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique fulfillment method identifier."
+    },
+    "line_item_ids": {
+      "type": "array",
+      "description": "Line item IDs fulfilled via this method.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "destinations": {
+      "type": "array",
+      "description": "Available destinations. Pickup uses retail locations; on-demand delivery uses addresses.",
+      "items": {
+        "$ref": "fulfillment_destination_req.json"
+      }
+    },
+    "selected_destination_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "ID of the selected destination."
+    },
+    "groups": {
+      "type": "array",
+      "description": "Fulfillment groups for selecting options.",
+      "items": {
+        "$ref": "fulfillment_group.update_req.json"
+      }
+    },
+    "delivery": {
+      "oneOf": [
+        {
+          "$ref": "delivery_fulfillment_quote.json"
+        },
+        {
+          "$ref": "delivery_fulfillment_request_req.json"
+        }
+      ],
+      "description": "Required delivery inputs for on-demand delivery."
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "type": {
+          "const": "pickup"
+        }
+      }
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "on_demand_delivery"
+        }
+      }
+    }
+  ]
+}

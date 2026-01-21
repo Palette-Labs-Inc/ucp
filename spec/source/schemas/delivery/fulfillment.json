@@ -7,6 +7,9 @@
   "description": "Extends restaurant checkout with delivery fulfillment details.",
   "type": "object",
   "$defs": {
+    "fulfillment": {
+      "$ref": "types/fulfillment.json"
+    },
     "checkout": {
       "title": "Checkout with Delivery Fulfillment",
       "description": "Checkout extended with delivery fulfillment details.",
@@ -16,15 +19,7 @@
           "type": "object",
           "properties": {
             "fulfillment": {
-              "type": "object",
-              "oneOf": [
-                {
-                  "$ref": "types/delivery_fulfillment_quote.json"
-                },
-                {
-                  "$ref": "types/delivery_fulfillment_request.json"
-                }
-              ],
+              "$ref": "#/$defs/fulfillment",
               "ucp_request": "optional"
             }
           }

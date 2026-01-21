@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xyz.localprotocol/schemas/delivery/types/delivery_list_response.json",
+  "title": "Delivery List Response",
+  "description": "Paginated delivery list response.",
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "description": "Deliveries matching the list query.",
+      "items": {
+        "$ref": "delivery.json"
+      }
+    },
+    "pagination": {
+      "type": "object",
+      "description": "Pagination information for list results.",
+      "properties": {
+        "cursor": {
+          "type": "string",
+          "description": "Cursor to fetch the next page of results."
+        },
+        "has_next_page": {
+          "type": "boolean",
+          "description": "Whether more results are available."
+        },
+        "total_count": {
+          "type": "integer",
+          "description": "Total number of matching deliveries (if available).",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

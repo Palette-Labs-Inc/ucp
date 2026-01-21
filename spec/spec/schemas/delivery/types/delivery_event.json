@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xyz.localprotocol/schemas/delivery/types/delivery_event.json",
+  "title": "Delivery Event",
+  "description": "Delivery lifecycle event payload.",
+  "type": "object",
+  "required": [
+    "event_id",
+    "event_type",
+    "created_time",
+    "delivery"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "Unique event identifier."
+    },
+    "event_type": {
+      "type": "string",
+      "description": "Delivery lifecycle event type.",
+      "enum": [
+        "delivery.pending",
+        "delivery.pickup",
+        "delivery.pickup_complete",
+        "delivery.dropoff",
+        "delivery.delivered",
+        "delivery.canceled",
+        "delivery.returned",
+        "delivery.ongoing"
+      ]
+    },
+    "created_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Event creation timestamp in RFC 3339 format."
+    },
+    "delivery": {
+      "$ref": "delivery.json",
+      "description": "Current delivery state."
+    }
+  }
+}

@@ -8,7 +8,7 @@
   "required": ["delivery_request"],
   "properties": {
     "delivery_request": {
-      "$ref": "delivery_request.json",
+      "$ref": "../delivery.json#/$defs/delivery_request",
       "description": "Delivery request details when no quote is provided."
     }
   }

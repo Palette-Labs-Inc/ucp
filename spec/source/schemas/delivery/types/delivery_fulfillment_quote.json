@@ -3,12 +3,7 @@
   "$id": "https://xyz.localprotocol/schemas/delivery/types/delivery_fulfillment_quote.json",
   "title": "Delivery Fulfillment Quote Reference",
   "description": "Delivery fulfillment reference to a previously created quote.",
-  "type": "object",
-  "required": ["quote_id"],
-  "properties": {
-    "quote_id": {
-      "type": "string",
-      "description": "Delivery quote identifier for this checkout."
-    }
-  }
+  "allOf": [
+    { "$ref": "../delivery.json#/$defs/quote" }
+  ]
 }

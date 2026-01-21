@@ -1,22 +1,17 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://xyz.localprotocol/schemas/delivery/types/delivery_request_req.json",
-  "title": "Delivery Request Request",
-  "description": "Inputs required to create a delivery without a precomputed quote.",
+  "$id": "https://xyz.localprotocol/schemas/delivery/types/delivery_update_request_req.json",
+  "title": "Delivery Update Request Request",
+  "description": "Patchable fields for updating an existing delivery.",
   "type": "object",
-  "required": [
-    "pickup",
-    "dropoff",
-    "manifest_total_value"
-  ],
   "properties": {
     "pickup": {
       "$ref": "delivery_location_req.json",
-      "description": "Pickup location."
+      "description": "Updated pickup location."
     },
     "dropoff": {
       "$ref": "delivery_location_req.json",
-      "description": "Dropoff location."
+      "description": "Updated dropoff location."
     },
     "pickup_ready_dt": {
       "type": "string",
@@ -40,7 +35,7 @@
     },
     "manifest_total_value": {
       "$ref": "price.json",
-      "description": "Total value of items."
+      "description": "Updated total value of items."
     },
     "external_store_id": {
       "type": "string",

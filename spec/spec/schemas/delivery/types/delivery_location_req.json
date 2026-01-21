@@ -5,16 +5,7 @@
   "description": "A postal address with optional geocoordinates.",
   "allOf": [
     {
-      "$ref": "../../shopping/types/shipping_destination_req.json"
-    },
-    {
-      "type": "object",
-      "properties": {
-        "location": {
-          "$ref": "location.json",
-          "description": "Geographic coordinates for this address."
-        }
-      }
+      "$ref": "shipping_destination_req.json"
     }
   ]
 }

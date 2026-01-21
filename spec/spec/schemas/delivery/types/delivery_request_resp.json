@@ -39,7 +39,7 @@
       "description": "RFC 3339 timestamp after which dropoff is no longer valid."
     },
     "manifest_total_value": {
-      "$ref": "../../shopping/types/price.json",
+      "$ref": "price.json",
       "description": "Total value of items."
     },
     "external_store_id": {

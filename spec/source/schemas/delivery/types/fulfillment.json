@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xyz.localprotocol/schemas/delivery/types/fulfillment.json",
+  "title": "Delivery Fulfillment",
+  "description": "Container for pickup and on-demand delivery methods.",
+  "type": "object",
+  "ucp_shared_request": true,
+  "properties": {
+    "methods": {
+      "type": "array",
+      "description": "Fulfillment methods for cart items.",
+      "items": { "$ref": "delivery_fulfillment_method.json" }
+    },
+    "available_methods": {
+      "type": "array",
+      "description": "Availability hints for fulfillment methods.",
+      "items": { "$ref": "fulfillment_available_method.json" },
+      "ucp_request": "omit"
+    }
+  }
+}

@@ -8,13 +8,77 @@
  */
 
 /**
+ * A fulfillment method for pickup or on-demand delivery.
+ */
+export type DeliveryFulfillmentMethod = {
+  /**
+   * Unique fulfillment method identifier.
+   */
+  id: string;
+  /**
+   * Fulfillment method type.
+   */
+  type: 'pickup' | 'on_demand_delivery';
+  /**
+   * Line item IDs fulfilled via this method.
+   */
+  line_item_ids: string[];
+  /**
+   * Available destinations. Pickup uses retail locations; on-demand delivery uses addresses.
+   */
+  destinations?: FulfillmentDestinationResponse[];
+  /**
+   * ID of the selected destination.
+   */
+  selected_destination_id?: string | null;
+  /**
+   * Fulfillment groups for selecting options.
+   */
+  groups?: FulfillmentGroupResponse[];
+  /**
+   * Required delivery inputs for on-demand delivery.
+   */
+  delivery?: DeliveryFulfillmentQuoteReference | DeliveryFulfillmentRequestResponse;
+  [k: string]: unknown;
+} & (
+  | {
+      type?: 'pickup';
+      [k: string]: unknown;
+    }
+  | {
+      type?: 'on_demand_delivery';
+      [k: string]: unknown;
+    }
+);
+/**
+ * A destination for fulfillment.
+ */
+export type FulfillmentDestinationResponse = ShippingDestinationResponse | RetailLocationResponse;
+/**
+ * Shipping destination.
+ */
+export type ShippingDestinationResponse = PostalAddress & {
+  /**
+   * ID specific to this shipping destination.
+   */
+  id: string;
+  [k: string]: unknown;
+};
+/**
+ * A postal address with optional geocoordinates.
+ */
+export type DeliveryLocationResponse = ShippingDestinationResponse & {
+  location?: Location;
+  [k: string]: unknown;
+};
+/**
  * Checkout extended with delivery fulfillment details.
  *
  * This interface was referenced by `DeliveryFulfillmentExtensionCreateRequest`'s JSON-Schema
  * via the `definition` "checkout".
  */
 export type CheckoutWithDeliveryFulfillmentCreateRequest = CheckoutWithMenuModifiersCreateRequest & {
-  fulfillment?: DeliveryFulfillmentQuoteReference | DeliveryFulfillmentRequestRequest;
+  fulfillment?: DeliveryFulfillmentRequest;
   [k: string]: unknown;
 };
 /**
@@ -80,30 +144,13 @@ export type LineItemWithMenuModifiersCreateRequest = LineItemCreateRequest & {
   [k: string]: unknown;
 };
 /**
- * A postal address with optional geocoordinates.
- */
-export type DeliveryLocationRequest = ShippingDestinationRequest & {
-  location?: Location;
-  [k: string]: unknown;
-};
-/**
- * Shipping destination.
- */
-export type ShippingDestinationRequest = PostalAddress & {
-  /**
-   * ID specific to this shipping destination.
-   */
-  id?: string;
-  [k: string]: unknown;
-};
-/**
  * Checkout extended with delivery fulfillment details.
  *
  * This interface was referenced by `DeliveryFulfillmentExtensionUpdateRequest`'s JSON-Schema
  * via the `definition` "checkout".
  */
 export type CheckoutWithDeliveryFulfillmentUpdateRequest = CheckoutWithMenuModifiersUpdateRequest & {
-  fulfillment?: DeliveryFulfillmentQuoteReference | DeliveryFulfillmentRequestRequest;
+  fulfillment?: DeliveryFulfillmentRequest;
   [k: string]: unknown;
 };
 /**
@@ -133,7 +180,7 @@ export type LineItemWithMenuModifiersUpdateRequest = LineItemUpdateRequest & {
  * via the `definition` "checkout".
  */
 export type CheckoutWithDeliveryFulfillmentResponse = CheckoutWithMenuModifiersResponse & {
-  fulfillment?: DeliveryFulfillmentQuoteReference | DeliveryFulfillmentRequestResponse;
+  fulfillment?: DeliveryFulfillmentResponse;
   [k: string]: unknown;
 };
 /**
@@ -169,25 +216,254 @@ export type LineItemWithMenuModifiersResponse = LineItemResponse & {
 /**
  * A postal address with optional geocoordinates.
  */
-export type DeliveryLocationResponse = ShippingDestinationResponse & {
+export type DeliveryLocationRequest = ShippingDestinationRequest & {
   location?: Location;
   [k: string]: unknown;
 };
 /**
  * Shipping destination.
  */
-export type ShippingDestinationResponse = PostalAddress & {
+export type ShippingDestinationRequest = PostalAddress & {
   /**
    * ID specific to this shipping destination.
    */
-  id: string;
+  id?: string;
   [k: string]: unknown;
 };
 
 /**
+ * Standalone delivery capability for pickup and on-demand delivery.
+ */
+export declare interface DeliveryCapability {
+  [k: string]: unknown;
+}
+/**
  * Extends restaurant checkout with delivery fulfillment details.
  */
 export declare interface DeliveryFulfillmentExtensionCreateRequest {
+  [k: string]: unknown;
+}
+/**
+ * Container for pickup and on-demand delivery methods.
+ *
+ * This interface was referenced by `DeliveryFulfillmentExtensionCreateRequest`'s JSON-Schema
+ * via the `definition` "fulfillment".
+ *
+ * This interface was referenced by `DeliveryFulfillmentExtensionUpdateRequest`'s JSON-Schema
+ * via the `definition` "fulfillment".
+ */
+export declare interface DeliveryFulfillmentRequest {
+  /**
+   * Fulfillment methods for cart items.
+   */
+  methods?: DeliveryFulfillmentMethod[];
+  [k: string]: unknown;
+}
+export declare interface PostalAddress {
+  /**
+   * An address extension such as an apartment number, C/O or alternative name.
+   */
+  extended_address?: string;
+  /**
+   * The street address.
+   */
+  street_address?: string;
+  /**
+   * The locality in which the street address is, and which is in the region. For example, Mountain View.
+   */
+  address_locality?: string;
+  /**
+   * The region in which the locality is, and which is in the country. Required for applicable countries (i.e. state in US, province in CA). For example, California or another appropriate first-level Administrative division.
+   */
+  address_region?: string;
+  /**
+   * The country. Recommended to be in 2-letter ISO 3166-1 alpha-2 format, for example "US". For backward compatibility, a 3-letter ISO 3166-1 alpha-3 country code such as "SGP" or a full country name such as "Singapore" can also be used.
+   */
+  address_country?: string;
+  /**
+   * The postal code. For example, 94043.
+   */
+  postal_code?: string;
+  /**
+   * Optional. First name of the contact associated with the address.
+   */
+  first_name?: string;
+  /**
+   * Optional. Last name of the contact associated with the address.
+   */
+  last_name?: string;
+  /**
+   * Optional. Full name of the contact associated with the address (if first_name or last_name fields are present they take precedence).
+   */
+  full_name?: string;
+  /**
+   * Optional. Phone number of the contact associated with the address.
+   */
+  phone_number?: string;
+  [k: string]: unknown;
+}
+/**
+ * A pickup location (retail store, locker, etc.).
+ */
+export declare interface RetailLocationResponse {
+  /**
+   * Unique location identifier.
+   */
+  id: string;
+  /**
+   * Location name (e.g., store name).
+   */
+  name: string;
+  address?: PostalAddress;
+  [k: string]: unknown;
+}
+/**
+ * A merchant-generated package/group of line items with fulfillment options.
+ */
+export declare interface FulfillmentGroupResponse {
+  /**
+   * Group identifier for referencing merchant-generated groups in updates.
+   */
+  id: string;
+  /**
+   * Line item IDs included in this group/package.
+   */
+  line_item_ids: string[];
+  /**
+   * Available fulfillment options for this group.
+   */
+  options?: FulfillmentOptionResponse[];
+  /**
+   * ID of the selected fulfillment option for this group.
+   */
+  selected_option_id?: string | null;
+  [k: string]: unknown;
+}
+/**
+ * A fulfillment option within a group (e.g., Standard Shipping $5, Express $15).
+ */
+export declare interface FulfillmentOptionResponse {
+  /**
+   * Unique fulfillment option identifier.
+   */
+  id: string;
+  /**
+   * Short label (e.g., 'Express Shipping', 'Curbside Pickup').
+   */
+  title: string;
+  /**
+   * Complete context for buyer decision (e.g., 'Arrives Dec 12-15 via FedEx').
+   */
+  description?: string;
+  /**
+   * Carrier name (for shipping).
+   */
+  carrier?: string;
+  /**
+   * Earliest fulfillment date.
+   */
+  earliest_fulfillment_time?: string;
+  /**
+   * Latest fulfillment date.
+   */
+  latest_fulfillment_time?: string;
+  /**
+   * Fulfillment option totals breakdown.
+   */
+  totals: TotalResponse[];
+  [k: string]: unknown;
+}
+export declare interface TotalResponse {
+  /**
+   * Type of total categorization.
+   */
+  type: 'items_discount' | 'subtotal' | 'discount' | 'fulfillment' | 'tax' | 'fee' | 'total';
+  /**
+   * Text to display against the amount. Should reflect appropriate method (e.g., 'Shipping', 'Delivery').
+   */
+  display_text?: string;
+  /**
+   * If type == total, sums subtotal - discount + fulfillment + tax + fee. Should be >= 0. Amount in minor (cents) currency units.
+   */
+  amount: number;
+  [k: string]: unknown;
+}
+/**
+ * Delivery fulfillment reference to a previously created quote.
+ */
+export declare interface DeliveryFulfillmentQuoteReference {
+  /**
+   * Delivery quote identifier for this checkout.
+   */
+  quote_id: string;
+  [k: string]: unknown;
+}
+/**
+ * Delivery fulfillment details when no quote is provided.
+ */
+export declare interface DeliveryFulfillmentRequestResponse {
+  delivery_request: DeliveryRequestResponse;
+  [k: string]: unknown;
+}
+/**
+ * Inputs required to create a delivery without a precomputed quote.
+ */
+export declare interface DeliveryRequestResponse {
+  pickup: DeliveryLocationResponse;
+  dropoff: DeliveryLocationResponse;
+  /**
+   * RFC 3339 timestamp when pickup can begin.
+   */
+  pickup_ready_dt?: string;
+  /**
+   * RFC 3339 timestamp after which pickup is no longer valid.
+   */
+  pickup_deadline_dt?: string;
+  /**
+   * RFC 3339 timestamp when dropoff can begin.
+   */
+  dropoff_ready_dt?: string;
+  /**
+   * RFC 3339 timestamp after which dropoff is no longer valid.
+   */
+  dropoff_deadline_dt?: string;
+  manifest_total_value: Price;
+  /**
+   * Optional store identifier for routing or pricing.
+   */
+  external_store_id?: string;
+  /**
+   * Optional external identifier for idempotency or correlation.
+   */
+  external_id?: string;
+  [k: string]: unknown;
+}
+/**
+ * Geographic coordinates in decimal degrees.
+ */
+export declare interface Location {
+  /**
+   * Latitude in decimal degrees.
+   */
+  lat?: number;
+  /**
+   * Longitude in decimal degrees.
+   */
+  lng?: number;
+  [k: string]: unknown;
+}
+/**
+ * Price with explicit currency. Amount is always in minor units (e.g., cents for USD).
+ */
+export declare interface Price {
+  /**
+   * Amount in minor currency units (e.g., 1000 = $10.00 USD). Use 0 for free items.
+   */
+  amount: number;
+  /**
+   * ISO 4217 currency code (e.g., 'USD', 'EUR', 'GBP').
+   */
+  currency: string;
   [k: string]: unknown;
 }
 /**
@@ -281,49 +557,6 @@ export declare interface PaymentInstrumentBase {
   credential?: PaymentCredential;
   [k: string]: unknown;
 }
-export declare interface PostalAddress {
-  /**
-   * An address extension such as an apartment number, C/O or alternative name.
-   */
-  extended_address?: string;
-  /**
-   * The street address.
-   */
-  street_address?: string;
-  /**
-   * The locality in which the street address is, and which is in the region. For example, Mountain View.
-   */
-  address_locality?: string;
-  /**
-   * The region in which the locality is, and which is in the country. Required for applicable countries (i.e. state in US, province in CA). For example, California or another appropriate first-level Administrative division.
-   */
-  address_region?: string;
-  /**
-   * The country. Recommended to be in 2-letter ISO 3166-1 alpha-2 format, for example "US". For backward compatibility, a 3-letter ISO 3166-1 alpha-3 country code such as "SGP" or a full country name such as "Singapore" can also be used.
-   */
-  address_country?: string;
-  /**
-   * The postal code. For example, 94043.
-   */
-  postal_code?: string;
-  /**
-   * Optional. First name of the contact associated with the address.
-   */
-  first_name?: string;
-  /**
-   * Optional. Last name of the contact associated with the address.
-   */
-  last_name?: string;
-  /**
-   * Optional. Full name of the contact associated with the address (if first_name or last_name fields are present they take precedence).
-   */
-  full_name?: string;
-  /**
-   * Optional. Phone number of the contact associated with the address.
-   */
-  phone_number?: string;
-  [k: string]: unknown;
-}
 /**
  * Base token credential schema. Concrete payment handlers may extend this schema with additional fields and define their own constraints.
  */
@@ -409,84 +642,6 @@ export declare interface MenuModifierItemSelection {
   [k: string]: unknown;
 }
 /**
- * Delivery fulfillment reference to a previously created quote.
- */
-export declare interface DeliveryFulfillmentQuoteReference {
-  /**
-   * Delivery quote identifier for this checkout.
-   */
-  quote_id: string;
-  [k: string]: unknown;
-}
-/**
- * Delivery fulfillment details when no quote is provided.
- */
-export declare interface DeliveryFulfillmentRequestRequest {
-  delivery_request: DeliveryRequestRequest;
-  [k: string]: unknown;
-}
-/**
- * Inputs required to create a delivery without a precomputed quote.
- */
-export declare interface DeliveryRequestRequest {
-  pickup: DeliveryLocationRequest;
-  dropoff: DeliveryLocationRequest;
-  /**
-   * RFC 3339 timestamp when pickup can begin.
-   */
-  pickup_ready_dt?: string;
-  /**
-   * RFC 3339 timestamp after which pickup is no longer valid.
-   */
-  pickup_deadline_dt?: string;
-  /**
-   * RFC 3339 timestamp when dropoff can begin.
-   */
-  dropoff_ready_dt?: string;
-  /**
-   * RFC 3339 timestamp after which dropoff is no longer valid.
-   */
-  dropoff_deadline_dt?: string;
-  manifest_total_value: Price;
-  /**
-   * Optional store identifier for routing or pricing.
-   */
-  external_store_id?: string;
-  /**
-   * Optional external identifier for idempotency or correlation.
-   */
-  external_id?: string;
-  [k: string]: unknown;
-}
-/**
- * Geographic coordinates in decimal degrees.
- */
-export declare interface Location {
-  /**
-   * Latitude in decimal degrees.
-   */
-  lat?: number;
-  /**
-   * Longitude in decimal degrees.
-   */
-  lng?: number;
-  [k: string]: unknown;
-}
-/**
- * Price with explicit currency. Amount is always in minor units (e.g., cents for USD).
- */
-export declare interface Price {
-  /**
-   * Amount in minor currency units (e.g., 1000 = $10.00 USD). Use 0 for free items.
-   */
-  amount: number;
-  /**
-   * ISO 4217 currency code (e.g., 'USD', 'EUR', 'GBP').
-   */
-  currency: string;
-  [k: string]: unknown;
-}
-/**
  * Extends restaurant checkout with delivery fulfillment details.
  */
 export declare interface DeliveryFulfillmentExtensionUpdateRequest {
@@ -553,6 +708,23 @@ export declare interface PaymentUpdateRequest {
  * Extends restaurant checkout with delivery fulfillment details.
  */
 export declare interface DeliveryFulfillmentExtensionResponse {
+  [k: string]: unknown;
+}
+/**
+ * Container for pickup and on-demand delivery methods.
+ *
+ * This interface was referenced by `DeliveryFulfillmentExtensionResponse`'s JSON-Schema
+ * via the `definition` "fulfillment".
+ */
+export declare interface DeliveryFulfillmentResponse {
+  /**
+   * Fulfillment methods for cart items.
+   */
+  methods?: DeliveryFulfillmentMethod[];
+  /**
+   * Availability hints for fulfillment methods.
+   */
+  available_methods?: DeliveryFulfillmentMethod[];
   [k: string]: unknown;
 }
 /**
@@ -687,21 +859,6 @@ export declare interface ItemResponse {
    * Product image URI.
    */
   image_url?: string;
-  [k: string]: unknown;
-}
-export declare interface TotalResponse {
-  /**
-   * Type of total categorization.
-   */
-  type: 'items_discount' | 'subtotal' | 'discount' | 'fulfillment' | 'tax' | 'fee' | 'total';
-  /**
-   * Text to display against the amount. Should reflect appropriate method (e.g., 'Shipping', 'Delivery').
-   */
-  display_text?: string;
-  /**
-   * If type == total, sums subtotal - discount + fulfillment + tax + fee. Should be >= 0. Amount in minor (cents) currency units.
-   */
-  amount: number;
   [k: string]: unknown;
 }
 export declare interface MessageError {
@@ -855,18 +1012,49 @@ export declare interface OrderConfirmation {
   [k: string]: unknown;
 }
 /**
+ * Standalone delivery resource.
+ */
+export declare interface Delivery {
+  /**
+   * Unique delivery identifier.
+   */
+  id: string;
+  /**
+   * Delivery status.
+   */
+  status: 'pending' | 'in_progress' | 'completed' | 'canceled' | 'failed';
+  /**
+   * Quote identifier used to create this delivery.
+   */
+  quote_id?: string;
+  delivery_request?: DeliveryRequestResponse;
+  /**
+   * Tracking URL for delivery progress.
+   */
+  tracking_url?: string;
+  /**
+   * Delivery creation timestamp.
+   */
+  created_at?: string;
+  /**
+   * Delivery update timestamp.
+   */
+  updated_at?: string;
+  [k: string]: unknown;
+}
+/**
  * Delivery fulfillment details when no quote is provided.
  */
-export declare interface DeliveryFulfillmentRequestResponse {
-  delivery_request: DeliveryRequestResponse;
+export declare interface DeliveryFulfillmentRequestRequest {
+  delivery_request: DeliveryRequestRequest;
   [k: string]: unknown;
 }
 /**
  * Inputs required to create a delivery without a precomputed quote.
  */
-export declare interface DeliveryRequestResponse {
-  pickup: DeliveryLocationResponse;
-  dropoff: DeliveryLocationResponse;
+export declare interface DeliveryRequestRequest {
+  pickup: DeliveryLocationRequest;
+  dropoff: DeliveryLocationRequest;
   /**
    * RFC 3339 timestamp when pickup can begin.
    */
@@ -892,5 +1080,30 @@ export declare interface DeliveryRequestResponse {
    * Optional external identifier for idempotency or correlation.
    */
   external_id?: string;
+  [k: string]: unknown;
+}
+/**
+ * Inputs required to request an on-demand delivery quote.
+ */
+export declare interface DeliveryQuoteRequest {
+  delivery_request: DeliveryRequestResponse;
+  [k: string]: unknown;
+}
+/**
+ * Quote details for an on-demand delivery request.
+ */
+export declare interface DeliveryQuoteResponse {
+  /**
+   * Delivery quote identifier.
+   */
+  quote_id: string;
+  /**
+   * Quote expiration timestamp.
+   */
+  expires_at?: string;
+  /**
+   * Quoted totals for the delivery.
+   */
+  totals?: TotalResponse[];
   [k: string]: unknown;
 }

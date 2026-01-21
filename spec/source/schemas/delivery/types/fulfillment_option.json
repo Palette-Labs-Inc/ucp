@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xyz.localprotocol/schemas/delivery/types/fulfillment_option.json",
+  "title": "Delivery Fulfillment Option",
+  "description": "A fulfillment option within a group (e.g., Standard Delivery, Priority Pickup).",
+  "type": "object",
+  "ucp_shared_request": true,
+  "required": ["id", "title", "totals"],
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique fulfillment option identifier.",
+      "ucp_request": "omit"
+    },
+    "title": {
+      "type": "string",
+      "description": "Short label for the option.",
+      "ucp_request": "omit"
+    },
+    "description": {
+      "type": "string",
+      "description": "Additional context for buyer decision.",
+      "ucp_request": "omit"
+    },
+    "provider": {
+      "type": "string",
+      "description": "Provider name (for on-demand delivery).",
+      "ucp_request": "omit"
+    },
+    "earliest_fulfillment_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Earliest fulfillment time.",
+      "ucp_request": "omit"
+    },
+    "latest_fulfillment_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Latest fulfillment time.",
+      "ucp_request": "omit"
+    },
+    "totals": {
+      "type": "array",
+      "items": {
+        "$ref": "../../shopping/types/total.json"
+      },
+      "description": "Fulfillment option totals breakdown.",
+      "ucp_request": "omit"
+    }
+  }
+}

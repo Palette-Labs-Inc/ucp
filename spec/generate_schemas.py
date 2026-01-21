@@ -51,6 +51,7 @@ VALID_RESPONSE_VALUES = {"omit"}
 ECP_SOURCE_FILES = [
   ("shopping", "source/services/shopping/embedded.json"),
   ("restaurant", "source/services/restaurant/embedded.json"),
+  ("delivery", "source/services/delivery/embedded.json"),
 ]
 ECP_SCHEMAS_DIR = "source/schemas/shopping"
 ECP_VERSION = "2026-01-11"
