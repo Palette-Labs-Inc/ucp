@@ -7,6 +7,7 @@
     "start": "node dist/index.js",
     "generate:models": "bash scripts/generate_models.sh",
     "simulate:preapproval": "tsx scripts/simulate-preapproval.ts",
+    "check:buyer-balance": "tsx scripts/check-buyer-balance.ts",
     "seed:flower-shop": "tsx scripts/seed-flower-shop.ts",
     "env:generate": "tsx scripts/generate-env-schema.ts",
     "postinstall": "pnpm run env:generate"

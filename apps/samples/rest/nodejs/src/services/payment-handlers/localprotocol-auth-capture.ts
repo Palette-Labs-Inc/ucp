@@ -24,7 +24,7 @@ export interface AuthorizationResult {
 }
 
 function getOperatorAccount() {
-  return mnemonicToAccount(env.ANVIL_MNEMONIC, { accountIndex: 1 });
+  return mnemonicToAccount(env.ANVIL_MNEMONIC, { addressIndex: 1 });
 }
 
 export async function authorizeFromInstrument(

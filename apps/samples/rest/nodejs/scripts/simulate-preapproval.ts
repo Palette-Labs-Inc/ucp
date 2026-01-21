@@ -1,10 +1,19 @@
 import {Address} from 'ox';
 import {mnemonicToAccount} from 'viem/accounts';
 
-import {auth_capture_escrow_abi, contractAddresses} from '@ucp/onchain/contracts';
+import {
+  auth_capture_escrow_abi,
+  contractAddresses,
+  mock_erc3009_token_abi,
+} from '@ucp/onchain/contracts';
 import {env} from '../src/env.js';
 import {createAnvilClients, toPaymentInfo} from '@ucp/onchain';
 import {getCollectorConfig} from '../src/utils/collector-utils.js';
+import {getMockTokenBalance} from '../src/utils/token-balance.js';
+
+function logStep(step: string): void {
+  console.log(`[simulate-preapproval] ${step}`);
+}
 
 function nowSeconds(): number {
   return Math.floor(Date.now() / 1000);
@@ -29,14 +38,16 @@ async function main(): Promise<void> {
   const productId = env.PRODUCT_ID;
   const simulationSecret = env.SIMULATION_SECRET;
 
+  logStep(`start base_url=${sampleBaseUrl} product_id=${productId}`);
+
   // Actor mapping to AuthCaptureEscrow terms:
   // operator = backend signer (account index 1)
   // receiver = merchant (account index 2)
   // payer = buyer (account index 3)
   const mnemonic = env.ANVIL_MNEMONIC;
-  const operatorAccount = mnemonicToAccount(mnemonic, {accountIndex: 1});
-  const merchantAccount = mnemonicToAccount(mnemonic, {accountIndex: 2});
-  const buyerAccount = mnemonicToAccount(mnemonic, {accountIndex: 3});
+  const operatorAccount = mnemonicToAccount(mnemonic, {addressIndex: 1});
+  const merchantAccount = mnemonicToAccount(mnemonic, {addressIndex: 2});
+  const buyerAccount = mnemonicToAccount(mnemonic, {addressIndex: 3});
 
   const {publicClient} = createAnvilClients({
     rpcUrl: env.ESCROW_RPC_URL,
@@ -84,10 +95,29 @@ async function main(): Promise<void> {
     salt,
   });
 
+  logStep('check buyer balance');
+  const buyerBalance = await getMockTokenBalance({
+    publicClient,
+    tokenAddress,
+    ownerAddress: buyerAccount.address,
+  });
+  if (buyerBalance < maxAmount) {
+    logStep('mint buyer tokens');
+    const mintAmount = maxAmount - buyerBalance;
+    const mintHash = await buyerClient.writeContract({
+      address: tokenAddress,
+      abi: mock_erc3009_token_abi,
+      functionName: 'mint',
+      args: [buyerAccount.address, mintAmount],
+    });
+    await publicClient.waitForTransactionReceipt({hash: mintHash});
+  }
+
   const collectorConfig = getCollectorConfig({
     strategy: 'preapproval',
     chainId,
   });
+  logStep('collector pre-steps');
   await collectorConfig.preSteps({
     publicClient,
     buyerClient,
@@ -96,8 +126,8 @@ async function main(): Promise<void> {
     maxAmount,
     paymentInfo,
   });
-
   // 3) Create checkout and submit payment_data to backend.
+  logStep('create checkout');
   const checkoutResponse = await fetch(`${sampleBaseUrl}/checkout-sessions`, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -109,6 +139,7 @@ async function main(): Promise<void> {
   });
   const checkout = await readJsonOrThrow<{id: string}>(checkoutResponse);
 
+  logStep('complete checkout');
   const completeResponse = await fetch(
     `${sampleBaseUrl}/checkout-sessions/${checkout.id}/complete`,
     {
@@ -144,6 +175,7 @@ async function main(): Promise<void> {
   }>(completeResponse);
 
   // 4) Simulate shipping which triggers capture in backend.
+  logStep('simulate shipping');
   const shipResponse = await fetch(
     `${sampleBaseUrl}/testing/simulate-shipping/${completed.order_id}`,
     {
