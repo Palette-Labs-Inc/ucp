@@ -10,23 +10,25 @@ import type { PaymentInfo } from "@ucp/onchain/rpc/types";
 
 export type CollectorStrategy = "preapproval";
 
+type PublicClient = ReturnType<typeof createAnvilClients>["publicClient"];
+type WalletClient = ReturnType<typeof createAnvilClients>["walletClient"];
+
+interface CollectorPreStepsArgs {
+  publicClient: PublicClient;
+  buyerClient: WalletClient;
+  buyerAddress: Address.Address;
+  tokenAddress: Address.Address;
+  maxAmount: bigint;
+  paymentInfo: PaymentInfo;
+}
+
 export interface CollectorConfig {
   collectorAddress: Address.Address;
   collectorData: Hex.Hex;
-  preSteps: (args: {
-    publicClient: ReturnType<typeof createAnvilClients>["publicClient"];
-    buyerClient: ReturnType<typeof createAnvilClients>["walletClient"];
-    buyerAddress: Address.Address;
-    tokenAddress: Address.Address;
-    maxAmount: bigint;
-    paymentInfo: PaymentInfo;
-  }) => Promise<void>;
+  preSteps: (args: CollectorPreStepsArgs) => Promise<void>;
 }
 
-async function waitForTx(
-  publicClient: ReturnType<typeof createAnvilClients>["publicClient"],
-  hash: `0x${string}`
-) {
+async function waitForTx(publicClient: PublicClient, hash: Hex.Hex) {
   await publicClient.waitForTransactionReceipt({ hash });
 }
 
