@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localprotocol.xyz/schemas/menu/types/merchant.json",
+  "title": "Merchant",
+  "description": "A merchant available for discovery and commerce.",
+  "type": "object",
+  "required": [
+    "id",
+    "name"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Global ID (GID) uniquely identifying this merchant."
+    },
+    "name": {
+      "type": "string",
+      "description": "Merchant display name."
+    },
+    "description": {
+      "type": "object",
+      "description": "Merchant description in one or more formats. At least one format must be provided.",
+      "properties": {
+        "plain": {
+          "type": "string",
+          "description": "Plain text description."
+        },
+        "html": {
+          "type": "string",
+          "description": "HTML-formatted description."
+        },
+        "markdown": {
+          "type": "string",
+          "description": "Markdown-formatted description."
+        }
+      },
+      "minProperties": 1
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Canonical merchant page URL."
+    },
+    "category": {
+      "type": "string",
+      "description": "Category: taxonomy path (e.g., 'Restaurants > Sushi') or merchant-defined type."
+    },
+    "media": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ucp.dev/schemas/shopping/types/media.json"
+      },
+      "description": "Merchant media (images, videos). First item is the featured media."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Merchant tags for categorization and search."
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "$ref": "https://ucp.dev/schemas/shopping/types/retail_location.json"
+      },
+      "description": "Merchant retail locations (stores, pickup points, etc.)."
+    },
+    "fulfillment_config": {
+      "$ref": "https://ucp.dev/schemas/shopping/types/merchant_fulfillment_config.json",
+      "description": "Merchant fulfillment capabilities and constraints."
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Business-defined custom data extending the standard merchant model."
+    }
+  }
+}

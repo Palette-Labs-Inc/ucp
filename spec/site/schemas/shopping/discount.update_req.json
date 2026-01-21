@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ucp.dev/schemas/shopping/discount.update_req.json",
+  "name": "dev.ucp.shopping.discount",
+  "version": "2026-01-11",
+  "title": "Discount Extension Update Request",
+  "description": "Extends Checkout with discount code support, enabling agents to apply promotional, loyalty, referral, and other discount codes.",
+  "$defs": {
+    "allocation": {
+      "$ref": "https://ucp.dev/schemas/shopping/types/discount_allocation.json"
+    },
+    "applied_discount": {
+      "$ref": "https://ucp.dev/schemas/shopping/types/applied_discount.json"
+    },
+    "discounts_object": {
+      "$ref": "https://ucp.dev/schemas/shopping/types/discounts_object.json"
+    },
+    "checkout": {
+      "title": "Checkout with Discount Update Request",
+      "description": "Checkout extended with discount capability.",
+      "allOf": [
+        {
+          "$ref": "https://ucp.dev/schemas/shopping/checkout.update_req.json"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "discounts": {
+              "$ref": "https://ucp.dev/schemas/shopping/discount.update_req.json#/$defs/discounts_object"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

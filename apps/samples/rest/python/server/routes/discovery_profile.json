@@ -10,11 +10,11 @@
           "endpoint": "{{ENDPOINT}}"
         }
       },
-      "xyz.localprotocol.commerce": {
+      "xyz.localprotocol.restaurant": {
         "version": "2026-01-11",
-        "spec": "https://localprotocol.xyz/specs/commerce",
+        "spec": "https://localprotocol.xyz/specs/restaurant",
         "rest": {
-          "schema": "https://localprotocol.xyz/services/commerce/openapi.json",
+          "schema": "https://localprotocol.xyz/services/restaurant/openapi.json",
           "endpoint": "{{ENDPOINT}}"
         }
       }
@@ -23,7 +23,7 @@
       {
         "name": "dev.ucp.shopping.checkout",
         "version": "2026-01-11",
-        "spec": "https://ucp.dev/specification/checkout",
+        "spec": "https://ucp.dev/specification/restaurant/checkout",
         "schema": "https://ucp.dev/schemas/shopping/checkout.json"
       },
       {
@@ -54,22 +54,22 @@
         "extends": "dev.ucp.shopping.checkout"
       },
       {
-        "name": "xyz.localprotocol.commerce.merchant",
+        "name": "xyz.localprotocol.restaurant.merchant",
         "version": "2026-01-11",
-        "spec": "https://localprotocol.xyz/specification/merchant",
-        "schema": "https://localprotocol.xyz/schemas/commerce/merchant.json"
+        "spec": "https://localprotocol.xyz/specification/restaurant/merchant",
+        "schema": "https://localprotocol.xyz/schemas/restaurant/merchant.json"
       },
       {
-        "name": "xyz.localprotocol.commerce.menu",
+        "name": "xyz.localprotocol.restaurant.menu",
         "version": "2026-01-11",
-        "spec": "https://localprotocol.xyz/specification/menu",
-        "schema": "https://localprotocol.xyz/schemas/commerce/menu.json"
+        "spec": "https://localprotocol.xyz/specification/restaurant/menu",
+        "schema": "https://localprotocol.xyz/schemas/restaurant/menu.json"
       },
       {
-        "name": "xyz.localprotocol.commerce.checkout",
+        "name": "xyz.localprotocol.restaurant.checkout",
         "version": "2026-01-11",
-        "spec": "https://localprotocol.xyz/specification/checkout",
-        "schema": "https://localprotocol.xyz/schemas/commerce/checkout.json",
+        "spec": "https://localprotocol.xyz/specification/restaurant/checkout",
+        "schema": "https://localprotocol.xyz/schemas/restaurant/checkout.json",
         "extends": "dev.ucp.shopping.checkout"
       }
     ]

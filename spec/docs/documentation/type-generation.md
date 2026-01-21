@@ -90,7 +90,7 @@ Inputs:
 Outputs:
 
 - `packages/python-sdk/src/ucp_sdk/models/**`
-  - `schemas/` (shopping, commerce, ucp, capability, etc.)
+  - `schemas/` (shopping, restaurant, ucp, capability, etc.)
   - `services/` (OpenRPC/OpenAPI model holders)
   - `discovery/` and `handlers/` models
 
@@ -164,7 +164,12 @@ Inputs:
 
 Output:
 
-- `spec/generated/schema-types.ts`
+- `spec/generated/schema-types-core.ts`
+- `spec/generated/schema-types-shopping.ts`
+- `spec/generated/schema-types-restaurant.ts`
+- `spec/generated/schema-types-delivery.ts`
+- `spec/generated/schema-types-discovery.ts`
+- `spec/generated/schema-types-handlers.ts`
 
 Notes:
 
@@ -186,7 +191,13 @@ Notes:
 
 - Python SDK output: `packages/python-sdk/src/ucp_sdk/models/**`
 - TS Zod output: `packages/js-sdk/src/spec_generated.ts`
-- Spec TS interfaces: `spec/generated/schema-types.ts`
+- Spec TS interfaces:
+  - `spec/generated/schema-types-core.ts`
+  - `spec/generated/schema-types-shopping.ts`
+  - `spec/generated/schema-types-restaurant.ts`
+  - `spec/generated/schema-types-delivery.ts`
+  - `spec/generated/schema-types-discovery.ts`
+  - `spec/generated/schema-types-handlers.ts`
 
 ## Troubleshooting
 

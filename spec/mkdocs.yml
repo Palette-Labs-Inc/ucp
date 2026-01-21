@@ -46,21 +46,23 @@ nav:
         - HTTP/REST Binding: specification/shopping/catalog-rest.md
         - MCP Binding: specification/shopping/catalog-mcp.md
       - Order Capability: specification/shopping/order.md
-    - Commerce:
+    - Restaurant:
       - Checkout Capability:
-        - Overview: specification/commerce/checkout.md
-        - HTTP/REST Binding: specification/commerce/checkout-rest.md
-        - MCP Binding: specification/commerce/checkout-mcp.md
-        - A2A Binding: specification/commerce/checkout-a2a.md
+        - Overview: specification/restaurant/checkout.md
+        - HTTP/REST Binding: specification/restaurant/checkout-rest.md
+        - MCP Binding: specification/restaurant/checkout-mcp.md
+        - A2A Binding: specification/restaurant/checkout-a2a.md
         - EP Binding: specification/embedded-checkout.md
       - Merchant Capability:
-        - Overview: specification/commerce/merchant.md
-        - HTTP/REST Binding: specification/commerce/merchant-rest.md
-        - MCP Binding: specification/commerce/merchant-mcp.md
+        - Overview: specification/restaurant/merchant.md
+        - HTTP/REST Binding: specification/restaurant/merchant-rest.md
+        - MCP Binding: specification/restaurant/merchant-mcp.md
       - Menu Capability:
-        - Overview: specification/commerce/menu.md
-        - HTTP/REST Binding: specification/commerce/menu-rest.md
-        - MCP Binding: specification/commerce/menu-mcp.md
+        - Overview: specification/restaurant/menu.md
+        - HTTP/REST Binding: specification/restaurant/menu-rest.md
+        - MCP Binding: specification/restaurant/menu-mcp.md
+    - Delivery:
+      - Fulfillment Extension: specification/delivery/fulfillment.md
     - Identity Linking Capability: specification/identity-linking.md
     - Payment Handlers:
       - Guide: specification/payment-handler-guide.md
@@ -212,11 +214,11 @@ plugins:
           - specification/shopping/checkout-rest.md
           - specification/shopping/checkout-mcp.md
           - specification/shopping/checkout-a2a.md
-        Commerce Checkout Capability:
-          - specification/commerce/checkout.md
-          - specification/commerce/checkout-rest.md
-          - specification/commerce/checkout-mcp.md
-          - specification/commerce/checkout-a2a.md
+        Restaurant Checkout Capability:
+          - specification/restaurant/checkout.md
+          - specification/restaurant/checkout-rest.md
+          - specification/restaurant/checkout-mcp.md
+          - specification/restaurant/checkout-a2a.md
         Checkout Extensions:
           - specification/ap2-mandates.md
           - specification/buyer-consent.md
@@ -227,14 +229,14 @@ plugins:
           - specification/shopping/catalog.md
           - specification/shopping/catalog-rest.md
           - specification/shopping/catalog-mcp.md
-        Commerce Merchant Capability:
-          - specification/commerce/merchant.md
-          - specification/commerce/merchant-rest.md
-          - specification/commerce/merchant-mcp.md
-        Commerce Menu Capability:
-          - specification/commerce/menu.md
-          - specification/commerce/menu-rest.md
-          - specification/commerce/menu-mcp.md
+        Restaurant Merchant Capability:
+          - specification/restaurant/merchant.md
+          - specification/restaurant/merchant-rest.md
+          - specification/restaurant/merchant-mcp.md
+        Restaurant Menu Capability:
+          - specification/restaurant/menu.md
+          - specification/restaurant/menu-rest.md
+          - specification/restaurant/menu-mcp.md
         Shopping Order Capability:
           - specification/shopping/order.md
         Identity Linking Capability:

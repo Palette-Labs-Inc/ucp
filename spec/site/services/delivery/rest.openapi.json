@@ -1,0 +1,454 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "UCP Delivery Service",
+    "version": "2026-01-19",
+    "description": "Canonical REST interface for UCP Delivery service. Schema references are logical pointers - actual payload shape is determined by negotiated capabilities.\n\n**Endpoint Resolution:** The base URL MUST be obtained from the merchant's discovery profile at `/.well-known/ucp` under `services[\"xyz.localprotocol.delivery\"].rest.endpoint`. The `{endpoint}` server variable below is a placeholder for tooling compatibility."
+  },
+  "servers": [
+    {
+      "url": "{endpoint}",
+      "description": "Merchant-provided endpoint from UCP discovery profile",
+      "variables": {
+        "endpoint": {
+          "default": "https://merchant.example.com/ucp",
+          "description": "Obtain from /.well-known/ucp → services[\"xyz.localprotocol.delivery\"].rest.endpoint"
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/delivery-quotes": {
+      "post": {
+        "operationId": "create_delivery_quote",
+        "summary": "Create Delivery Quote",
+        "description": "Create a delivery quote to estimate cost and ETA.",
+        "parameters": [
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/authorization"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/idempotency_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/request_id"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/content_type"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/accept"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/accept_encoding"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/schemas/request_quote"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Delivery quote created",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/schemas/response_quote"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/delivery-quotes/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "Delivery quote identifier."
+        }
+      ],
+      "get": {
+        "operationId": "get_delivery_quote",
+        "summary": "Get Delivery Quote",
+        "description": "Get an existing delivery quote by ID.",
+        "parameters": [
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/authorization"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/request_id"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/content_type"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/accept"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/accept_encoding"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delivery quote retrieved",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/schemas/response_quote"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/deliveries": {
+      "post": {
+        "operationId": "create_delivery",
+        "summary": "Create Delivery",
+        "description": "Create a delivery from a previously generated quote.",
+        "parameters": [
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/authorization"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/idempotency_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/request_id"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/content_type"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/accept"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/accept_encoding"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/schemas/request_delivery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Delivery created",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/schemas/response_delivery"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/deliveries/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "Delivery identifier."
+        }
+      ],
+      "get": {
+        "operationId": "get_delivery",
+        "summary": "Get Delivery",
+        "description": "Get an existing delivery by ID.",
+        "parameters": [
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/authorization"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/request_id"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/content_type"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/accept"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/accept_encoding"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delivery retrieved",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/schemas/response_delivery"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "webhooks": {
+    "deliveryEvent": {
+      "post": {
+        "operationId": "delivery_event_webhook",
+        "summary": "Delivery Event Webhook",
+        "description": "Merchant sends delivery lifecycle events to the platform's registered webhook URL. The platform provides the webhook URL during partner onboarding.",
+        "parameters": [
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/parameters/x_api_key"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/schemas/delivery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Event received and acknowledged",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ucp"
+                  ],
+                  "properties": {
+                    "ucp": {
+                      "$ref": "https://ucp.dev/services/delivery/rest.openapi.json#/components/schemas/ucp"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "delivery": {
+        "$ref": "https://xyz.localprotocol/schemas/delivery/types/delivery.json"
+      },
+      "request_delivery": {
+        "$ref": "https://xyz.localprotocol/schemas/delivery/delivery.json#/$defs/request_delivery"
+      },
+      "response_delivery": {
+        "$ref": "https://xyz.localprotocol/schemas/delivery/delivery.json#/$defs/response_delivery"
+      },
+      "request_quote": {
+        "$ref": "https://xyz.localprotocol/schemas/delivery/quote.json#/$defs/request_quote"
+      },
+      "response_quote": {
+        "$ref": "https://xyz.localprotocol/schemas/delivery/quote.json#/$defs/response_quote"
+      },
+      "ucp": {
+        "$ref": "https://ucp.dev/schemas/ucp.json"
+      }
+    },
+    "parameters": {
+      "authorization": {
+        "name": "Authorization",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Should contain oauth token representing the following 2 schemes: 1. Platform self authenticating (client_credentials). 2. Platform authenticating on behalf of end user (authorization_code)."
+      },
+      "x_api_key": {
+        "name": "X-API-Key",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Authenticates the platform with a reusable api key allocated to the platform by the business."
+      },
+      "request_signature": {
+        "name": "Request-Signature",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Ensure the authenticity and integrity of an HTTP message."
+      },
+      "idempotency_key": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "description": "Ensures duplicate operations don't happen during retries."
+      },
+      "request_id": {
+        "name": "Request-Id",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "description": "For tracing the requests across network layers and components."
+      },
+      "user_agent": {
+        "name": "User-Agent",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Identifies the user agent string making the call."
+      },
+      "content_type": {
+        "name": "Content-Type",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Representation Metadata. Tells the receiver what the data in the message body actually is."
+      },
+      "accept": {
+        "name": "Accept",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Content Negotiation. The client tells the server what data formats it is capable of understanding."
+      },
+      "accept_language": {
+        "name": "Accept-Language",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Localization. Tells the receiver the user's preferred natural languages, often with \"weights\" or priorities."
+      },
+      "accept_encoding": {
+        "name": "Accept-Encoding",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Compression. The client tells the server which content-codings it supports, usually for compression."
+      }
+    },
+    "headers": {
+      "x_detached_jwt": {
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Optional detached JWT signature for the response body. Verifies the response came from the server."
+      }
+    }
+  }
+}

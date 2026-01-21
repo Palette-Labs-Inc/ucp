@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ucp.dev/handlers/localprotocol_auth_capture/config.json",
   "title": "Localprotocol Commerce Auth/Capture Handler Config",
-  "description": "Configuration for the Localprotocol commerce auth/capture escrow handler.",
+  "description": "Configuration for the Localprotocol restaurant auth/capture escrow handler.",
   "type": "object",
   "required": [
     "chain_id",

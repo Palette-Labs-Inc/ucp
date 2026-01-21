@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localprotocol.xyz/schemas/restaurant/types/modifier_selection.json",
+  "title": "Menu Modifier Selection",
+  "description": "Selected modifiers for a modifier group, including nested selections.",
+  "type": "object",
+  "required": ["modifier_group_id", "selections"],
+  "properties": {
+    "modifier_group_id": {
+      "type": "string",
+      "description": "Modifier group identifier for this selection."
+    },
+    "selections": {
+      "type": "array",
+      "items": {
+        "$ref": "modifier_item_selection.json"
+      },
+      "description": "Selections made within the modifier group."
+    }
+  }
+}

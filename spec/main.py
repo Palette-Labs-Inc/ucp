@@ -45,7 +45,7 @@ def define_env(env):
   # --- CONFIGURATION ---
   openapi_dirs = [
     "spec/services/shopping/",
-    "spec/services/commerce/",
+    "spec/services/restaurant/",
     "spec/services/delivery/",
   ]
   schemas_dirs = [
@@ -54,8 +54,8 @@ def define_env(env):
     "spec/schemas/",
     "spec/schemas/shopping/",
     "spec/schemas/shopping/types/",
-    "spec/schemas/commerce/",
-    "spec/schemas/commerce/types/",
+    "spec/schemas/restaurant/",
+    "spec/schemas/restaurant/types/",
   ]
 
   def _load_json_file(entity_name):

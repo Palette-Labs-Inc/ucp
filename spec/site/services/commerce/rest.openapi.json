@@ -1,0 +1,989 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "UCP Commerce Service",
+    "version": "2026-01-11",
+    "description": "Canonical REST interface for UCP Commerce service. Schema references are logical pointers - actual payload shape is determined by negotiated capabilities.\n\n**Endpoint Resolution:** This spec defines operations only. The base URL MUST be obtained from the merchant's discovery profile at `/.well-known/ucp` under `services[\"xyz.localprotocol.commerce\"].rest.endpoint`. The `{endpoint}` server variable below is a placeholder for tooling compatibility."
+  },
+  "servers": [
+    {
+      "url": "{endpoint}",
+      "description": "Merchant-provided endpoint from UCP discovery profile",
+      "variables": {
+        "endpoint": {
+          "default": "https://merchant.example.com/ucp",
+          "description": "Obtain from /.well-known/ucp → services[\"xyz.localprotocol.commerce\"].rest.endpoint"
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/checkout-sessions": {
+      "post": {
+        "operationId": "create_checkout",
+        "summary": "Create Checkout",
+        "description": "Create a checkout session. Called as soon as a user adds an item to a cart.",
+        "parameters": [
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/authorization"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/idempotency_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_id"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/content_type"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_encoding"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/schemas/checkout_create_request"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Checkout session created",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/schemas/checkout_response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/checkout-sessions/{id}": {
+      "parameters": [
+        {
+          "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/checkout_session_id_path"
+        }
+      ],
+      "get": {
+        "operationId": "get_checkout",
+        "summary": "Get Checkout",
+        "description": "Get the latest state of a checkout session.",
+        "parameters": [
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/authorization"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_id"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/content_type"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_encoding"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Checkout session retrieved",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/schemas/checkout_response"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "update_checkout",
+        "summary": "Update Checkout",
+        "description": "If an optional field is provided in the request body, its value is treated as a complete replacement for the corresponding data. If optional field is omitted, then current checkout session is unchanged.",
+        "parameters": [
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/authorization"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/idempotency_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_id"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/content_type"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_encoding"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/schemas/checkout_update_request"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Checkout session updated",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/schemas/checkout_response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/checkout-sessions/{id}/complete": {
+      "parameters": [
+        {
+          "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/checkout_session_id_path"
+        }
+      ],
+      "post": {
+        "operationId": "complete_checkout",
+        "summary": "Complete Checkout",
+        "description": "Place the order",
+        "parameters": [
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/authorization"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/idempotency_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_id"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/content_type"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_encoding"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/schemas/payment_data"
+                  },
+                  {
+                    "title": "Risk Signals",
+                    "description": "Optional risk signals for fraud detection.",
+                    "type": "object",
+                    "properties": {
+                      "risk_signals": {
+                        "type": "object",
+                        "description": "Key-value pairs of risk signals."
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Checkout session completed",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/schemas/checkout_response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/checkout-sessions/{id}/cancel": {
+      "parameters": [
+        {
+          "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/checkout_session_id_path"
+        }
+      ],
+      "post": {
+        "operationId": "cancel_checkout",
+        "summary": "Cancel Checkout",
+        "description": "Cancel a checkout session",
+        "parameters": [
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/authorization"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/idempotency_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_id"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/content_type"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_encoding"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Checkout session canceled",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/schemas/checkout_response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/merchants/search": {
+      "post": {
+        "operationId": "search_merchants",
+        "summary": "Search merchants",
+        "description": "Search for merchants by name, category, and context.",
+        "parameters": [
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/authorization"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_id"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/content_type"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_encoding"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/schemas/merchant_search_request"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Merchant search results",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/schemas/merchant_search_response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/merchants/{id}": {
+      "get": {
+        "operationId": "get_merchant",
+        "summary": "Get merchant",
+        "description": "Get a merchant by ID.",
+        "parameters": [
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/merchant_id_path"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/authorization"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_id"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_encoding"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Merchant",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/schemas/merchant_get_merchant_response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/merchants/{id}/menus": {
+      "get": {
+        "operationId": "get_merchant_menus",
+        "summary": "Get merchant menus",
+        "description": "Get menus and categories for a merchant by ID.",
+        "parameters": [
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/merchant_id_path"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/authorization"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_id"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_encoding"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Menu list",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/schemas/menu_list_response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/menu/search": {
+      "post": {
+        "operationId": "search_menu",
+        "summary": "Search menu items",
+        "description": "Search for menu items by query and context.",
+        "parameters": [
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/authorization"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_id"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/content_type"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_encoding"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/schemas/menu_search_request"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Menu search results",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/schemas/menu_search_response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/menu/items": {
+      "get": {
+        "operationId": "list_menu_items",
+        "summary": "List menu items",
+        "description": "List menu items available in the current context.",
+        "parameters": [
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/authorization"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_id"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_encoding"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Menu item list",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/schemas/menu_list_response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/menu/items/{id}": {
+      "get": {
+        "operationId": "get_menu_item",
+        "summary": "Get menu item",
+        "description": "Get a menu item by ID.",
+        "parameters": [
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/item_id_path"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/authorization"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_id"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_encoding"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Menu item",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/schemas/menu_get_item_response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/menu/items/{id}/modifier-groups": {
+      "get": {
+        "operationId": "get_item_modifier_groups",
+        "summary": "Get item modifier groups",
+        "description": "Get modifier groups for a menu item by ID.",
+        "parameters": [
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/item_id_path"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/authorization"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_id"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_encoding"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Modifier groups",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/schemas/menu_get_item_modifier_groups_response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/menu/modifiers/{id}": {
+      "get": {
+        "operationId": "get_modifier_item",
+        "summary": "Get modifier item",
+        "description": "Get a modifier item by ID.",
+        "parameters": [
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/modifier_id_path"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/authorization"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/x_api_key"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_signature"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/request_id"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/user_agent"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_language"
+          },
+          {
+            "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/parameters/accept_encoding"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Modifier item",
+            "headers": {
+              "X-Detached-JWT": {
+                "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/headers/x_detached_jwt"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://ucp.dev/services/commerce/rest.openapi.json#/components/schemas/menu_get_modifier_item_response"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "checkout_session_id_path": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "The unique identifier of the checkout session.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "item_id_path": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "Global ID (GID) of menu item.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "merchant_id_path": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "Global ID (GID) of merchant.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "authorization": {
+        "name": "Authorization",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Should contain oauth token representing the following 2 schemes: 1. Platform self authenticating (client_credentials). 2. Platform authenticating on behalf of end user (authorization_code)."
+      },
+      "x_api_key": {
+        "name": "X-API-Key",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Authenticates the platform with a reusable api key allocated to the platform by the business."
+      },
+      "request_signature": {
+        "name": "Request-Signature",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Ensure the authenticity and integrity of an HTTP message."
+      },
+      "idempotency_key": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "description": "Ensures duplicate operations don't happen during retries."
+      },
+      "request_id": {
+        "name": "Request-Id",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "description": "For tracing the requests across network layers and components."
+      },
+      "user_agent": {
+        "name": "User-Agent",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Identifies the user agent string making the call."
+      },
+      "content_type": {
+        "name": "Content-Type",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Representation Metadata. Tells the receiver what the data in the message body actually is."
+      },
+      "accept": {
+        "name": "Accept",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Content Negotiation. The client tells the server what data formats it is capable of understanding."
+      },
+      "accept_language": {
+        "name": "Accept-Language",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Localization. Tells the receiver the user's preferred natural languages, often with \"weights\" or priorities."
+      },
+      "accept_encoding": {
+        "name": "Accept-Encoding",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Compression. The client tells the server which content-codings it supports, usually for compression"
+      },
+      "modifier_id_path": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "Global ID (GID) of modifier item.",
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "headers": {
+      "x_detached_jwt": {
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Optional detached JWT signature for the response body. Verifies the response came from the server."
+      }
+    },
+    "schemas": {
+      "payment_data": {
+        "$ref": "https://ucp.dev/schemas/shopping/payment_data.json"
+      },
+      "menu_search_response": {
+        "$ref": "https://localprotocol.xyz/schemas/commerce/menu.json#/$defs/search_response"
+      },
+      "menu_search_request": {
+        "$ref": "https://localprotocol.xyz/schemas/commerce/menu.json#/$defs/search_request"
+      },
+      "menu_get_item_response": {
+        "$ref": "https://localprotocol.xyz/schemas/commerce/menu.json#/$defs/get_item_response"
+      },
+      "menu_list_response": {
+        "$ref": "https://localprotocol.xyz/schemas/commerce/menu.json#/$defs/list_response"
+      },
+      "merchant_search_response": {
+        "$ref": "https://localprotocol.xyz/schemas/commerce/merchant.json#/$defs/search_response"
+      },
+      "merchant_search_request": {
+        "$ref": "https://localprotocol.xyz/schemas/commerce/merchant.json#/$defs/search_request"
+      },
+      "merchant_get_merchant_response": {
+        "$ref": "https://localprotocol.xyz/schemas/commerce/merchant.json#/$defs/get_merchant_response"
+      },
+      "menu_get_item_modifier_groups_response": {
+        "$ref": "https://localprotocol.xyz/schemas/commerce/menu.json#/$defs/get_item_modifier_groups_response"
+      },
+      "menu_get_modifier_item_response": {
+        "$ref": "https://localprotocol.xyz/schemas/commerce/menu.json#/$defs/get_modifier_item_response"
+      },
+      "checkout_response": {
+        "$ref": "https://localprotocol.xyz/schemas/commerce/checkout.json"
+      },
+      "checkout_create_request": {
+        "$ref": "https://localprotocol.xyz/schemas/commerce/checkout.create_req.json"
+      },
+      "checkout_update_request": {
+        "$ref": "https://localprotocol.xyz/schemas/commerce/checkout.update_req.json"
+      },
+      "payment_response": {
+        "$ref": "https://ucp.dev/schemas/shopping/payment.json"
+      },
+      "payment_create_request": {
+        "$ref": "https://ucp.dev/schemas/shopping/payment.create_req.json"
+      },
+      "payment_update_request": {
+        "$ref": "https://ucp.dev/schemas/shopping/payment.update_req.json"
+      }
+    }
+  }
+}

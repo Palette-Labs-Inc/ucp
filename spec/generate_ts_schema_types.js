@@ -3,29 +3,31 @@ const path = require('node:path');
 const { compile } = require('json-schema-to-typescript');
 
 const SOURCE_ROOT = path.resolve(__dirname, 'spec');
-const OUTPUT_FILE = path.resolve(__dirname, './generated/schema-types.ts');
+const OUTPUT_DIR = path.resolve(__dirname, './generated');
+const LEGACY_OUTPUT_FILE = path.resolve(OUTPUT_DIR, 'schema-types.ts');
 const WRAPPER_NAME = 'SCHEMA_WRAPPER';
 
 /**
  * Dynamically finds all JSON schemas and generates TypeScript types.
  */
-async function generate() {
-  if (!fs.existsSync(path.dirname(OUTPUT_FILE))) {
-    fs.mkdirSync(path.dirname(OUTPUT_FILE), {recursive: true});
+function ensureOutputDir() {
+  if (!fs.existsSync(OUTPUT_DIR)) {
+    fs.mkdirSync(OUTPUT_DIR, {recursive: true});
   }
+}
 
-  const properties = {};
-
-  function addSchemasFromDir(baseDir, prefix = '') {
+function addSchemasFromDir(baseDir, prefix = '', options = {}) {
+  const { includeSubdirs = true } = options;
     if (!fs.existsSync(baseDir)) return;
 
     for (const entry of fs.readdirSync(baseDir, { withFileTypes: true })) {
       const entryPath = path.join(baseDir, entry.name);
       if (entry.isDirectory()) {
+        if (!includeSubdirs) continue;
         const nextPrefix = prefix
           ? `${prefix}_${entry.name}`
           : entry.name;
-        addSchemasFromDir(entryPath, nextPrefix);
+        addSchemasFromDir(entryPath, nextPrefix, options);
         continue;
       }
 
@@ -33,31 +35,30 @@ async function generate() {
 
       const baseName = path.basename(entry.name, '.json');
       const name = `${prefix ? `${prefix}_` : ''}${baseName}`.replace(/-/g, '_');
-      properties[name] = { $ref: entryPath };
+      options.properties[name] = { $ref: entryPath };
     }
-  }
+}
 
-  // Add all schemas under spec/schemas (shopping, commerce, and future sections)
-  addSchemasFromDir(path.join(SOURCE_ROOT, 'schemas'));
+function addHandlerSchemas(handlersDir, properties) {
+  if (!fs.existsSync(handlersDir)) return;
 
-  // Add handler schemas
-  const handlersDir = path.join(SOURCE_ROOT, 'handlers');
-  if (fs.existsSync(handlersDir)) {
-    for (const handler of fs.readdirSync(handlersDir)) {
-      const handlerPath = path.join(handlersDir, handler);
-      if (fs.statSync(handlerPath).isDirectory()) {
-        for (const file of fs.readdirSync(handlerPath)) {
-          if (file.endsWith('.json')) {
-            const name =
-                `${handler}_${path.basename(file, '.json')}`.replace(/-/g, '_');
-            properties[name] = {$ref: path.join(handlerPath, file)};
-          }
+  for (const handler of fs.readdirSync(handlersDir)) {
+    const handlerPath = path.join(handlersDir, handler);
+    if (fs.statSync(handlerPath).isDirectory()) {
+      for (const file of fs.readdirSync(handlerPath)) {
+        if (file.endsWith('.json')) {
+          const name =
+              `${handler}_${path.basename(file, '.json')}`.replace(/-/g, '_');
+          properties[name] = {$ref: path.join(handlerPath, file)};
         }
       }
     }
   }
+}
 
-  console.log(`Found ${Object.keys(properties).length} schemas. Compiling...`);
+async function compileDomain(domainName, properties, outputFile) {
+  console.log(
+      `[${domainName}] Found ${Object.keys(properties).length} schemas. Compiling...`);
 
   const wrappedSchema = {
     title: WRAPPER_NAME,
@@ -147,10 +148,96 @@ async function generate() {
     // Replace { ... }[] with Array<{ ... }>
     ts = ts.replace(/:\s*(\{[^}]+\})\[\]/g, ': Array<$1>');
 
-    fs.writeFileSync(OUTPUT_FILE, ts.trim());
-    console.log(`Success! Types written to ${OUTPUT_FILE}`);
+    fs.writeFileSync(outputFile, ts.trim());
+    console.log(`[${domainName}] Success! Types written to ${outputFile}`);
   } catch (err) {
-    console.error('Error generating types:', err);
+    console.error(`[${domainName}] Error generating types:`, err);
+  }
+}
+
+async function generate() {
+  ensureOutputDir();
+
+  if (fs.existsSync(LEGACY_OUTPUT_FILE)) {
+    fs.unlinkSync(LEGACY_OUTPUT_FILE);
+  }
+
+  const domainConfigs = [
+    {
+      name: 'core',
+      output: path.join(OUTPUT_DIR, 'schema-types-core.ts'),
+      schemas: [
+        {
+          dir: path.join(SOURCE_ROOT, 'schemas'),
+          prefix: '',
+          includeSubdirs: false
+        }
+      ]
+    },
+    {
+      name: 'shopping',
+      output: path.join(OUTPUT_DIR, 'schema-types-shopping.ts'),
+      schemas: [
+        {
+          dir: path.join(SOURCE_ROOT, 'schemas', 'shopping'),
+          prefix: 'shopping'
+        }
+      ]
+    },
+    {
+      name: 'restaurant',
+      output: path.join(OUTPUT_DIR, 'schema-types-restaurant.ts'),
+      schemas: [
+        {
+          dir: path.join(SOURCE_ROOT, 'schemas', 'restaurant'),
+          prefix: 'restaurant'
+        }
+      ]
+    },
+    {
+      name: 'delivery',
+      output: path.join(OUTPUT_DIR, 'schema-types-delivery.ts'),
+      schemas: [
+        {
+          dir: path.join(SOURCE_ROOT, 'schemas', 'delivery'),
+          prefix: 'delivery'
+        }
+      ]
+    },
+    {
+      name: 'discovery',
+      output: path.join(OUTPUT_DIR, 'schema-types-discovery.ts'),
+      schemas: [
+        {
+          dir: path.join(SOURCE_ROOT, 'discovery'),
+          prefix: 'discovery'
+        }
+      ]
+    },
+    {
+      name: 'handlers',
+      output: path.join(OUTPUT_DIR, 'schema-types-handlers.ts'),
+      handlers: path.join(SOURCE_ROOT, 'handlers')
+    }
+  ];
+
+  for (const config of domainConfigs) {
+    const properties = {};
+
+    if (config.schemas) {
+      for (const schemaConfig of config.schemas) {
+        addSchemasFromDir(schemaConfig.dir, schemaConfig.prefix, {
+          includeSubdirs: schemaConfig.includeSubdirs,
+          properties
+        });
+      }
+    }
+
+    if (config.handlers) {
+      addHandlerSchemas(config.handlers, properties);
+    }
+
+    await compileDomain(config.name, properties, config.output);
   }
 }
 

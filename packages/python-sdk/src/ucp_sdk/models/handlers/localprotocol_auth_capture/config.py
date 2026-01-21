@@ -23,7 +23,7 @@ from typing import Literal
 
 
 class LocalprotocolCommerceAuthCaptureHandlerConfig(BaseModel):
-  """Configuration for the Localprotocol commerce auth/capture escrow handler."""
+  """Configuration for the Localprotocol restaurant auth/capture escrow handler."""
 
   model_config = ConfigDict(
     extra="allow",

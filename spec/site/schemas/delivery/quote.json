@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xyz.localprotocol/schemas/delivery/quote.json",
+  "name": "xyz.localprotocol.delivery",
+  "version": "2026-01-19",
+  "title": "Delivery Quote Capability",
+  "description": "Delivery capability with quote and delivery resources. Checkout integration is optional via a separate fulfillment extension.",
+  "type": "object",
+  "$defs": {
+    "delivery_location": {
+      "$ref": "https://ucp.dev/schemas/delivery/types/delivery_location.json"
+    },
+    "delivery_request": {
+      "$ref": "https://ucp.dev/schemas/delivery/types/delivery_request.json"
+    },
+    "delivery_quote": {
+      "$ref": "https://ucp.dev/schemas/delivery/types/delivery_quote.json"
+    },
+    "request_quote": {
+      "$ref": "https://ucp.dev/schemas/delivery/quote.json#/$defs/delivery_request"
+    },
+    "response_quote": {
+      "title": "Response Quote",
+      "description": "Response wrapper for delivery quote operations.",
+      "type": "object",
+      "required": [
+        "ucp",
+        "delivery_quote"
+      ],
+      "properties": {
+        "ucp": {
+          "$ref": "https://ucp.dev/schemas/ucp.json#/$defs/response"
+        },
+        "delivery_quote": {
+          "$ref": "https://ucp.dev/schemas/delivery/quote.json#/$defs/delivery_quote",
+          "description": "Delivery quote details."
+        }
+      }
+    }
+  }
+}

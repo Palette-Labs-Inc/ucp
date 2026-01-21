@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ucp.dev/handlers/localprotocol_auth_capture/instrument.json",
   "title": "Localprotocol Commerce Auth/Capture Instrument",
-  "description": "Payment instrument for Localprotocol commerce auth/capture escrow flows.",
+  "description": "Payment instrument for Localprotocol restaurant auth/capture escrow flows.",
   "allOf": [
     {
       "$ref": "../../schemas/shopping/types/payment_instrument_base.json"
@@ -20,7 +20,7 @@
         "type": {
           "type": "string",
           "const": "localprotocol_auth_capture",
-          "description": "Indicates this is a Localprotocol commerce auth/capture instrument."
+          "description": "Indicates this is a Localprotocol restaurant auth/capture instrument."
         },
         "authorization_id": {
           "type": "string",

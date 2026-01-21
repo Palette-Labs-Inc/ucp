@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xyz.localprotocol/schemas/delivery/fulfillment.json",
+  "name": "xyz.localprotocol.delivery.fulfillment",
+  "version": "2026-01-19",
+  "title": "Delivery Fulfillment Extension",
+  "description": "Extends restaurant checkout with delivery fulfillment details.",
+  "type": "object",
+  "$defs": {
+    "checkout": {
+      "title": "Checkout with Delivery Fulfillment",
+      "description": "Checkout extended with delivery fulfillment details.",
+      "allOf": [
+        {
+          "$ref": "../restaurant/checkout_resp.json#/$defs/checkout"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "fulfillment": {
+              "type": "object",
+              "oneOf": [
+                {
+                  "$ref": "types/delivery_fulfillment_quote.json"
+                },
+                {
+                  "$ref": "types/delivery_fulfillment_request.json"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

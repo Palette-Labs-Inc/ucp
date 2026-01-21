@@ -49,11 +49,11 @@ All REST endpoints **MUST** be served over HTTPS with minimum TLS version
 | [Complete Checkout](checkout.md#complete-checkout) | `POST` | `/checkout-sessions/{id}/complete` | Place the order. |
 | [Cancel Checkout](checkout.md#cancel-checkout) | `POST` | `/checkout-sessions/{id}/cancel` | Cancel a checkout session. |
 
-### Menu Checkout (Commerce)
-When negotiating `xyz.localprotocol.commerce.checkout`, the checkout payload is
+### Menu Checkout (Restaurant)
+When negotiating `xyz.localprotocol.restaurant.checkout`, the checkout payload is
 the base checkout schema extended with menu modifier selections on line items:
-`line_items[].modifier_selections` using the commerce menu modifier selection
-type. The REST endpoints remain `/checkout-sessions/*` on the commerce service
+`line_items[].modifier_selections` using the restaurant menu modifier selection
+type. The REST endpoints remain `/checkout-sessions/*` on the restaurant service
 endpoint advertised in `/.well-known/ucp`.
 
 ## Examples

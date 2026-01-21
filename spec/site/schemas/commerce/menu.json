@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localprotocol.xyz/schemas/commerce/menu.json",
+  "name": "xyz.localprotocol.commerce.menu",
+  "version": "2026-01-11",
+  "title": "Menu Capability",
+  "description": "Menu discovery and configurable menu item definitions.",
+  "type": "object",
+  "$defs": {
+    "menu_item": {
+      "$ref": "https://ucp.dev/schemas/commerce/types/item.json"
+    },
+    "category": {
+      "$ref": "https://ucp.dev/schemas/commerce/types/category.json"
+    },
+    "context": {
+      "allOf": [
+        {
+          "$ref": "https://ucp.dev/schemas/shopping/types/context.json"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "intent": {
+              "type": "string",
+              "description": "Background context for semantic search (e.g., 'quick lunch nearby', 'family meal under $30')."
+            }
+          }
+        }
+      ],
+      "description": "Location and market context for menu operations. Extends base context with 'intent' for semantic search."
+    },
+    "search_request": {
+      "type": "object",
+      "required": [
+        "query"
+      ],
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "Free-text search query."
+        },
+        "context": {
+          "$ref": "https://ucp.dev/schemas/commerce/menu.json#/$defs/context"
+        },
+        "pagination": {
+          "$ref": "https://ucp.dev/schemas/shopping/types/pagination.json#/$defs/request"
+        }
+      }
+    },
+    "search_response": {
+      "type": "object",
+      "required": [
+        "ucp",
+        "categories"
+      ],
+      "properties": {
+        "ucp": {
+          "$ref": "https://ucp.dev/schemas/ucp.json#/$defs/response"
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "$ref": "https://ucp.dev/schemas/commerce/menu.json#/$defs/category"
+          },
+          "description": "Menu categories with nested items."
+        },
+        "pagination": {
+          "$ref": "https://ucp.dev/schemas/shopping/types/pagination.json#/$defs/response"
+        },
+        "messages": {
+          "type": "array",
+          "items": {
+            "$ref": "https://ucp.dev/schemas/shopping/types/message.json"
+          },
+          "description": "Errors, warnings, or informational messages about the search results."
+        }
+      }
+    },
+    "get_item_response": {
+      "type": "object",
+      "required": [
+        "ucp",
+        "item"
+      ],
+      "properties": {
+        "ucp": {
+          "$ref": "https://ucp.dev/schemas/ucp.json#/$defs/response"
+        },
+        "item": {
+          "$ref": "https://ucp.dev/schemas/commerce/types/item.json",
+          "description": "The requested menu item."
+        },
+        "messages": {
+          "type": "array",
+          "items": {
+            "$ref": "https://ucp.dev/schemas/shopping/types/message.json"
+          },
+          "description": "Errors, warnings, or informational messages about the requested item."
+        }
+      }
+    },
+    "get_item_modifier_groups_response": {
+      "type": "object",
+      "required": [
+        "ucp",
+        "modifier_groups"
+      ],
+      "properties": {
+        "ucp": {
+          "$ref": "https://ucp.dev/schemas/ucp.json#/$defs/response"
+        },
+        "modifier_groups": {
+          "type": "array",
+          "items": {
+            "$ref": "https://ucp.dev/schemas/commerce/types/modifier_group.json"
+          },
+          "description": "Modifier groups available for the item."
+        },
+        "messages": {
+          "type": "array",
+          "items": {
+            "$ref": "https://ucp.dev/schemas/shopping/types/message.json"
+          },
+          "description": "Errors, warnings, or informational messages about the requested item."
+        }
+      }
+    },
+    "get_modifier_item_response": {
+      "type": "object",
+      "required": [
+        "ucp",
+        "modifier_item"
+      ],
+      "properties": {
+        "ucp": {
+          "$ref": "https://ucp.dev/schemas/ucp.json#/$defs/response"
+        },
+        "modifier_item": {
+          "$ref": "https://ucp.dev/schemas/commerce/types/modifier_item.json",
+          "description": "The requested modifier item."
+        },
+        "messages": {
+          "type": "array",
+          "items": {
+            "$ref": "https://ucp.dev/schemas/shopping/types/message.json"
+          },
+          "description": "Errors, warnings, or informational messages about the requested modifier."
+        }
+      }
+    },
+    "list_response": {
+      "type": "object",
+      "required": [
+        "ucp",
+        "categories"
+      ],
+      "properties": {
+        "ucp": {
+          "$ref": "https://ucp.dev/schemas/ucp.json#/$defs/response"
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "$ref": "https://ucp.dev/schemas/commerce/menu.json#/$defs/category"
+          },
+          "description": "Menu categories with nested items."
+        },
+        "messages": {
+          "type": "array",
+          "items": {
+            "$ref": "https://ucp.dev/schemas/shopping/types/message.json"
+          },
+          "description": "Errors, warnings, or informational messages about the menu."
+        }
+      }
+    }
+  }
+}

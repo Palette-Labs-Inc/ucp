@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ucp.dev/schemas/shopping/types/discounts_object.json",
+  "title": "Discounts Object",
+  "description": "Discount codes input and applied discounts output.",
+  "type": "object",
+  "properties": {
+    "codes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Discount codes to apply. Case-insensitive. Replaces previously submitted codes. Send empty array to clear."
+    },
+    "applied": {
+      "type": "array",
+      "readOnly": true,
+      "items": {
+        "$ref": "applied_discount.json"
+      },
+      "description": "Discounts successfully applied (code-based and automatic)."
+    }
+  }
+}

@@ -58,8 +58,8 @@ Businesses advertise MCP transport availability through their UCP profile at
 }
 ```
 
-For menu checkout, businesses advertise the commerce service endpoint and the
-`xyz.localprotocol.commerce.checkout` capability. The MCP tool names remain the
+For menu checkout, businesses advertise the restaurant service endpoint and the
+`xyz.localprotocol.restaurant.checkout` capability. The MCP tool names remain the
 same, but the checkout schema includes `line_items[].modifier_selections`.
 
 ### Platform Profile Advertisement
@@ -121,7 +121,7 @@ Maps to the [Create Checkout](checkout.md#create-checkout) operation.
         *   `dev.ucp.shopping.fulfillment`: [Fulfillment](../fulfillment.md)
         *   `dev.ucp.shopping.discount`: [Discount](../discount.md)
         *   `dev.ucp.shopping.ap2_mandate`: [AP2 Mandates](../ap2-mandates.md)
-        *   `xyz.localprotocol.commerce.checkout`: Menu modifiers on line items (`modifier_selections`).
+        *   `xyz.localprotocol.restaurant.checkout`: Menu modifiers on line items (`modifier_selections`).
 
 #### Output Schema
 
@@ -343,7 +343,7 @@ Maps to the [Update Checkout](checkout.md#update-checkout) operation.
         *   `dev.ucp.shopping.fulfillment`: [Fulfillment](../fulfillment.md)
         *   `dev.ucp.shopping.discount`: [Discount](../discount.md)
         *   `dev.ucp.shopping.ap2_mandate`: [AP2 Mandates](../ap2-mandates.md)
-        *   `xyz.localprotocol.commerce.checkout`: Menu modifiers on line items (`modifier_selections`).
+        *   `xyz.localprotocol.restaurant.checkout`: Menu modifiers on line items (`modifier_selections`).
 
 #### Output Schema
 

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xyz.localprotocol/schemas/delivery/fulfillment.update_req.json",
+  "name": "xyz.localprotocol.delivery.fulfillment",
+  "version": "2026-01-19",
+  "title": "Delivery Fulfillment Extension Update Request",
+  "description": "Extends shopping fulfillment with a delivery quote identifier on checkout.fulfillment.",
+  "type": "object",
+  "$defs": {
+    "checkout": {
+      "title": "Checkout with Delivery Quote Identifier Update Request",
+      "description": "Checkout extended with a delivery quote identifier inside fulfillment.",
+      "allOf": [
+        {
+          "$ref": "https://ucp.dev/schemas/shopping/fulfillment.update_req.json#/$defs/checkout"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "fulfillment": {
+              "type": "object",
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "quote_id": {
+                      "type": "string",
+                      "description": "Delivery quote identifier for this checkout."
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "delivery_request": {
+                      "$ref": "https://ucp.dev/schemas/delivery/types/delivery_request.json",
+                      "description": "Delivery request details when no quote is provided."
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

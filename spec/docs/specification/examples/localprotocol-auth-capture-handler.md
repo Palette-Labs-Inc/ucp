@@ -16,7 +16,7 @@
 
 # Localprotocol Commerce Auth/Capture Payment Handler
 
-* **Handler Name:** `xyz.localprotocol.commerce.auth_capture`
+* **Handler Name:** `xyz.localprotocol.restaurant.auth_capture`
 * **Version:** `2026-01-11`
 
 ## Introduction
@@ -83,7 +83,7 @@ Businesses advertise support for this handler in the checkout's
     "handlers": [
       {
         "id": "localprotocol_auth_capture",
-        "name": "xyz.localprotocol.commerce.auth_capture",
+        "name": "xyz.localprotocol.restaurant.auth_capture",
         "version": "2026-01-11",
         "spec": "https://github.com/base/commerce-payments",
         "config_schema": "https://ucp.dev/handlers/localprotocol_auth_capture/config.json",
@@ -129,7 +129,7 @@ Before using this handler, platforms **MUST** complete:
 
 #### Step 1: Discover Handler
 
-Identify `xyz.localprotocol.commerce.auth_capture` in `payment.handlers`.
+Identify `xyz.localprotocol.restaurant.auth_capture` in `payment.handlers`.
 
 #### Step 2: Collect Authorization
 

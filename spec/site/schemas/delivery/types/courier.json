@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xyz.localprotocol/schemas/delivery/types/courier.json",
+  "title": "Courier",
+  "description": "Courier details for a delivery.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Courier name."
+    },
+    "phone_number": {
+      "type": "string",
+      "description": "Courier phone number."
+    },
+    "vehicle_type": {
+      "type": "string",
+      "description": "Courier vehicle type."
+    },
+    "location": {
+      "$ref": "https://ucp.dev/schemas/delivery/types/location.json",
+      "description": "Courier location."
+    }
+  }
+}

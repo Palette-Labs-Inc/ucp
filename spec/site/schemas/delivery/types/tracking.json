@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xyz.localprotocol/schemas/delivery/types/tracking.json",
+  "title": "Tracking",
+  "description": "Tracking details for a delivery.",
+  "type": "object",
+  "properties": {
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Tracking URL for this delivery."
+    },
+    "number": {
+      "type": "string",
+      "description": "Carrier tracking number when available."
+    },
+    "status": {
+      "type": "string",
+      "description": "Provider-specific tracking status."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "RFC 3339 timestamp for the last tracking update."
+    }
+  }
+}

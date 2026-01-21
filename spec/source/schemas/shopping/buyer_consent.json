@@ -7,26 +7,7 @@
   "description": "Extends Checkout with buyer consent tracking for privacy compliance via the buyer object.",
   "$defs": {
     "consent": {
-      "type": "object",
-      "description": "User consent states for data processing",
-      "properties": {
-        "analytics": {
-          "type": "boolean",
-          "description": "Consent for analytics and performance tracking."
-        },
-        "preferences": {
-          "type": "boolean",
-          "description": "Consent for storing user preferences."
-        },
-        "marketing": {
-          "type": "boolean",
-          "description": "Consent for marketing communications."
-        },
-        "sale_of_data": {
-          "type": "boolean",
-          "description": "Consent for selling data to third parties (CCPA)."
-        }
-      }
+      "$ref": "types/consent.json"
     },
 
     "buyer": {

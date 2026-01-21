@@ -18,8 +18,9 @@
 
 from __future__ import annotations
 
-from typing import Any, Literal
-from pydantic import BaseModel, ConfigDict, Field, RootModel
+from typing import Any
+from pydantic import ConfigDict, Field, RootModel
+from .types import applied_discount, discount_allocation, discounts_object
 from .checkout_create_req import CheckoutCreateRequest
 
 
@@ -30,72 +31,16 @@ class DiscountExtensionCreateRequest(RootModel[Any]):
     """
 
 
-class Allocation(BaseModel):
-  """Breakdown of how a discount amount was allocated to a specific target."""
-
-  model_config = ConfigDict(
-    extra="allow",
-  )
-  path: str
-  """
-    JSONPath to the allocation target (e.g., '$.line_items[0]', '$.totals.shipping').
-    """
-  amount: int = Field(..., ge=0)
-  """
-    Amount allocated to this target in minor (cents) currency units.
-    """
+class Allocation(RootModel[discount_allocation.DiscountAllocation]):
+  root: discount_allocation.DiscountAllocation
 
 
-class AppliedDiscount(BaseModel):
-  """A discount that was successfully applied."""
-
-  model_config = ConfigDict(
-    extra="allow",
-  )
-  code: str | None = None
-  """
-    The discount code. Omitted for automatic discounts.
-    """
-  title: str
-  """
-    Human-readable discount name (e.g., 'Summer Sale 20% Off').
-    """
-  amount: int = Field(..., ge=0)
-  """
-    Total discount amount in minor (cents) currency units.
-    """
-  automatic: bool | None = False
-  """
-    True if applied automatically by merchant rules (no code required).
-    """
-  method: Literal["each", "across"] | None = None
-  """
-    Allocation method. 'each' = applied independently per item. 'across' = split proportionally by value.
-    """
-  priority: int | None = Field(None, ge=1)
-  """
-    Stacking order for discount calculation. Lower numbers applied first (1 = first).
-    """
-  allocations: list[Allocation] | None = None
-  """
-    Breakdown of where this discount was allocated. Sum of allocation amounts equals total amount.
-    """
+class AppliedDiscount(RootModel[applied_discount.AppliedDiscount]):
+  root: applied_discount.AppliedDiscount
 
 
-class DiscountsObject(BaseModel):
-  """Discount codes input and applied discounts output."""
-
-  model_config = ConfigDict(
-    extra="allow",
-  )
-  codes: list[str] | None = None
-  """
-    Discount codes to apply. Case-insensitive. Replaces previously submitted codes. Send empty array to clear.
-    """
-  applied: list[AppliedDiscount] | None = None
-  """
-    Discounts successfully applied (code-based and automatic).
-    """
+class DiscountsObject(RootModel[discounts_object.DiscountsObject]):
+  root: discounts_object.DiscountsObject
 
 
 class Checkout(CheckoutCreateRequest):

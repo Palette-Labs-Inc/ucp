@@ -26,14 +26,14 @@ from ...schemas.shopping.types.payment_instrument_base import (
 
 
 class LocalprotocolCommerceAuthCaptureInstrument(PaymentInstrumentBase):
-  """Payment instrument for Localprotocol commerce auth/capture escrow flows."""
+  """Payment instrument for Localprotocol restaurant auth/capture escrow flows."""
 
   model_config = ConfigDict(
     extra="allow",
   )
   type: Literal["localprotocol_auth_capture"]
   """
-    Indicates this is a Localprotocol commerce auth/capture instrument.
+    Indicates this is a Localprotocol restaurant auth/capture instrument.
     """
   authorization_id: str
   """

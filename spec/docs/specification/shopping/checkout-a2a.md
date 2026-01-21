@@ -89,7 +89,7 @@ An example:
             "version": "2026-01-11"
           },
           {
-            "name": "xyz.localprotocol.commerce.checkout",
+            "name": "xyz.localprotocol.restaurant.checkout",
             "version": "2026-01-11",
             "extends": "dev.ucp.shopping.checkout"
           },
@@ -146,9 +146,9 @@ that activated UCP-A2A Extension in an A2A `Message`'s `DataPart`.
 The checkout object **MUST** be returned as part of a `DataPart` object with
 key `a2a.ucp.checkout`.
 
-When negotiating `xyz.localprotocol.commerce.checkout`, the checkout payload
+When negotiating `xyz.localprotocol.restaurant.checkout`, the checkout payload
 includes menu modifier selections on line items (`line_items[].modifier_selections`),
-using the commerce modifier selection type.
+using the restaurant modifier selection type.
 
 **Request format:**
 Agentic applications can accept natural language input from users interacting

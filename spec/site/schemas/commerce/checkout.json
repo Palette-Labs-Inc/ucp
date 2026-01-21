@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localprotocol.xyz/schemas/commerce/checkout.json",
+  "name": "xyz.localprotocol.commerce.checkout",
+  "version": "2026-01-11",
+  "title": "Checkout Commerce Extension Response",
+  "description": "Extends checkout with menu modifier selections for commerce ordering.",
+  "$defs": {
+    "commerce_line_item": {
+      "title": "Line Item with Menu Modifiers Response",
+      "description": "Line item extended with menu modifier selections.",
+      "allOf": [
+        {
+          "$ref": "https://ucp.dev/schemas/shopping/types/line_item.json"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "modifier_selections": {
+              "type": "array",
+              "items": {
+                "$ref": "https://ucp.dev/schemas/commerce/types/modifier_selection.json"
+              },
+              "description": "Selected menu modifiers for this line item, including nested selections."
+            }
+          }
+        }
+      ]
+    },
+    "checkout": {
+      "title": "Checkout with Menu Modifiers Response",
+      "description": "Checkout extended with menu modifier selections on line items.",
+      "allOf": [
+        {
+          "$ref": "https://ucp.dev/schemas/shopping/checkout.json"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "line_items": {
+              "type": "array",
+              "items": {
+                "$ref": "https://ucp.dev/schemas/commerce/checkout.json#/$defs/commerce_line_item"
+              },
+              "description": "List of line items being checked out."
+            }
+          }
+        }
+      ]
+    }
+  }
+}

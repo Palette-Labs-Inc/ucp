@@ -94,7 +94,7 @@ from ucp_sdk.models.schemas.shopping.types.fulfillment_resp import (
   FulfillmentResponse,
 )
 from ucp_sdk.models.schemas.shopping.types.item_resp import ItemResponse
-from ucp_sdk.models.schemas.commerce.checkout_resp import (
+from ucp_sdk.models.schemas.restaurant.checkout_resp import (
   CommerceLineItem as CommerceLineItemResponse,
 )
 from ucp_sdk.models.schemas.shopping.types.order_confirmation import (
@@ -319,7 +319,7 @@ class CheckoutService:
     if self._has_modifier_selections(line_items):
       checkout_capabilities.append(
         Response(
-          name="xyz.localprotocol.commerce.checkout",
+          name="xyz.localprotocol.restaurant.checkout",
           version=Version(config.get_server_version()),
         )
       )
@@ -612,7 +612,7 @@ class CheckoutService:
             version=Version(config.get_server_version()),
           ),
           Response(
-            name="xyz.localprotocol.commerce.checkout",
+            name="xyz.localprotocol.restaurant.checkout",
             version=Version(config.get_server_version()),
           ),
         ],

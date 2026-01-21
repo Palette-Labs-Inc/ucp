@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ucp.dev/schemas/shopping/types/applied_discount.json",
+  "title": "Applied Discount",
+  "description": "A discount that was successfully applied.",
+  "type": "object",
+  "required": ["title", "amount"],
+  "properties": {
+    "code": {
+      "type": "string",
+      "description": "The discount code. Omitted for automatic discounts."
+    },
+    "title": {
+      "type": "string",
+      "description": "Human-readable discount name (e.g., 'Summer Sale 20% Off')."
+    },
+    "amount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total discount amount in minor (cents) currency units."
+    },
+    "automatic": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if applied automatically by merchant rules (no code required)."
+    },
+    "method": {
+      "type": "string",
+      "enum": ["each", "across"],
+      "description": "Allocation method. 'each' = applied independently per item. 'across' = split proportionally by value."
+    },
+    "priority": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Stacking order for discount calculation. Lower numbers applied first (1 = first)."
+    },
+    "allocations": {
+      "type": "array",
+      "items": { "$ref": "discount_allocation.json" },
+      "description": "Breakdown of where this discount was allocated. Sum of allocation amounts equals total amount."
+    }
+  }
+}

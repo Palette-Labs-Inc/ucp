@@ -19,7 +19,8 @@
 from __future__ import annotations
 
 from typing import Any
-from pydantic import BaseModel, ConfigDict, Field, RootModel
+from pydantic import ConfigDict, Field, RootModel
+from .types import consent as consent_1
 from .types.buyer import Buyer as Buyer_1
 from .checkout_update_req import CheckoutUpdateRequest
 
@@ -31,28 +32,8 @@ class BuyerConsentExtensionUpdateRequest(RootModel[Any]):
     """
 
 
-class Consent(BaseModel):
-  """User consent states for data processing."""
-
-  model_config = ConfigDict(
-    extra="allow",
-  )
-  analytics: bool | None = None
-  """
-    Consent for analytics and performance tracking.
-    """
-  preferences: bool | None = None
-  """
-    Consent for storing user preferences.
-    """
-  marketing: bool | None = None
-  """
-    Consent for marketing communications.
-    """
-  sale_of_data: bool | None = None
-  """
-    Consent for selling data to third parties (CCPA).
-    """
+class Consent(RootModel[consent_1.Consent]):
+  root: consent_1.Consent
 
 
 class Buyer(Buyer_1):
