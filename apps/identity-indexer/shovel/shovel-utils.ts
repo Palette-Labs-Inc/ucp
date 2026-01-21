@@ -1,7 +1,7 @@
 import type { Column, Integration, Source } from "@indexsupply/shovel-config";
 import type { Abi, AbiEvent } from "abitype";
 import type { AnyContractIntegrationConfig, EnvVars } from "./shovel-types.js";
-import { contractAddresses } from "@ucp/contracts";
+import { contractAddresses } from "@ucp/onchain/contracts";
 
 export function buildShovelSource(env: EnvVars): Source {
   return {

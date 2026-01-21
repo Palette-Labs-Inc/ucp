@@ -1786,3 +1786,4 @@ export const contracts = {
   ReputationRegistry: { abi: reputation_registry_abi },
   ValidationRegistry: { abi: validation_registry_abi },
 } as const;
+

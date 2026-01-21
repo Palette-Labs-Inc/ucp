@@ -5,28 +5,38 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./contracts": "./src/contracts/index.ts",
+    "./contracts/contracts": "./src/contracts/contracts.ts",
+    "./contracts/addresses": "./src/contracts/addresses.ts",
     "./evm/anvil": "./src/evm/anvil.ts",
     "./evm/contracts/auth-capture-escrow": "./src/evm/contracts/auth-capture-escrow.ts",
+    "./evm/contracts/call-builder": "./src/evm/contracts/call-builder.ts",
     "./rpc/router": "./src/rpc/router.ts",
     "./rpc/schema": "./src/rpc/schema.ts",
     "./rpc/types": "./src/rpc/types.ts",
-    "./rpc/actions/merchant": "./src/rpc/actions/merchant.ts"
+    "./rpc/actions/merchant": "./src/rpc/actions/merchant.ts",
+    "./rpc/actions/collectors": "./src/rpc/actions/collectors.ts",
+    "./rpc/actions/identity": "./src/rpc/actions/identity.ts"
   },
   "types": "./src/index.ts",
   "files": [
     "src"
   ],
   "scripts": {
-    "check": "tsc -p tsconfig.json --noEmit"
+    "check": "tsc -p tsconfig.json --noEmit",
+    "generate": "pnpm run generate:abis && pnpm run generate:addresses",
+    "generate:abis": "TSX_DISABLE_CACHE=1 node --import tsx scripts/generate-abis.ts",
+    "generate:addresses": "TSX_DISABLE_CACHE=1 node --import tsx scripts/generate-addresses.ts"
   },
   "dependencies": {
-    "@ucp/contracts": "workspace:*",
     "abitype": "catalog:",
     "ox": "catalog:",
     "viem": "catalog:"
   },
   "devDependencies": {
+    "@ucp/config": "workspace:*",
     "@types/node": "catalog:",
+    "tsx": "catalog:",
     "typescript": "catalog:"
   }
 }

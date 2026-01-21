@@ -131,12 +131,12 @@ importers:
       '@ucp/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@ucp/contracts':
-        specifier: workspace:*
-        version: link:../../packages/contracts
       '@ucp/erc8004-specs':
         specifier: workspace:*
         version: link:../../erc8004
+      '@ucp/onchain':
+        specifier: workspace:*
+        version: link:../../packages/onchain
       abitype:
         specifier: 'catalog:'
         version: 1.2.3(typescript@5.9.3)(zod@4.3.5)
@@ -214,9 +214,6 @@ importers:
       '@ucp/config':
         specifier: workspace:*
         version: link:../../../../packages/config
-      '@ucp/contracts':
-        specifier: workspace:*
-        version: link:../../../../packages/contracts
       '@ucp/onchain':
         specifier: workspace:*
         version: link:../../../../packages/onchain
@@ -314,25 +311,6 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
-  packages/contracts:
-    dependencies:
-      abitype:
-        specifier: 'catalog:'
-        version: 1.2.3(typescript@5.9.3)(zod@4.3.5)
-    devDependencies:
-      '@types/node':
-        specifier: 'catalog:'
-        version: 25.0.9
-      '@ucp/config':
-        specifier: workspace:*
-        version: link:../config
-      tsx:
-        specifier: 'catalog:'
-        version: 4.21.0
-      typescript:
-        specifier: 'catalog:'
-        version: 5.9.3
-
   packages/js-sdk:
     dependencies:
       zod:
@@ -348,9 +326,6 @@ importers:
 
   packages/onchain:
     dependencies:
-      '@ucp/contracts':
-        specifier: workspace:*
-        version: link:../contracts
       abitype:
         specifier: 'catalog:'
         version: 1.2.3(typescript@5.9.3)(zod@4.3.5)
@@ -364,6 +339,12 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 25.0.9
+      '@ucp/config':
+        specifier: workspace:*
+        version: link:../config
+      tsx:
+        specifier: 'catalog:'
+        version: 4.21.0
       typescript:
         specifier: 'catalog:'
         version: 5.9.3

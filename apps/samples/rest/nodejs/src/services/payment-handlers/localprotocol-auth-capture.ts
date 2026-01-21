@@ -2,8 +2,7 @@ import { z } from "zod";
 import { Address, Hex } from "ox";
 import { mnemonicToAccount } from "viem/accounts";
 
-import { auth_capture_escrow_abi } from "@ucp/contracts/generated/contracts";
-import { contractAddresses } from "@ucp/contracts/generated/addresses";
+import { auth_capture_escrow_abi, contractAddresses } from "@ucp/onchain/contracts";
 import { LocalprotocolAuthCaptureInstrumentSchema } from "../../models/extensions";
 import { env } from "../../env";
 import { createAnvilClients, toPaymentInfo } from "@ucp/onchain";

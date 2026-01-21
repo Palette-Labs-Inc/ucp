@@ -20,7 +20,7 @@ from __future__ import annotations
 
 from typing import Any
 from pydantic import ConfigDict, Field, RootModel
-from .types import modifier_selection
+from .types._internal_1 import MenuModifierSelection
 from ..shopping.types.line_item_update_req import LineItemUpdateRequest
 from ..shopping.checkout_update_req import CheckoutUpdateRequest
 
@@ -40,9 +40,7 @@ class CommerceLineItem(LineItemUpdateRequest):
   model_config = ConfigDict(
     extra="allow",
   )
-  modifier_selections: list[modifier_selection.MenuModifierSelection] | None = (
-    None
-  )
+  modifier_selections: list[MenuModifierSelection] | None = None
   """
     Selected menu modifiers for this line item, including nested selections.
     """

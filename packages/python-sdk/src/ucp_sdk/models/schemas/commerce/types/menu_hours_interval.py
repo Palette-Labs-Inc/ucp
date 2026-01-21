@@ -18,9 +18,32 @@
 
 from __future__ import annotations
 
-from typing import Any
-from pydantic import RootModel
+from pydantic import BaseModel, ConfigDict, Field
 
 
-class Model(RootModel[Any]):
-  root: Any
+class MenuHoursInterval(BaseModel):
+  """A single menu availability interval for a day of the week."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  day: str
+  """
+    Day of week.
+    """
+  from_hour: int = Field(..., ge=0, le=23)
+  """
+    Start hour (0-23).
+    """
+  from_minute: int = Field(..., ge=0, le=59)
+  """
+    Start minute (0-59).
+    """
+  to_hour: int = Field(..., ge=0, le=23)
+  """
+    End hour (0-23).
+    """
+  to_minute: int = Field(..., ge=0, le=59)
+  """
+    End minute (0-59).
+    """

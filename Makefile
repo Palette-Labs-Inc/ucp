@@ -80,6 +80,8 @@ generate:
 	@pnpm run generate:ts
 	@./scripts/js_sdk_build.sh "$(UCP_SPEC_DIR)"
 	@./scripts/python_sdk_build.sh "$(UCP_SPEC_DIR)"
+	@$(MAKE) build-contract-abis
+	@$(MAKE) generate-contracts
 
 .PHONY: spec-conformance-sdks
 spec-conformance-sdks:
@@ -222,7 +224,7 @@ build-contract-abis: check-docker env-init
 
 .PHONY: generate-contracts
 generate-contracts:
-	@pnpm -C packages/contracts generate
+	@pnpm -C packages/onchain generate
 
 .PHONY: infra-up
 infra-up: env-init anvil deploy-registries deploy-commerce-payments deploy-commerce-mock-token generate-contracts

@@ -1,6 +1,6 @@
 import type { Column } from "@indexsupply/shovel-config";
 import type { Abi, ExtractAbiEvent, ExtractAbiEventNames } from "abitype";
-import type { contracts } from "@ucp/contracts";
+import type { contracts } from "@ucp/onchain/contracts";
 import type { AppEnv } from "../src/env.js";
 
 export type EnvVars = AppEnv;

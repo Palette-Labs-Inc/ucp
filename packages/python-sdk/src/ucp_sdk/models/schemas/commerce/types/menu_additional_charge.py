@@ -19,51 +19,41 @@
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
-from . import menu_additional_charge, menu_hours_interval
 
 
-class Hours(BaseModel):
-  """Menu availability hours."""
+class FlatCharge(BaseModel):
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  currency_code: str | None = None
+  """
+    ISO 4217 currency code.
+    """
+  amount: float | None = None
+  """
+    Charge amount in major units.
+    """
+
+
+class PercentageCharge(BaseModel):
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  decimal_value: float | None = Field(None, ge=0.0)
+  """
+    Charge percentage as a decimal.
+    """
+
+
+class MenuAdditionalCharge(BaseModel):
+  """An additional charge applied to orders from a menu."""
 
   model_config = ConfigDict(
     extra="allow",
   )
-  intervals: list[menu_hours_interval.MenuHoursInterval] | None = None
-
-
-class Menu(BaseModel):
-  """A menu containing categories and fulfillment configuration."""
-
-  model_config = ConfigDict(
-    extra="allow",
-  )
-  id: str
+  charge_type: str | None = None
   """
-    Menu identifier.
+    Charge type identifier.
     """
-  name: str
-  """
-    Menu name.
-    """
-  category_ids: list[str] = Field(..., min_length=1)
-  """
-    Category identifiers included in this menu.
-    """
-  fulfillment_modes: list[str] | None = None
-  """
-    Fulfillment modes supported by this menu.
-    """
-  description: str | None = None
-  """
-    Menu description.
-    """
-  hours: Hours | None = None
-  """
-    Menu availability hours.
-    """
-  additional_charges: (
-    list[menu_additional_charge.MenuAdditionalCharge] | None
-  ) = None
-  """
-    Additional charges applied to orders from this menu.
-    """
+  flat_charge: FlatCharge | None = None
+  percentage_charge: PercentageCharge | None = None

@@ -21,9 +21,9 @@
   "dependencies": {
     "@indexsupply/shovel-config": "catalog:",
     "@ucp/config": "workspace:*",
-    "@ucp/contracts": "workspace:*",
     "@ucp-js/sdk": "workspace:*",
     "@ucp/erc8004-specs": "workspace:*",
+    "@ucp/onchain": "workspace:*",
     "@hono/node-server": "catalog:",
     "@hono/zod-validator": "catalog:",
     "hono": "catalog:",

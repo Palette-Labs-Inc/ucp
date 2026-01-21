@@ -11,7 +11,7 @@ interface ContractSpec {
 }
 
 const repoRootDir = repoRoot();
-const packageDir = resolve(repoRootDir, "packages", "contracts");
+const packageDir = resolve(repoRootDir, "packages", "onchain");
 const erc8004OutDir = resolve(repoRootDir, "contracts", "erc8004", "out");
 const commercePaymentsOutDir = resolve(
   repoRootDir,
@@ -20,7 +20,7 @@ const commercePaymentsOutDir = resolve(
   "commerce-payments",
   "out",
 );
-const outputFile = resolve(packageDir, "src", "generated", "contracts.ts");
+const outputFile = resolve(packageDir, "src", "contracts", "contracts.ts");
 
 const contracts: ContractSpec[] = [
   {

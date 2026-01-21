@@ -11,8 +11,8 @@ interface DeploymentSpec {
 }
 
 const repoRootDir = repoRoot();
-const packageDir = resolve(repoRootDir, "packages", "contracts");
-const outputFile = resolve(packageDir, "src", "generated", "addresses.ts");
+const packageDir = resolve(repoRootDir, "packages", "onchain");
+const outputFile = resolve(packageDir, "src", "contracts", "addresses.ts");
 
 const deployments: DeploymentSpec[] = [
   {

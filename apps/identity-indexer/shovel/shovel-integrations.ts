@@ -1,5 +1,5 @@
 import type { Abi, ExtractAbiEventNames } from "abitype";
-import { contracts } from "@ucp/contracts";
+import { contracts } from "@ucp/onchain/contracts";
 import type {
   ContractIntegrationConfig,
   EventInputMapping,

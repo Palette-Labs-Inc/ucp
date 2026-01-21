@@ -15,7 +15,7 @@ import type {
 } from "viem";
 
 import { Address, Hex } from "ox";
-import { auth_capture_escrow_abi } from "@ucp/contracts/generated/contracts";
+import { auth_capture_escrow_abi } from "../../contracts/contracts.js";
 
 type AuthorizeFn = ExtractAbiFunction<
   typeof auth_capture_escrow_abi,

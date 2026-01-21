@@ -13,6 +13,6 @@
   },
   "scripts": {
     "generate:ts": "node spec/generate_ts_schema_types.js",
-    "generate:contracts": "pnpm -C packages/contracts generate:abis && pnpm -C packages/contracts generate:addresses"
+    "generate:contracts": "pnpm -C packages/onchain generate:abis && pnpm -C packages/onchain generate:addresses"
   }
 }

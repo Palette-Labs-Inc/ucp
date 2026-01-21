@@ -18,6 +18,6 @@
 
 from __future__ import annotations
 
-from ._internal_1 import MenuModifierSelection
+from ._internal_1 import MenuModifierItemSelection
 
-__all__ = ["MenuModifierSelection"]
+__all__ = ["MenuModifierItemSelection"]

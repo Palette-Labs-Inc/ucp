@@ -1,5 +1,4 @@
-import { identity_registry_abi } from "@ucp/contracts/generated/contracts";
-import { contractAddresses } from "@ucp/contracts/generated/addresses";
+import { contractAddresses, identity_registry_abi } from "@ucp/onchain/contracts";
 import { createPublicClient, createWalletClient, http } from "viem";
 import * as Address from "ox/Address";
 import * as Hex from "ox/Hex";

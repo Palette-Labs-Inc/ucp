@@ -344,21 +344,81 @@ export type LocalprotocolCommerceAuthCaptureInstrument = PaymentInstrumentBase &
    */
   type: 'localprotocol_auth_capture';
   /**
+   * Operator address used for the escrow authorization.
+   */
+  operator: string;
+  /**
+   * Payer address authorizing the escrow.
+   */
+  payer: string;
+  /**
+   * Receiver (merchant payout) address for captured funds.
+   */
+  receiver: string;
+  /**
+   * ERC-20 token contract address used for the payment.
+   */
+  token: string;
+  /**
+   * Amount authorized in the escrow (as a decimal string).
+   */
+  amount: string;
+  /**
+   * Maximum amount allowed for the authorization (as a decimal string).
+   */
+  max_amount: string;
+  /**
+   * Pre-approval expiry timestamp (unix seconds).
+   */
+  pre_approval_expiry: number;
+  /**
+   * Authorization expiry timestamp (unix seconds).
+   */
+  authorization_expiry: number;
+  /**
+   * Refund expiry timestamp (unix seconds).
+   */
+  refund_expiry: number;
+  /**
+   * Minimum fee in basis points.
+   */
+  min_fee_bps: number;
+  /**
+   * Maximum fee in basis points.
+   */
+  max_fee_bps: number;
+  /**
+   * Fee receiver address (use zero address for none).
+   */
+  fee_receiver: string;
+  /**
+   * Entropy to ensure unique payment hashes (as a decimal string).
+   */
+  salt: string;
+  /**
+   * Token collector contract address used for authorization.
+   */
+  token_collector: string;
+  /**
+   * Collector-specific calldata used to authorize tokens.
+   */
+  collector_data: string;
+  /**
    * Authorization identifier returned by the escrow protocol.
    */
-  authorization_id: string;
+  authorization_id?: string;
   /**
    * Transaction hash for the authorization onchain.
    */
-  authorize_tx_hash: string;
+  authorize_tx_hash?: string;
   /**
-   * EVM chain ID where the authorization was created.
+   * EVM chain ID where the authorization was created (optional if derived from config).
    */
-  chain_id: number;
+  chain_id?: number;
   /**
-   * AuthCaptureEscrow contract address.
+   * AuthCaptureEscrow contract address (optional if derived from config).
    */
-  escrow_contract: string;
+  escrow_contract?: string;
   /**
    * Merchant payout address used for capture.
    */
@@ -2792,7 +2852,7 @@ export declare interface UCPService {
  * This interface was referenced by `UCPMetadata`'s JSON-Schema
  * via the `definition` "discovery_profile".
  */
-export declare interface UCPDiscoveryProfile {
+export declare interface UCPDiscoveryMetadata {
   /**
    * UCP protocol version in YYYY-MM-DD format.
    *

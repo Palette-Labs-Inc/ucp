@@ -1,12 +1,12 @@
 import { Address, Hex } from "ox";
 
 import {
+  contractAddresses,
   mock_erc3009_token_abi,
   pre_approval_payment_collector_abi,
-} from "@ucp/contracts/generated/contracts";
-import { contractAddresses } from "@ucp/contracts/generated/addresses";
-import type { PaymentInfo } from "@ucp/onchain";
+} from "@ucp/onchain/contracts";
 import type { createAnvilClients } from "@ucp/onchain";
+import type { PaymentInfo } from "@ucp/onchain/rpc/types";
 
 export type CollectorStrategy = "preapproval";
 
