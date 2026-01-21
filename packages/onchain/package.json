@@ -1,0 +1,32 @@
+{
+  "name": "@ucp/onchain",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./evm/anvil": "./src/evm/anvil.ts",
+    "./evm/contracts/auth-capture-escrow": "./src/evm/contracts/auth-capture-escrow.ts",
+    "./rpc/router": "./src/rpc/router.ts",
+    "./rpc/schema": "./src/rpc/schema.ts",
+    "./rpc/types": "./src/rpc/types.ts",
+    "./rpc/actions/merchant": "./src/rpc/actions/merchant.ts"
+  },
+  "types": "./src/index.ts",
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "check": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@ucp/contracts": "workspace:*",
+    "abitype": "catalog:",
+    "ox": "catalog:",
+    "viem": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
+  }
+}

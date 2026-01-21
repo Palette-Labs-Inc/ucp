@@ -15,7 +15,6 @@ export const AppEnvSchema = z.object({
   ANVIL_DEPLOYER_KEY: z.string().min(1).default("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"),
   DEV_MNEMONIC: z.string().min(1).default("test test test test test test test test test test test junk"),
   ESCROW_RPC_URL: z.string().min(1).default("http://127.0.0.1:8545"),
-  ESCROW_OPERATOR_PRIVATE_KEY: z.string().min(1).default("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"),
   SIMULATION_SECRET: z.string().min(1).default("super-secret-sim-key"),
   SAMPLE_BASE_URL: z.string().min(1).default("http://localhost:3000"),
   PRODUCT_ID: z.string().min(1).default("bouquet_roses"),

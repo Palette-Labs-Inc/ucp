@@ -646,6 +646,12 @@ export class CheckoutService {
               400,
           );
         }
+        // AuthCaptureEscrow mapping:
+        // operator = backend signer (ANVIL account index 1)
+        // payer = buyer wallet from payment_data
+        // receiver = merchant wallet from payment_data
+        // tokenCollector = collector contract that pulls tokens into escrow
+        // collectorData = extra data for the collector (permit/approval)
         const {authorizationId, authorizeTxHash} =
             await authorizeFromInstrument(parsedInstrument.data);
         const updatedInstrument = {

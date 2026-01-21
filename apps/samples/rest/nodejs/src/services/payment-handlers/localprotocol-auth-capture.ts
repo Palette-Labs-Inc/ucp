@@ -1,18 +1,23 @@
 import { z } from "zod";
 import { Address, Hex } from "ox";
-import { mnemonicToAccount, privateKeyToAccount } from "viem/accounts";
+import { mnemonicToAccount } from "viem/accounts";
 
 import { auth_capture_escrow_abi } from "@ucp/contracts/generated/contracts";
+import { contractAddresses } from "@ucp/contracts/generated/addresses";
 import { LocalprotocolAuthCaptureInstrumentSchema } from "../../models/extensions";
 import { env } from "../../env";
-import { getOnchainConfig } from "../../onchain/config";
-import { createAnvilClients } from "../../onchain/evm/anvil";
-import { getEscrowAddress } from "../../onchain/evm/addresses";
-import { toPaymentInfo } from "../../onchain/evm/contracts/auth-capture-escrow";
+import { createAnvilClients, toPaymentInfo } from "@ucp/onchain";
 
 type LocalprotocolInstrument = z.infer<
   typeof LocalprotocolAuthCaptureInstrumentSchema
 >;
+
+// AuthCaptureEscrow terms -> UCP payment data fields:
+// operator: backend signer that calls escrow (ANVIL account index 1).
+// payer: end customer wallet (buyer).
+// receiver: merchant wallet that receives the payment.
+// tokenCollector: contract that pulls tokens from payer into escrow.
+// collectorData: extra data for the tokenCollector (e.g. permit / approval).
 
 export interface AuthorizationResult {
   authorizationId: Hex.Hex;
@@ -20,26 +25,22 @@ export interface AuthorizationResult {
 }
 
 function getOperatorAccount() {
-  const mnemonic = env.ANVIL_MNEMONIC ?? env.DEV_MNEMONIC;
-  if (mnemonic) return mnemonicToAccount(mnemonic, { accountIndex: 1 });
-  if (!env.ESCROW_OPERATOR_PRIVATE_KEY) {
-    throw new Error("Missing ESCROW_OPERATOR_PRIVATE_KEY");
-  }
-  Hex.assert(env.ESCROW_OPERATOR_PRIVATE_KEY);
-  return privateKeyToAccount(env.ESCROW_OPERATOR_PRIVATE_KEY);
+  return mnemonicToAccount(env.ANVIL_MNEMONIC, { accountIndex: 1 });
 }
 
 export async function authorizeFromInstrument(
   instrument: LocalprotocolInstrument
 ): Promise<AuthorizationResult> {
+  // "authorize" = escrow funds (hold). No fee parameters are applied here.
   const operatorAccount = getOperatorAccount();
-  const onchain = getOnchainConfig(instrument.chain_id);
   const { publicClient, walletClient } = createAnvilClients({
-    rpcUrl: onchain.rpcUrl,
-    chainId: onchain.chainId,
+    rpcUrl: env.ESCROW_RPC_URL,
+    chainId: env.CHAIN_ID,
     account: operatorAccount,
   });
-  const escrowAddress = getEscrowAddress(onchain.chainId);
+  const escrowAddress = Address.from(
+    contractAddresses[env.CHAIN_ID].AuthCaptureEscrow
+  );
   const paymentInfo = toPaymentInfo({
     operator: instrument.operator,
     payer: instrument.payer,
@@ -96,14 +97,16 @@ export async function authorizeFromInstrument(
 export async function captureFromInstrument(
   instrument: LocalprotocolInstrument
 ): Promise<void> {
+  // "capture" = release escrowed funds to receiver, with optional fee.
   const operatorAccount = getOperatorAccount();
-  const onchain = getOnchainConfig(instrument.chain_id);
   const { publicClient, walletClient } = createAnvilClients({
-    rpcUrl: onchain.rpcUrl,
-    chainId: onchain.chainId,
+    rpcUrl: env.ESCROW_RPC_URL,
+    chainId: env.CHAIN_ID,
     account: operatorAccount,
   });
-  const escrowAddress = getEscrowAddress(onchain.chainId);
+  const escrowAddress = Address.from(
+    contractAddresses[env.CHAIN_ID].AuthCaptureEscrow
+  );
   const paymentInfo = toPaymentInfo({
     operator: instrument.operator,
     payer: instrument.payer,

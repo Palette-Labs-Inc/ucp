@@ -1,5 +1,4 @@
 export { createAnvilClients } from "../evm/anvil";
-export { getEscrowAddress } from "../evm/addresses";
 export {
   buildAuthorizeCall,
   getEscrowContract,

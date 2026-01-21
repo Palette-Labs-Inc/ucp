@@ -16,6 +16,7 @@
     "@hono/zod-validator": "catalog:",
     "@ucp/config": "workspace:*",
     "@ucp/contracts": "workspace:*",
+    "@ucp/onchain": "workspace:*",
     "abitype": "catalog:",
     "better-sqlite3": "catalog:",
     "hono": "catalog:",

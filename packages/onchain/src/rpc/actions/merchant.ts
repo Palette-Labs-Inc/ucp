@@ -1,7 +1,9 @@
+import { Address } from "ox";
+import { contractAddresses } from "@ucp/contracts/generated/addresses";
+
 import type { RpcActions } from "../router";
 import type { MerchantPrepareCheckoutParams } from "../types";
 import { buildAuthorizeCall } from "../../evm/contracts/auth-capture-escrow";
-import { getEscrowAddress } from "../../evm/addresses";
 
 export function createMerchantActions(args: {
   chainId: number;
@@ -9,12 +11,14 @@ export function createMerchantActions(args: {
   RpcActions,
   "escrow_getAddress" | "merchant_prepareCheckout"
 > {
+  const escrowAddress = Address.from(
+    contractAddresses[args.chainId].AuthCaptureEscrow
+  );
   return {
     async escrow_getAddress() {
-      return { address: getEscrowAddress(args.chainId) };
+      return { address: escrowAddress };
     },
     async merchant_prepareCheckout(params: MerchantPrepareCheckoutParams) {
-      const escrowAddress = getEscrowAddress(args.chainId);
       const call = buildAuthorizeCall({
         escrowAddress,
         paymentInfo: params.paymentInfo,

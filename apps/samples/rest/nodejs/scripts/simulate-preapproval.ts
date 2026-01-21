@@ -8,7 +8,7 @@ import {
 } from '@ucp/contracts/generated/contracts';
 import {contractAddresses} from '@ucp/contracts/generated/addresses';
 import {env} from '../src/env.js';
-import {createAnvilClients, getOnchainConfig, getEscrowAddress, toPaymentInfo} from '../src/onchain';
+import {createAnvilClients, toPaymentInfo} from '@ucp/onchain';
 
 const emptyHex = Hex.from('0x');
 
@@ -23,32 +23,53 @@ async function writeAndWait(
   await publicClient.waitForTransactionReceipt({hash});
 }
 
+async function readJsonOrThrow<T>(response: Response): Promise<T> {
+  const text = await response.text();
+  if (!response.ok) {
+    throw new Error(
+      `Request failed (${response.status} ${response.statusText}): ${text}`,
+    );
+  }
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new Error(`Invalid JSON response: ${text}`);
+  }
+}
+
 async function main(): Promise<void> {
-  const onchain = getOnchainConfig();
   const sampleBaseUrl = env.SAMPLE_BASE_URL;
   const productId = env.PRODUCT_ID;
   const simulationSecret = env.SIMULATION_SECRET;
 
+  // Actor mapping to AuthCaptureEscrow terms:
+  // operator = backend signer (account index 1)
+  // receiver = merchant (account index 2)
+  // payer = buyer (account index 3)
   const mnemonic = env.ANVIL_MNEMONIC;
   const operatorAccount = mnemonicToAccount(mnemonic, {accountIndex: 1});
   const merchantAccount = mnemonicToAccount(mnemonic, {accountIndex: 2});
   const buyerAccount = mnemonicToAccount(mnemonic, {accountIndex: 3});
 
   const {publicClient} = createAnvilClients({
-    rpcUrl: onchain.rpcUrl,
-    chainId: onchain.chainId,
+    rpcUrl: env.ESCROW_RPC_URL,
+    chainId: env.CHAIN_ID,
     account: operatorAccount,
   });
   const {walletClient: buyerClient} = createAnvilClients({
-    rpcUrl: onchain.rpcUrl,
-    chainId: onchain.chainId,
+    rpcUrl: env.ESCROW_RPC_URL,
+    chainId: env.CHAIN_ID,
     account: buyerAccount,
   });
 
   const chainId = await publicClient.getChainId();
   const addressBook = contractAddresses[chainId];
 
-  const escrowAddress = getEscrowAddress(chainId);
+  // Contracts:
+  // AuthCaptureEscrow = escrow that tracks authorization/capture state.
+  // PreApprovalPaymentCollector = tokenCollector used by authorize().
+  // MockERC3009Token = test token pulled from payer into escrow.
+  const escrowAddress = Address.from(addressBook.AuthCaptureEscrow);
   const collectorAddress = Address.from(addressBook.PreApprovalPaymentCollector);
   const tokenAddress = Address.from(addressBook.MockERC3009Token);
 
@@ -60,6 +81,8 @@ async function main(): Promise<void> {
   const feeReceiver = Address.from(env.FEE_RECEIVER);
   const salt = BigInt(env.SALT);
 
+  // PaymentInfo mirrors the escrow struct. "feeReceiver" is used only when
+  // fees are applied (fee bps > 0). With 0 fees, it is informational.
   const paymentInfo = toPaymentInfo({
     operator: operatorAccount.address,
     payer: buyerAccount.address,
@@ -75,6 +98,7 @@ async function main(): Promise<void> {
     salt,
   });
 
+  // 1) Buyer approves collector to pull tokens.
   const approveGas = await publicClient.estimateContractGas({
     address: tokenAddress,
     abi: mock_erc3009_token_abi,
@@ -91,6 +115,7 @@ async function main(): Promise<void> {
   });
   await writeAndWait(publicClient, approveHash);
 
+  // 2) Buyer pre-approves payment (collector pulls into escrow).
   const preApproveGas = await publicClient.estimateContractGas({
     address: collectorAddress,
     abi: pre_approval_payment_collector_abi,
@@ -107,6 +132,7 @@ async function main(): Promise<void> {
   });
   await writeAndWait(publicClient, preApproveHash);
 
+  // 3) Create checkout and submit payment_data to backend.
   const checkoutResponse = await fetch(`${sampleBaseUrl}/checkout-sessions`, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -116,7 +142,7 @@ async function main(): Promise<void> {
       payment: {},
     }),
   });
-  const checkout = (await checkoutResponse.json()) as {id: string};
+  const checkout = await readJsonOrThrow<{id: string}>(checkoutResponse);
 
   const completeResponse = await fetch(
     `${sampleBaseUrl}/checkout-sessions/${checkout.id}/complete`,
@@ -147,11 +173,12 @@ async function main(): Promise<void> {
       }),
     },
   );
-  const completed = (await completeResponse.json()) as {
+  const completed = await readJsonOrThrow<{
     id: string;
     order_id?: string;
-  };
+  }>(completeResponse);
 
+  // 4) Simulate shipping which triggers capture in backend.
   const shipResponse = await fetch(
     `${sampleBaseUrl}/testing/simulate-shipping/${completed.order_id}`,
     {
@@ -159,7 +186,7 @@ async function main(): Promise<void> {
       headers: {'Simulation-Secret': simulationSecret},
     },
   );
-  await shipResponse.json();
+  await readJsonOrThrow(shipResponse);
 
   const escrowHash = await publicClient.readContract({
     address: escrowAddress,
