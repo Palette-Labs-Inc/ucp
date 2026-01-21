@@ -5,7 +5,7 @@ import {z} from 'zod';
 
 import {getCheckoutSession, getIdempotencyRecord, getInventory, getOrder, getProduct, logRequest, releaseStock, reserveStock, saveCheckout, saveIdempotencyRecord, saveOrder} from '../data';
 import {CheckoutResponseStatusSchema, type Expectation, type ExpectationLineItem, type ExtendedCheckoutCreateRequest, type ExtendedCheckoutResponse, type ExtendedCheckoutUpdateRequest, ExtendedPaymentCredentialSchema, ExtendedPaymentDataSchema, type FulfillmentDestinationRequest, type FulfillmentDestinationResponse, type FulfillmentOptionResponse, type FulfillmentRequest, type FulfillmentResponse, type LineItemCreateRequest, type LineItemResponse, LocalprotocolAuthCaptureInstrumentSchema, type Order, type OrderLineItem, type PaymentCreateRequest, type PostalAddress} from '../models';
-import {authorizeEscrow, buildPaymentInfo, captureEscrow, getEscrowConfigFromEnv, readPaymentInfoHash, toBigInt, waitForEscrowReceipt} from '../utils/escrow';
+import {authorizeFromInstrument, captureFromInstrument} from '../services/payment-handlers/localprotocol-auth-capture';
 
 /**
  * Schema for the request body when completing a checkout session.
@@ -24,25 +24,6 @@ export type CompleteCheckoutRequest = z.infer<typeof zCompleteCheckoutRequest>;
  * Service for managing checkout sessions.
  */
 export class CheckoutService {
-  private buildPaymentInfoFromInstrument(
-      instrument: z.infer<typeof LocalprotocolAuthCaptureInstrumentSchema>,
-      ) {
-    return buildPaymentInfo({
-      operator: instrument.operator as `0x${string}`,
-      payer: instrument.payer as `0x${string}`,
-      receiver: instrument.receiver as `0x${string}`,
-      token: instrument.token as `0x${string}`,
-      maxAmount: toBigInt(instrument.max_amount),
-      preApprovalExpiry: instrument.pre_approval_expiry,
-      authorizationExpiry: instrument.authorization_expiry,
-      refundExpiry: instrument.refund_expiry,
-      minFeeBps: instrument.min_fee_bps,
-      maxFeeBps: instrument.max_fee_bps,
-      feeReceiver: instrument.fee_receiver as `0x${string}`,
-      salt: toBigInt(instrument.salt),
-    });
-  }
-
   private computeHash(data: unknown): string {
     const replacer = (_key: string, value: unknown) =>
         typeof value === 'object' && value !== null && !Array.isArray(value) ?
@@ -665,21 +646,8 @@ export class CheckoutService {
               400,
           );
         }
-        const escrowConfig = getEscrowConfigFromEnv(parsedInstrument.data.chain_id);
-        const paymentInfo =
-            this.buildPaymentInfoFromInstrument(parsedInstrument.data);
-        const authorizeTxHash = await authorizeEscrow({
-          config: escrowConfig,
-          paymentInfo,
-          amount: toBigInt(parsedInstrument.data.amount),
-          tokenCollector: parsedInstrument.data.token_collector as `0x${string}`,
-          collectorData: parsedInstrument.data.collector_data as `0x${string}`,
-        });
-        await waitForEscrowReceipt(escrowConfig, authorizeTxHash);
-        const authorizationId = await readPaymentInfoHash({
-          config: escrowConfig,
-          paymentInfo,
-        });
+        const {authorizationId, authorizeTxHash} =
+            await authorizeFromInstrument(parsedInstrument.data);
         const updatedInstrument = {
           ...parsedInstrument.data,
           authorize_tx_hash: authorizeTxHash,
@@ -949,16 +917,7 @@ export class CheckoutService {
       const parsedInstrument =
           LocalprotocolAuthCaptureInstrumentSchema.safeParse(selected);
       if (parsedInstrument.success) {
-        const escrowConfig = getEscrowConfigFromEnv(parsedInstrument.data.chain_id);
-        const paymentInfo =
-            this.buildPaymentInfoFromInstrument(parsedInstrument.data);
-        await captureEscrow({
-          config: escrowConfig,
-          paymentInfo,
-          amount: toBigInt(parsedInstrument.data.amount),
-          feeBps: parsedInstrument.data.min_fee_bps,
-          feeReceiver: parsedInstrument.data.fee_receiver as `0x${string}`,
-        });
+        await captureFromInstrument(parsedInstrument.data);
       }
     }
 

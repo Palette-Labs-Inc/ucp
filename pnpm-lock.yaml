@@ -217,6 +217,9 @@ importers:
       '@ucp/contracts':
         specifier: workspace:*
         version: link:../../../../packages/contracts
+      abitype:
+        specifier: 'catalog:'
+        version: 1.2.3(typescript@5.9.3)(zod@4.3.5)
       better-sqlite3:
         specifier: 'catalog:'
         version: 9.6.0
@@ -226,6 +229,9 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.11.4
+      ox:
+        specifier: 'catalog:'
+        version: 0.11.3(typescript@5.9.3)(zod@4.3.5)
       pino:
         specifier: 'catalog:'
         version: 10.2.0

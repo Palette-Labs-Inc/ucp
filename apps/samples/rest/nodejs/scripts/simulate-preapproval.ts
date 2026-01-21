@@ -1,9 +1,5 @@
-import {
-  createPublicClient,
-  createWalletClient,
-  http,
-  type Address,
-} from 'viem';
+import {Address, Hex} from 'ox';
+import {createPublicClient, createWalletClient, http} from 'viem';
 import {mnemonicToAccount} from 'viem/accounts';
 
 import {
@@ -13,6 +9,7 @@ import {
 } from '@ucp/contracts/generated/contracts';
 import {contractAddresses} from '@ucp/contracts/generated/addresses';
 import {env} from '../src/env.js';
+import {getOnchainConfig, getEscrowAddress, toPaymentInfo} from '../src/onchain';
 
 const defaultRpcUrl = 'http://127.0.0.1:8545';
 const defaultMerchantAddress = '0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc';
@@ -21,12 +18,13 @@ function nowSeconds(): number {
   return Math.floor(Date.now() / 1000);
 }
 
-function getEnvAddress(value: string | undefined, fallback: string): Address {
-  return (value ?? fallback) as Address;
+function getEnvAddress(value: string | undefined, fallback: string): Address.Address {
+  return Address.from(value ?? fallback);
 }
 
 async function main(): Promise<void> {
-  const rpcUrl = env.ESCROW_RPC_URL ?? defaultRpcUrl;
+  const onchain = getOnchainConfig();
+  const rpcUrl = onchain.rpcUrl ?? defaultRpcUrl;
   const sampleBaseUrl = env.SAMPLE_BASE_URL ?? 'http://localhost:3000';
   const productId = env.PRODUCT_ID ?? 'bouquet_roses';
   const simulationSecret = env.SIMULATION_SECRET ?? 'super-secret-sim-key';
@@ -109,9 +107,9 @@ async function main(): Promise<void> {
     throw new Error(`Missing contract addresses for chain ${chainId}`);
   }
 
-  const escrowAddress = addressBook.AuthCaptureEscrow as Address;
-  const collectorAddress = addressBook.PreApprovalPaymentCollector as Address;
-  const tokenAddress = addressBook.MockERC3009Token as Address;
+  const escrowAddress = getEscrowAddress(chainId);
+  const collectorAddress = Address.from(addressBook.PreApprovalPaymentCollector);
+  const tokenAddress = Address.from(addressBook.MockERC3009Token);
 
   if (!escrowAddress || !collectorAddress || !tokenAddress) {
     throw new Error('Missing escrow/collector/token addresses for this chain.');
@@ -122,12 +120,13 @@ async function main(): Promise<void> {
   const preApprovalExpiry = nowSeconds() + 3600;
   const authorizationExpiry = nowSeconds() + 5400;
   const refundExpiry = nowSeconds() + 7200;
-  const feeReceiver =
-    (env.FEE_RECEIVER ??
-      '0x0000000000000000000000000000000000000000') as Address;
+  const feeReceiver = Address.from(
+    env.FEE_RECEIVER ??
+      '0x0000000000000000000000000000000000000000',
+  );
   const salt = BigInt(env.SALT ?? 1);
 
-  const paymentInfo = {
+  const paymentInfo = toPaymentInfo({
     operator: operatorAccount.address,
     payer: buyerAccount.address,
     receiver: merchantAddress,
@@ -140,7 +139,7 @@ async function main(): Promise<void> {
     maxFeeBps: 0,
     feeReceiver,
     salt,
-  };
+  });
 
   const tokenBalance = await publicClient.readContract({
     address: tokenAddress,
@@ -234,7 +233,7 @@ async function main(): Promise<void> {
           fee_receiver: feeReceiver,
           salt: salt.toString(),
           token_collector: collectorAddress,
-          collector_data: '0x',
+          collector_data: Hex.from('0x'),
           authorization_id: '0x',
           authorize_tx_hash: '0x',
           chain_id: chainId,
