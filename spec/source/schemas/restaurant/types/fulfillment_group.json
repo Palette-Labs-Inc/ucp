@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://xyz.localprotocol/schemas/delivery/types/fulfillment_group.json",
+  "$id": "https://xyz.localprotocol/schemas/restaurant/types/fulfillment_group.json",
   "title": "Delivery Fulfillment Group",
   "description": "A merchant-generated package/group of line items with fulfillment options.",
   "type": "object",

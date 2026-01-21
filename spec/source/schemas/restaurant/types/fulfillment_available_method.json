@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://xyz.localprotocol/schemas/delivery/types/fulfillment_available_method.json",
+  "$id": "https://xyz.localprotocol/schemas/restaurant/types/fulfillment_available_method.json",
   "title": "Delivery Fulfillment Available Method",
   "description": "Availability hint for pickup or on-demand delivery.",
   "type": "object",

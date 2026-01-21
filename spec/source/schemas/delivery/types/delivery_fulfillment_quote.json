@@ -1,9 +1,0 @@
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://xyz.localprotocol/schemas/delivery/types/delivery_fulfillment_quote.json",
-  "title": "Delivery Fulfillment Quote Reference",
-  "description": "Delivery fulfillment reference to a previously created quote.",
-  "allOf": [
-    { "$ref": "../delivery.json#/$defs/quote" }
-  ]
-}

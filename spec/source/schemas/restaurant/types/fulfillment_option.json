@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://xyz.localprotocol/schemas/delivery/types/fulfillment_option.json",
+  "$id": "https://xyz.localprotocol/schemas/restaurant/types/fulfillment_option.json",
   "title": "Delivery Fulfillment Option",
   "description": "A fulfillment option within a group (e.g., Standard Delivery, Priority Pickup).",
   "type": "object",

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://xyz.localprotocol/schemas/delivery/types/pickup_location.json",
+  "$id": "https://xyz.localprotocol/schemas/restaurant/types/pickup_location.json",
   "title": "Pickup Location",
   "description": "A pickup location (retail store, locker, etc.).",
   "type": "object",
