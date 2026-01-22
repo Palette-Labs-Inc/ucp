@@ -19,35 +19,38 @@
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
-from .types import fulfillment_req, line_item_update_req
-from ..shopping.types import buyer as buyer_1
-from ..shopping import payment_update_req
+from typing import Literal
 
 
-class CheckoutRestaurantExtensionUpdateRequest(BaseModel):
-  """Extends checkout with menu modifier selections for restaurant ordering."""
+class AllowsMultiDestination(BaseModel):
+  """Permits multiple destinations per method type."""
 
   model_config = ConfigDict(
     extra="allow",
   )
-  id: str
+  on_demand_delivery: bool | None = None
   """
-    Unique identifier of the checkout session.
+    Multiple dropoff locations allowed.
     """
-  line_items: list[line_item_update_req.RestaurantLineItemUpdateRequest]
+  pickup: bool | None = None
   """
-    List of line items being checked out.
+    Multiple pickup locations allowed.
     """
-  buyer: buyer_1.Buyer | None = None
+
+
+class RestaurantMerchantFulfillmentConfig(BaseModel):
+  """Merchant fulfillment configuration for restaurant checkout. Method types align with restaurant fulfillment methods."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  allows_multi_destination: AllowsMultiDestination | None = None
   """
-    Representation of the buyer.
+    Permits multiple destinations per method type.
     """
-  currency: str
+  allows_method_combinations: (
+    list[list[Literal["on_demand_delivery", "pickup"]]] | None
+  ) = None
   """
-    ISO 4217 currency code.
-    """
-  payment: payment_update_req.PaymentUpdateRequest
-  fulfillment: fulfillment_req.RestaurantFulfillmentRequest | None = None
-  """
-    Fulfillment selection and availability for the checkout.
+    Allowed method type combinations for a single checkout.
     """

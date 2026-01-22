@@ -54,7 +54,7 @@ class MenuMerchantSearchFilters(BaseModel):
   """
     Whether the merchant is open at request time.
     """
-  fulfillment_method: Literal["shipping", "pickup"] | None = None
+  fulfillment_method: Literal["pickup", "on_demand_delivery"] | None = None
   """
     Required fulfillment method type for the merchant.
     """

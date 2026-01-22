@@ -18,32 +18,26 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict
-from .types import fulfillment_req, line_item_create_req
-from ..shopping.types import buyer as buyer_1
-from ..shopping import payment_create_req
+from pydantic import BaseModel, ConfigDict, Field
+from . import item as item_1
+from ._internal_1 import MenuModifierSelection
 
 
-class CheckoutRestaurantExtensionCreateRequest(BaseModel):
-  """Extends checkout with menu modifier selections for restaurant ordering."""
+class RestaurantLineItemCreateRequest(BaseModel):
+  """Checkout line item with menu modifier selections."""
 
   model_config = ConfigDict(
     extra="allow",
   )
-  line_items: list[line_item_create_req.RestaurantLineItemCreateRequest]
+  item: item_1.MenuItem
   """
-    List of line items being checked out.
+    Menu item snapshot for checkout.
     """
-  buyer: buyer_1.Buyer | None = None
+  modifier_selections: list[MenuModifierSelection] | None = None
   """
-    Representation of the buyer.
+    Selected menu modifiers for this line item, including nested selections.
     """
-  currency: str
+  quantity: int = Field(..., ge=1)
   """
-    ISO 4217 currency code.
-    """
-  payment: payment_create_req.PaymentCreateRequest
-  fulfillment: fulfillment_req.RestaurantFulfillmentRequest | None = None
-  """
-    Fulfillment selection and availability for the checkout.
+    Quantity of the item being purchased.
     """

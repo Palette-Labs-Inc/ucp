@@ -18,36 +18,25 @@
 
 from __future__ import annotations
 
+from typing import Literal
 from pydantic import BaseModel, ConfigDict
-from .types import fulfillment_req, line_item_update_req
-from ..shopping.types import buyer as buyer_1
-from ..shopping import payment_update_req
 
 
-class CheckoutRestaurantExtensionUpdateRequest(BaseModel):
-  """Extends checkout with menu modifier selections for restaurant ordering."""
+class RestaurantFulfillmentAvailableMethodResponse(BaseModel):
+  """Availability hint for pickup or on-demand delivery in restaurant checkout."""
 
   model_config = ConfigDict(
     extra="allow",
   )
-  id: str
+  type: Literal["pickup", "on_demand_delivery"]
   """
-    Unique identifier of the checkout session.
+    Fulfillment method type this availability applies to.
     """
-  line_items: list[line_item_update_req.RestaurantLineItemUpdateRequest]
+  fulfillable_on: str | None = None
   """
-    List of line items being checked out.
+    'now' for immediate availability, or ISO 8601 date for future availability.
     """
-  buyer: buyer_1.Buyer | None = None
+  description: str | None = None
   """
-    Representation of the buyer.
-    """
-  currency: str
-  """
-    ISO 4217 currency code.
-    """
-  payment: payment_update_req.PaymentUpdateRequest
-  fulfillment: fulfillment_req.RestaurantFulfillmentRequest | None = None
-  """
-    Fulfillment selection and availability for the checkout.
+    Human-readable availability info.
     """

@@ -18,20 +18,13 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import ConfigDict
+from ...shopping.types.order_confirmation import OrderConfirmation
 
 
-class DiscountAllocation(BaseModel):
-  """Breakdown of how a discount amount was allocated to a specific target."""
+class RestaurantOrderConfirmation(OrderConfirmation):
+  """Order confirmation details for restaurant checkout."""
 
   model_config = ConfigDict(
     extra="allow",
   )
-  path: str
-  """
-    JSONPath to the allocation target (e.g., '$.line_items[0]', '$.totals.shipping').
-    """
-  amount: int = Field(..., ge=0)
-  """
-    Amount allocated to this target in minor (cents) currency units.
-    """

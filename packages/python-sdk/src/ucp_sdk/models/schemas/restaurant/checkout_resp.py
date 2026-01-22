@@ -18,39 +18,74 @@
 
 from __future__ import annotations
 
-from typing import Any
-from pydantic import ConfigDict, Field, RootModel
-from .types._internal_1 import MenuModifierSelection
-from ..shopping.types.line_item_resp import LineItemResponse
-from ..shopping.checkout_resp import CheckoutResponse
+from typing import Literal
+from pydantic import AnyUrl, AwareDatetime, BaseModel, ConfigDict
+from ..._internal import ResponseCheckout
+from .types import fulfillment_resp, line_item_resp, order_confirmation
+from ..shopping.types import buyer as buyer_1, link, message, total_resp
+from ..shopping import payment_resp
 
 
-class CheckoutRestaurantExtensionResponse(RootModel[Any]):
-  root: Any = Field(..., title="Checkout Restaurant Extension Response")
-  """
-    Extends checkout with menu modifier selections for restaurant ordering.
-    """
-
-
-class RestaurantLineItem(LineItemResponse):
-  """Line item extended with menu modifier selections."""
+class CheckoutRestaurantExtensionResponse(BaseModel):
+  """Extends checkout with menu modifier selections for restaurant ordering."""
 
   model_config = ConfigDict(
     extra="allow",
   )
-  modifier_selections: list[MenuModifierSelection] | None = None
+  ucp: ResponseCheckout
+  id: str
   """
-    Selected menu modifiers for this line item, including nested selections.
+    Unique identifier of the checkout session.
     """
-
-
-class Checkout(CheckoutResponse):
-  """Checkout extended with menu modifier selections on line items."""
-
-  model_config = ConfigDict(
-    extra="allow",
-  )
-  line_items: list[RestaurantLineItem] | None = None
+  line_items: list[line_item_resp.RestaurantLineItemResponse]
   """
     List of line items being checked out.
+    """
+  buyer: buyer_1.Buyer | None = None
+  """
+    Representation of the buyer.
+    """
+  status: Literal[
+    "incomplete",
+    "requires_escalation",
+    "ready_for_complete",
+    "complete_in_progress",
+    "completed",
+    "canceled",
+  ]
+  """
+    Checkout state indicating the current phase and required action. See Checkout Status lifecycle documentation for state transition details.
+    """
+  currency: str
+  """
+    ISO 4217 currency code.
+    """
+  totals: list[total_resp.TotalResponse]
+  """
+    Different cart totals.
+    """
+  messages: list[message.Message] | None = None
+  """
+    List of messages with error and info about the checkout session state.
+    """
+  links: list[link.Link]
+  """
+    Links to be displayed by the platform (Privacy Policy, TOS). Mandatory for legal compliance.
+    """
+  expires_at: AwareDatetime | None = None
+  """
+    RFC 3339 expiry timestamp. Default TTL is 6 hours from creation if not sent.
+    """
+  continue_url: AnyUrl | None = None
+  """
+    URL for checkout handoff and session recovery. MUST be provided when status is requires_escalation. See specification for format and availability requirements.
+    """
+  payment: payment_resp.PaymentResponse
+  fulfillment: fulfillment_resp.RestaurantFulfillmentResponse | None = None
+  """
+    Fulfillment selection and availability for the checkout.
+    """
+  order: order_confirmation.RestaurantOrderConfirmation | None = None
+  """
+    Order confirmation details with restaurant fulfillment summary.
     """

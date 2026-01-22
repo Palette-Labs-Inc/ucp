@@ -19,21 +19,21 @@
 from __future__ import annotations
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict
-from . import delivery_location
+from ...shared.types import dropoff_location_req, pickup_location_req
 from ...shopping.types import price
 
 
-class DeliveryRequest(BaseModel):
+class DeliveryInputsRequest(BaseModel):
   """Inputs required to create a delivery without a precomputed quote."""
 
   model_config = ConfigDict(
     extra="allow",
   )
-  pickup: delivery_location.DeliveryLocation
+  pickup: pickup_location_req.PickupLocationRequest
   """
     Pickup location.
     """
-  dropoff: delivery_location.DeliveryLocation
+  dropoff: dropoff_location_req.DropoffLocationRequest
   """
     Dropoff location.
     """
@@ -53,7 +53,7 @@ class DeliveryRequest(BaseModel):
   """
     RFC 3339 timestamp after which dropoff is no longer valid.
     """
-  manifest_total_value: price.Price
+  items_value: price.Price
   """
     Total value of items.
     """

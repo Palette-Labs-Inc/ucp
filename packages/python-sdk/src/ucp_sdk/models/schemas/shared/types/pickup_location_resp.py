@@ -18,17 +18,26 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict
-from . import delivery_request as delivery_request_1
+from pydantic import ConfigDict
+from . import location as location_1
+from ...shopping.types.postal_address import PostalAddress
 
 
-class DeliveryFulfillmentRequest(BaseModel):
-  """Delivery fulfillment details when no quote is provided."""
+class PickupLocationResponse(PostalAddress):
+  """A pickup location for on-demand delivery."""
 
   model_config = ConfigDict(
     extra="allow",
   )
-  delivery_request: delivery_request_1.DeliveryRequest
+  id: str
   """
-    Delivery request details when no quote is provided.
+    ID specific to this pickup location.
+    """
+  name: str | None = None
+  """
+    Pickup location name (e.g., store name).
+    """
+  location: location_1.Location | None = None
+  """
+    Geographic coordinates for this address.
     """

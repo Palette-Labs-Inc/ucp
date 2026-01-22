@@ -18,32 +18,25 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict
-from .types import fulfillment_req, line_item_create_req
-from ..shopping.types import buyer as buyer_1
-from ..shopping import payment_create_req
+from pydantic import AwareDatetime, BaseModel, ConfigDict
+from ...shopping.types import total_resp
 
 
-class CheckoutRestaurantExtensionCreateRequest(BaseModel):
-  """Extends checkout with menu modifier selections for restaurant ordering."""
+class DeliveryQuote(BaseModel):
+  """Quote details for an on-demand delivery request."""
 
   model_config = ConfigDict(
     extra="allow",
   )
-  line_items: list[line_item_create_req.RestaurantLineItemCreateRequest]
+  quote_id: str
   """
-    List of line items being checked out.
+    Delivery quote identifier.
     """
-  buyer: buyer_1.Buyer | None = None
+  expires_at: AwareDatetime | None = None
   """
-    Representation of the buyer.
+    Quote expiration timestamp.
     """
-  currency: str
+  totals: list[total_resp.TotalResponse] | None = None
   """
-    ISO 4217 currency code.
-    """
-  payment: payment_create_req.PaymentCreateRequest
-  fulfillment: fulfillment_req.RestaurantFulfillmentRequest | None = None
-  """
-    Fulfillment selection and availability for the checkout.
+    Quoted totals for the delivery.
     """

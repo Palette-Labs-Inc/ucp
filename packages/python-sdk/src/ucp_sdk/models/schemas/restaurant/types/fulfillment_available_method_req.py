@@ -19,20 +19,11 @@
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
-from . import applied_discount
 
 
-class DiscountsObject(BaseModel):
-  """Discount codes input and applied discounts output."""
+class RestaurantFulfillmentAvailableMethodRequest(BaseModel):
+  """Availability hint for pickup or on-demand delivery in restaurant checkout."""
 
   model_config = ConfigDict(
     extra="allow",
   )
-  codes: list[str] | None = None
-  """
-    Discount codes to apply. Case-insensitive. Replaces previously submitted codes. Send empty array to clear.
-    """
-  applied: list[applied_discount.AppliedDiscount] | None = None
-  """
-    Discounts successfully applied (code-based and automatic).
-    """

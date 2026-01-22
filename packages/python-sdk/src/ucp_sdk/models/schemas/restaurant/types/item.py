@@ -18,30 +18,11 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict
 from typing import Any
+from pydantic import BaseModel, ConfigDict
+from . import rich_text
 from ...shopping.types import media as media_1, price as price_1
 from ._internal import MenuModifierGroup
-
-
-class Description(BaseModel):
-  """Menu item description in one or more formats. At least one format must be provided."""
-
-  model_config = ConfigDict(
-    extra="allow",
-  )
-  plain: str | None = None
-  """
-    Plain text description.
-    """
-  html: str | None = None
-  """
-    HTML-formatted description.
-    """
-  markdown: str | None = None
-  """
-    Markdown-formatted description.
-    """
 
 
 class MenuItem(BaseModel):
@@ -58,7 +39,7 @@ class MenuItem(BaseModel):
   """
     Menu item name.
     """
-  description: Description
+  description: rich_text.RichText
   """
     Menu item description in one or more formats. At least one format must be provided.
     """

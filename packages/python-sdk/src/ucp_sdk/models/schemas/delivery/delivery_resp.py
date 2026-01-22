@@ -18,16 +18,26 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict
+from ._internal import (
+  Context,
+  DeliveryCapabilityResponse,
+  DeliveryListResponse,
+  DeliveryRequest,
+  DeliveryResponse,
+  DeliveryUpdateRequest,
+  Quote,
+  QuoteRequest,
+  QuoteResponse,
+)
 
-
-class DeliveryFulfillmentQuoteReference(BaseModel):
-  """Delivery fulfillment reference to a previously created quote."""
-
-  model_config = ConfigDict(
-    extra="allow",
-  )
-  quote_id: str
-  """
-    Delivery quote identifier for this checkout.
-    """
+__all__ = [
+  "Context",
+  "DeliveryCapabilityResponse",
+  "DeliveryListResponse",
+  "DeliveryRequest",
+  "DeliveryResponse",
+  "DeliveryUpdateRequest",
+  "Quote",
+  "QuoteRequest",
+  "QuoteResponse",
+]

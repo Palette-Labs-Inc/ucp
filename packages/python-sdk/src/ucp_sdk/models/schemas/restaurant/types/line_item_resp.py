@@ -18,36 +18,36 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict
-from .types import fulfillment_req, line_item_update_req
-from ..shopping.types import buyer as buyer_1
-from ..shopping import payment_update_req
+from pydantic import BaseModel, ConfigDict, Field
+from . import item as item_1
+from ._internal_1 import MenuModifierSelection
+from ...shopping.types import total_resp
 
 
-class CheckoutRestaurantExtensionUpdateRequest(BaseModel):
-  """Extends checkout with menu modifier selections for restaurant ordering."""
+class RestaurantLineItemResponse(BaseModel):
+  """Checkout line item with menu modifier selections."""
 
   model_config = ConfigDict(
     extra="allow",
   )
   id: str
+  item: item_1.MenuItem
   """
-    Unique identifier of the checkout session.
+    Menu item snapshot for checkout.
     """
-  line_items: list[line_item_update_req.RestaurantLineItemUpdateRequest]
+  modifier_selections: list[MenuModifierSelection] | None = None
   """
-    List of line items being checked out.
+    Selected menu modifiers for this line item, including nested selections.
     """
-  buyer: buyer_1.Buyer | None = None
+  quantity: int = Field(..., ge=1)
   """
-    Representation of the buyer.
+    Quantity of the item being purchased.
     """
-  currency: str
+  totals: list[total_resp.TotalResponse]
   """
-    ISO 4217 currency code.
+    Line item totals breakdown.
     """
-  payment: payment_update_req.PaymentUpdateRequest
-  fulfillment: fulfillment_req.RestaurantFulfillmentRequest | None = None
+  parent_id: str | None = None
   """
-    Fulfillment selection and availability for the checkout.
+    Parent line item identifier for any nested structures.
     """

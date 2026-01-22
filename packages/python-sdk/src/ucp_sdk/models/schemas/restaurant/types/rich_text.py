@@ -19,35 +19,23 @@
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
-from .types import fulfillment_req, line_item_update_req
-from ..shopping.types import buyer as buyer_1
-from ..shopping import payment_update_req
 
 
-class CheckoutRestaurantExtensionUpdateRequest(BaseModel):
-  """Extends checkout with menu modifier selections for restaurant ordering."""
+class RichText(BaseModel):
+  """Text content in one or more formats."""
 
   model_config = ConfigDict(
     extra="allow",
   )
-  id: str
+  plain: str | None = None
   """
-    Unique identifier of the checkout session.
+    Plain text.
     """
-  line_items: list[line_item_update_req.RestaurantLineItemUpdateRequest]
+  html: str | None = None
   """
-    List of line items being checked out.
+    HTML-formatted text.
     """
-  buyer: buyer_1.Buyer | None = None
+  markdown: str | None = None
   """
-    Representation of the buyer.
-    """
-  currency: str
-  """
-    ISO 4217 currency code.
-    """
-  payment: payment_update_req.PaymentUpdateRequest
-  fulfillment: fulfillment_req.RestaurantFulfillmentRequest | None = None
-  """
-    Fulfillment selection and availability for the checkout.
+    Markdown-formatted text.
     """

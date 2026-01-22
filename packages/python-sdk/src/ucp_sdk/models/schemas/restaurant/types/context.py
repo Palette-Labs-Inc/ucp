@@ -18,27 +18,17 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict
-from .types import delivery_fulfillment_quote, delivery_fulfillment_request
-from ..restaurant.checkout_resp import Checkout as Checkout_1
+from pydantic import ConfigDict
+from ...shopping.types.context import Context
 
 
-class DeliveryFulfillmentExtension(BaseModel):
-  """Extends restaurant checkout with delivery fulfillment details."""
-
-  model_config = ConfigDict(
-    extra="allow",
-  )
-
-
-class Checkout(Checkout_1):
-  """Checkout extended with delivery fulfillment details."""
+class RestaurantContext(Context):
+  """Location and market context for restaurant operations."""
 
   model_config = ConfigDict(
     extra="allow",
   )
-  fulfillment: (
-    delivery_fulfillment_quote.DeliveryFulfillmentQuoteReference
-    | delivery_fulfillment_request.DeliveryFulfillmentRequest
-    | None
-  ) = None
+  intent: str | None = None
+  """
+    Background context for semantic search (e.g., 'quick lunch nearby', 'family meal under $30').
+    """

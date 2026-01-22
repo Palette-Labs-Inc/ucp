@@ -19,10 +19,14 @@
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, RootModel
-from ..shopping.types.context import Context as Context_1
+from .types import (
+  category,
+  context as context_1,
+  item as item_1,
+  modifier_item as modifier_item_1,
+)
 from ..shopping.types import message, pagination as pagination_1
 from ..._internal import Response_1
-from .types import category, item as item_1, modifier_item as modifier_item_1
 from .types._internal import MenuModifierGroup
 
 
@@ -34,15 +38,10 @@ class MenuCapability(BaseModel):
   )
 
 
-class Context(Context_1):
-  """Location and market context for menu operations. Extends base context with 'intent' for semantic search."""
-
-  model_config = ConfigDict(
-    extra="allow",
-  )
-  intent: str | None = None
+class Context(RootModel[context_1.RestaurantContext]):
+  root: context_1.RestaurantContext
   """
-    Background context for semantic search (e.g., 'quick lunch nearby', 'family meal under $30').
+    Location and market context for menu operations. Extends base context with 'intent' for semantic search.
     """
 
 

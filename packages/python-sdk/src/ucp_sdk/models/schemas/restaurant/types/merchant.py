@@ -20,31 +20,8 @@ from __future__ import annotations
 
 from pydantic import AnyUrl, BaseModel, ConfigDict
 from typing import Any
-from ...shopping.types import (
-  media as media_1,
-  merchant_fulfillment_config,
-  retail_location_resp,
-)
-
-
-class Description(BaseModel):
-  """Merchant description in one or more formats. At least one format must be provided."""
-
-  model_config = ConfigDict(
-    extra="allow",
-  )
-  plain: str | None = None
-  """
-    Plain text description.
-    """
-  html: str | None = None
-  """
-    HTML-formatted description.
-    """
-  markdown: str | None = None
-  """
-    Markdown-formatted description.
-    """
+from . import merchant_fulfillment_config, rich_text
+from ...shopping.types import media as media_1, retail_location_resp
 
 
 class Merchant(BaseModel):
@@ -61,7 +38,7 @@ class Merchant(BaseModel):
   """
     Merchant display name.
     """
-  description: Description | None = None
+  description: rich_text.RichText | None = None
   """
     Merchant description in one or more formats. At least one format must be provided.
     """
@@ -86,10 +63,10 @@ class Merchant(BaseModel):
     Merchant retail locations (stores, pickup points, etc.).
     """
   fulfillment_config: (
-    merchant_fulfillment_config.MerchantFulfillmentConfig | None
+    merchant_fulfillment_config.RestaurantMerchantFulfillmentConfig | None
   ) = None
   """
-    Merchant fulfillment capabilities and constraints.
+    Merchant fulfillment capabilities and constraints for pickup and on-demand delivery.
     """
   metadata: dict[str, Any] | None = None
   """

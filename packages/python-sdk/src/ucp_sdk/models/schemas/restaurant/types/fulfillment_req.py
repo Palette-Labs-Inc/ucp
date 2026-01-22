@@ -19,31 +19,19 @@
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
-from .types import fulfillment_req, line_item_create_req
-from ..shopping.types import buyer as buyer_1
-from ..shopping import payment_create_req
+from . import fulfillment_method_create_req
 
 
-class CheckoutRestaurantExtensionCreateRequest(BaseModel):
-  """Extends checkout with menu modifier selections for restaurant ordering."""
+class RestaurantFulfillmentRequest(BaseModel):
+  """Container for pickup and on-demand delivery methods in restaurant checkout."""
 
   model_config = ConfigDict(
     extra="allow",
   )
-  line_items: list[line_item_create_req.RestaurantLineItemCreateRequest]
+  methods: (
+    list[fulfillment_method_create_req.RestaurantFulfillmentMethodCreateRequest]
+    | None
+  ) = None
   """
-    List of line items being checked out.
-    """
-  buyer: buyer_1.Buyer | None = None
-  """
-    Representation of the buyer.
-    """
-  currency: str
-  """
-    ISO 4217 currency code.
-    """
-  payment: payment_create_req.PaymentCreateRequest
-  fulfillment: fulfillment_req.RestaurantFulfillmentRequest | None = None
-  """
-    Fulfillment selection and availability for the checkout.
+    Fulfillment methods for cart items.
     """

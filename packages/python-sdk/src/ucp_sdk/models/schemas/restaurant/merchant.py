@@ -18,9 +18,12 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict
-from ..shopping.types.context import Context as Context_1
-from .types import merchant as merchant_1, merchant_search_filters
+from pydantic import BaseModel, ConfigDict, RootModel
+from .types import (
+  context as context_1,
+  merchant as merchant_1,
+  merchant_search_filters,
+)
 from ..shopping.types import message, pagination as pagination_1
 from ..._internal import Response_1
 
@@ -33,15 +36,10 @@ class MerchantCapability(BaseModel):
   )
 
 
-class Context(Context_1):
-  """Location and market context for merchant operations. Extends base context with 'intent' for semantic search."""
-
-  model_config = ConfigDict(
-    extra="allow",
-  )
-  intent: str | None = None
+class Context(RootModel[context_1.RestaurantContext]):
+  root: context_1.RestaurantContext
   """
-    Background context for semantic search (e.g., 'family-friendly restaurants', 'late-night delivery').
+    Location and market context for merchant operations. Extends base context with 'intent' for semantic search.
     """
 
 

@@ -19,35 +19,28 @@
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
-from .types import fulfillment_req, line_item_update_req
-from ..shopping.types import buyer as buyer_1
-from ..shopping import payment_update_req
+from ...shared.types import location as location_1
 
 
-class CheckoutRestaurantExtensionUpdateRequest(BaseModel):
-  """Extends checkout with menu modifier selections for restaurant ordering."""
+class Courier(BaseModel):
+  """Assigned courier details."""
 
   model_config = ConfigDict(
     extra="allow",
   )
-  id: str
+  name: str | None = None
   """
-    Unique identifier of the checkout session.
+    Courier name.
     """
-  line_items: list[line_item_update_req.RestaurantLineItemUpdateRequest]
+  phone_number: str | None = None
   """
-    List of line items being checked out.
+    Courier phone number.
     """
-  buyer: buyer_1.Buyer | None = None
+  vehicle_type: str | None = None
   """
-    Representation of the buyer.
+    Courier vehicle type (e.g., car, bike, scooter).
     """
-  currency: str
+  location: location_1.Location | None = None
   """
-    ISO 4217 currency code.
-    """
-  payment: payment_update_req.PaymentUpdateRequest
-  fulfillment: fulfillment_req.RestaurantFulfillmentRequest | None = None
-  """
-    Fulfillment selection and availability for the checkout.
+    Courier live location.
     """

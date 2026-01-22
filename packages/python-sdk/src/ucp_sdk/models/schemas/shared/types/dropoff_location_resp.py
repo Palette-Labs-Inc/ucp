@@ -18,32 +18,22 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict
-from .types import fulfillment_req, line_item_create_req
-from ..shopping.types import buyer as buyer_1
-from ..shopping import payment_create_req
+from pydantic import ConfigDict
+from . import location as location_1
+from ...shopping.types.postal_address import PostalAddress
 
 
-class CheckoutRestaurantExtensionCreateRequest(BaseModel):
-  """Extends checkout with menu modifier selections for restaurant ordering."""
+class DropoffLocationResponse(PostalAddress):
+  """A dropoff location for on-demand delivery."""
 
   model_config = ConfigDict(
     extra="allow",
   )
-  line_items: list[line_item_create_req.RestaurantLineItemCreateRequest]
+  id: str
   """
-    List of line items being checked out.
+    ID specific to this dropoff location.
     """
-  buyer: buyer_1.Buyer | None = None
+  location: location_1.Location | None = None
   """
-    Representation of the buyer.
-    """
-  currency: str
-  """
-    ISO 4217 currency code.
-    """
-  payment: payment_create_req.PaymentCreateRequest
-  fulfillment: fulfillment_req.RestaurantFulfillmentRequest | None = None
-  """
-    Fulfillment selection and availability for the checkout.
+    Geographic coordinates for this address.
     """

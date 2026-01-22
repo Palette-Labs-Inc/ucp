@@ -18,18 +18,29 @@
 
 from __future__ import annotations
 
-from pydantic import ConfigDict
-from . import location as location_1
-from ...shopping.types.postal_address import PostalAddress
+from typing import Literal
+from pydantic import AwareDatetime, BaseModel, ConfigDict
 
 
-class DeliveryLocation(PostalAddress):
-  """A postal address with optional geocoordinates."""
+class RestaurantPickupEvent(BaseModel):
+  """Pickup lifecycle event payload for restaurant orders fulfilled via pickup."""
 
   model_config = ConfigDict(
     extra="allow",
   )
-  location: location_1.Location | None = None
+  event_id: str
   """
-    Geographic coordinates for this address.
+    Unique pickup event identifier.
+    """
+  event_type: Literal["ready", "arrived", "completed", "canceled"]
+  """
+    Pickup lifecycle event type aligned with pickup status values.
+    """
+  created_at: AwareDatetime
+  """
+    Event creation timestamp in RFC 3339 format.
+    """
+  description: str | None = None
+  """
+    Human-readable description of the pickup status.
     """

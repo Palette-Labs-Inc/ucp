@@ -18,32 +18,21 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict
-from .types import fulfillment_req, line_item_create_req
-from ..shopping.types import buyer as buyer_1
-from ..shopping import payment_create_req
+from pydantic import AwareDatetime, ConfigDict
+from .order import RestaurantOrder
 
 
-class CheckoutRestaurantExtensionCreateRequest(BaseModel):
-  """Extends checkout with menu modifier selections for restaurant ordering."""
+class RestaurantOrderEvent(RestaurantOrder):
+  """Webhook payload for restaurant order lifecycle events. This is a snapshot of the full order state plus event metadata; fulfillment.events are part of the order state, not the webhook event itself."""
 
   model_config = ConfigDict(
     extra="allow",
   )
-  line_items: list[line_item_create_req.RestaurantLineItemCreateRequest]
+  event_id: str
   """
-    List of line items being checked out.
+    Unique event identifier.
     """
-  buyer: buyer_1.Buyer | None = None
+  created_time: AwareDatetime
   """
-    Representation of the buyer.
-    """
-  currency: str
-  """
-    ISO 4217 currency code.
-    """
-  payment: payment_create_req.PaymentCreateRequest
-  fulfillment: fulfillment_req.RestaurantFulfillmentRequest | None = None
-  """
-    Fulfillment selection and availability for the checkout.
+    Event creation timestamp in RFC 3339 format.
     """

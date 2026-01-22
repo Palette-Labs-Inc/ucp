@@ -16,30 +16,3 @@
 # pylint: disable=all
 # pyformat: disable
 
-from __future__ import annotations
-
-from pydantic import BaseModel, ConfigDict
-
-
-class Consent(BaseModel):
-  """User consent states for data processing."""
-
-  model_config = ConfigDict(
-    extra="allow",
-  )
-  analytics: bool | None = None
-  """
-    Consent for analytics and performance tracking.
-    """
-  preferences: bool | None = None
-  """
-    Consent for storing user preferences.
-    """
-  marketing: bool | None = None
-  """
-    Consent for marketing communications.
-    """
-  sale_of_data: bool | None = None
-  """
-    Consent for selling data to third parties (CCPA).
-    """

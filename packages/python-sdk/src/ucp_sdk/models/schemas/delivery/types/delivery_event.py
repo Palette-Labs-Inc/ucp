@@ -18,32 +18,39 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict
-from .types import fulfillment_req, line_item_create_req
-from ..shopping.types import buyer as buyer_1
-from ..shopping import payment_create_req
+from typing import Literal
+from pydantic import AwareDatetime, BaseModel, ConfigDict
+from .._internal import Delivery
 
 
-class CheckoutRestaurantExtensionCreateRequest(BaseModel):
-  """Extends checkout with menu modifier selections for restaurant ordering."""
+class DeliveryEvent(BaseModel):
+  """Delivery lifecycle event payload."""
 
   model_config = ConfigDict(
     extra="allow",
   )
-  line_items: list[line_item_create_req.RestaurantLineItemCreateRequest]
+  event_id: str
   """
-    List of line items being checked out.
+    Unique event identifier.
     """
-  buyer: buyer_1.Buyer | None = None
+  event_type: Literal[
+    "pending",
+    "pickup",
+    "pickup_complete",
+    "dropoff",
+    "delivered",
+    "canceled",
+    "returned",
+    "ongoing",
+  ]
   """
-    Representation of the buyer.
+    Delivery lifecycle event type aligned with delivery status values.
     """
-  currency: str
+  created_at: AwareDatetime
   """
-    ISO 4217 currency code.
+    Event creation timestamp in RFC 3339 format.
     """
-  payment: payment_create_req.PaymentCreateRequest
-  fulfillment: fulfillment_req.RestaurantFulfillmentRequest | None = None
+  delivery: Delivery
   """
-    Fulfillment selection and availability for the checkout.
+    Current delivery state.
     """
