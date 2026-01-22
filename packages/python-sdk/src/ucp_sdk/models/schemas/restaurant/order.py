@@ -20,9 +20,9 @@ from __future__ import annotations
 
 from pydantic import AnyUrl, BaseModel, ConfigDict
 from typing import Literal
-from .types import fulfillment_event, order_line_item
+from .types import fulfillment_event, order_line_item, total_resp
 from ..._internal import ResponseOrder
-from ..shopping.types import adjustment, total_resp
+from ..shopping.types import adjustment
 
 
 class PlatformConfig(BaseModel):
@@ -43,13 +43,29 @@ class Fulfillment(BaseModel):
   model_config = ConfigDict(
     extra="allow",
   )
-  type: Literal["pickup", "on_demand_delivery"] | None = None
+  type: Literal["pickup", "on_demand_delivery"]
   """
     Selected fulfillment type for this order.
     """
+  status: Literal[
+    "ready",
+    "arrived",
+    "completed",
+    "canceled",
+    "pending",
+    "pickup",
+    "pickup_complete",
+    "dropoff",
+    "delivered",
+    "returned",
+    "ongoing",
+  ]
+  """
+    Derived fulfillment status from the latest pickup or delivery event log.
+    """
   events: list[fulfillment_event.RestaurantFulfillmentEvent] | None = None
   """
-    Append-only fulfillment events aligned to the selected fulfillment type.
+    Append-only fulfillment event logc aligned to the selected fulfillment type.
     """
 
 
@@ -84,7 +100,7 @@ class RestaurantOrder(BaseModel):
   """
     Append-only event log of money movements (refunds, returns, credits, disputes, cancellations, etc.) that exist independently of fulfillment.
     """
-  totals: list[total_resp.TotalResponse]
+  totals: list[total_resp.RestaurantTotalResponse]
   """
     Different totals for the order.
     """

@@ -58,6 +58,10 @@
     },
     "fulfillment": {
       "type": "object",
+      "required": [
+        "type",
+        "status"
+      ],
       "properties": {
         "type": {
           "type": "string",
@@ -67,12 +71,29 @@
           ],
           "description": "Selected fulfillment type for this order."
         },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ready",
+            "arrived",
+            "completed",
+            "canceled",
+            "pending",
+            "pickup",
+            "pickup_complete",
+            "dropoff",
+            "delivered",
+            "returned",
+            "ongoing"
+          ],
+          "description": "Derived fulfillment status from the latest pickup or delivery event log."
+        },
         "events": {
           "type": "array",
           "items": {
             "$ref": "types/fulfillment_event.json"
           },
-          "description": "Append-only fulfillment events aligned to the selected fulfillment type."
+          "description": "Append-only fulfillment event logc aligned to the selected fulfillment type."
         }
       },
       "description": "Fulfillment lifecycle events for pickup or on-demand delivery."
@@ -87,7 +108,7 @@
     "totals": {
       "type": "array",
       "items": {
-        "$ref": "../shopping/types/total_resp.json"
+        "$ref": "types/total_resp.json"
       },
       "description": "Different totals for the order."
     }

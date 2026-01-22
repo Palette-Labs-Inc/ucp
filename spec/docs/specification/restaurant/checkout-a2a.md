@@ -92,11 +92,6 @@ An example:
             "name": "xyz.localprotocol.restaurant.checkout",
             "version": "2026-01-11",
             "extends": "xyz.localprotocol.restaurant.checkout"
-          },
-          {
-            "name": "dev.ucp.shopping.fulfillment",
-            "version": "2026-01-11",
-            "extends": "xyz.localprotocol.restaurant.checkout"
           }
         ]
       }
@@ -148,7 +143,8 @@ key `a2a.ucp.checkout`.
 
 When negotiating `xyz.localprotocol.restaurant.checkout`, the checkout payload
 includes menu modifier selections on line items (`line_items[].modifier_selections`),
-using the restaurant modifier selection type.
+using the flat restaurant modifier selection shape (`id`, `modifier_group_id`, `item_id`,
+`quantity`, optional `parent_selection_id`).
 
 **Request format:**
 Agentic applications can accept natural language input from users interacting

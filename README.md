@@ -22,18 +22,9 @@ at `spec/`, and orchestration happens from the root using `make` + shell scripts
 - `packages` — shared libraries you own.
 
 ## Workspace
-
 This repo uses `pnpm` workspaces for `apps/*` and `packages/*`.
 
-`pnpm` is required and enforced via Corepack. If you haven't enabled it yet:
-
-```
-corepack enable
-corepack prepare pnpm@9.12.2 --activate
-```
-
 ## Getting Started
-
 Requirements pulled from the upstream subtree READMEs:
 
 - Node.js + pnpm (JS SDK build + model generation + orchestration).
@@ -54,11 +45,8 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
 Common flows:
-
-- Generate spec → conformance → SDKs:
+- Generate UCP spec → conformance → SDKs:
   - `make spec-conformance-sdks`
-- Update subtrees from upstream:
-  - `make update-upstream`
 - Run the Python sample server:
   - `make run-samples-server`
 - Run conformance tests against the sample server:

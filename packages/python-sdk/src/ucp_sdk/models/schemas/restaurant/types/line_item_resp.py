@@ -19,9 +19,7 @@
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
-from . import item as item_1
-from ._internal_1 import MenuModifierSelection
-from ...shopping.types import total_resp
+from . import item as item_1, modifier_selection, total_resp
 
 
 class RestaurantLineItemResponse(BaseModel):
@@ -35,15 +33,17 @@ class RestaurantLineItemResponse(BaseModel):
   """
     Menu item snapshot for checkout.
     """
-  modifier_selections: list[MenuModifierSelection] | None = None
+  modifier_selections: list[modifier_selection.MenuModifierSelection] | None = (
+    None
+  )
   """
-    Selected menu modifiers for this line item, including nested selections.
+    Selected menu modifiers for this line item.
     """
   quantity: int = Field(..., ge=1)
   """
     Quantity of the item being purchased.
     """
-  totals: list[total_resp.TotalResponse]
+  totals: list[total_resp.RestaurantTotalResponse]
   """
     Line item totals breakdown.
     """

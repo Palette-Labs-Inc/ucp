@@ -52,9 +52,10 @@ All REST endpoints **MUST** be served over HTTPS with minimum TLS version
 ### Menu Checkout (Commerce)
 When negotiating `xyz.localprotocol.restaurant.checkout`, the checkout payload is
 the base checkout schema extended with menu modifier selections on line items:
-`line_items[].modifier_selections` using the restaurant menu modifier selection
-type. The REST endpoints remain `/checkout-sessions/*` on the restaurant service
-endpoint advertised in `/.well-known/ucp`.
+`line_items[].modifier_selections` uses the flat restaurant modifier selection
+shape (`id`, `modifier_group_id`, `item_id`, `quantity`, and optional `parent_selection_id`
+for nested groups). The REST endpoints remain `/checkout-sessions/*` on the
+restaurant service endpoint advertised in `/.well-known/ucp`.
 
 ## Examples
 
@@ -335,9 +336,13 @@ so clients must include all previously set fields they wish to retain.
 
 #### Update Fulfillment
 
-Fulfillment is an extension to the checkout capability. Most fields are provided
-by the business based on buyer inputs, which includes desired fulfillment
-type & addresses.
+Fulfillment is embedded in the restaurant checkout capability. Most fields are
+provided by the business based on buyer inputs, which include desired fulfillment
+method and destination details.
+
+Businesses return the selectable fulfillment options in
+`checkout.fulfillment.methods[]`, and platforms render those options for buyer
+selection.
 
 === "Request"
 
@@ -367,14 +372,18 @@ type & addresses.
       "fulfillment": {
         "methods": [
           {
-            "type": "shipping",
+            "type": "pickup",
             "destinations": [
               {
-                "street_address": "123 Main St",
-                "address_locality": "Springfield",
-                "address_region": "IL",
-                "postal_code": "62701",
-                "address_country": "US"
+                "id": "store_1",
+                "name": "Downtown Store",
+                "address": {
+                  "street_address": "123 Main St",
+                  "address_locality": "Springfield",
+                  "address_region": "IL",
+                  "postal_code": "62701",
+                  "address_country": "US"
+                }
               }
             ]
           }
@@ -406,7 +415,7 @@ type & addresses.
           "type": "error",
           "code": "missing",
           "path": "$.selected_fulfillment_option",
-          "content": "Please select a fulfillment option",
+          "content": "Please select a fulfillment method",
           "severity": "recoverable"
         }
       ],
@@ -454,51 +463,34 @@ type & addresses.
       "fulfillment": {
         "methods": [
           {
-            "id": "shipping_1",
-            "type": "shipping",
-            "line_item_ids": ["item_123"],
-            "selected_destination_id": "dest_home",
+            "id": "pickup",
+            "type": "pickup",
+            "selected_destination_id": "store_1",
             "destinations": [
               {
-                "id": "dest_home",
-                "street_address": "123 Main St",
-                "address_locality": "Springfield",
-                "address_region": "IL",
-                "postal_code": "62701",
-                "address_country": "US"
-              }
-            ],
-            "groups": [
-              {
-                "id": "package_1",
-                "line_item_ids": ["item_123"],
-                "selected_option_id": "standard",
-                "options": [
-                  {
-                    "id": "standard",
-                    "title": "Standard Shipping",
-                    "description": "Arrives in 5-7 business days",
-                    "totals": [
-                      {
-                        "type": "total",
-                        "amount": 500
-                      }
-                    ]
-                  },
-                  {
-                    "id": "express",
-                    "title": "Express Shipping",
-                    "description": "Arrives in 2-3 business days",
-                    "totals": [
-                      {
-                        "type": "total",
-                        "amount": 1000
-                      }
-                    ]
-                  }
-                ]
+                "id": "store_1",
+                "name": "Downtown Store",
+                "address": {
+                  "street_address": "123 Main St",
+                  "address_locality": "Springfield",
+                  "address_region": "IL",
+                  "postal_code": "62701",
+                  "address_country": "US"
+                }
               }
             ]
+          }
+        ],
+        "available_methods": [
+          {
+            "type": "pickup",
+            "fulfillable_on": "now",
+            "description": "Ready for pickup in 20 minutes"
+          },
+          {
+            "type": "on_demand_delivery",
+            "fulfillable_on": "2026-01-30T18:10:00Z",
+            "description": "Delivery available in 35-45 minutes"
           }
         ]
       },
@@ -576,26 +568,76 @@ Follow-up calls after initial `fulfillment` data to update selection.
       "fulfillment": {
         "methods": [
           {
-            "id": "shipping_1",
-            "type": "shipping",
-            "line_item_ids": ["item_123"],
-            "selected_destination_id": "dest_home",
-            "destinations": [
-              {
-                "id": "dest_home",
-                "street_address": "123 Main St",
+            "id": "pickup",
+            "selected_destination_id": "store_1"
+          }
+        ]
+      }
+    }
+    ```
+
+#### Update Fulfillment Selection (Delivery)
+
+When the buyer selects on-demand delivery, the platform submits the delivery
+inputs as the selected method.
+
+=== "Request"
+
+    ```json
+    PUT /checkout-sessions/{id} HTTP/1.1
+    UCP-Agent: profile="https://platform.example/profile"
+    Content-Type: application/json
+
+    {
+      "id": "chk_123456789",
+      "buyer": {
+        "email": "jane@example.com",
+        "first_name": "Jane",
+        "last_name": "Doe"
+      },
+      "line_items": [
+        {
+          "item": {
+            "id": "item_123",
+            "title": "Red T-Shirt",
+            "price": 2500
+          },
+          "id": "li_1",
+          "quantity": 2
+        }
+      ],
+      "fulfillment": {
+        "methods": [
+          {
+            "id": "delivery",
+            "type": "on_demand_delivery",
+            "delivery": {
+              "pickup": {
+                "id": "store_1",
+                "name": "Downtown Store",
+                "address": {
+                  "street_address": "123 Main St",
+                  "address_locality": "Springfield",
+                  "address_region": "IL",
+                  "postal_code": "62701",
+                  "address_country": "US"
+                }
+              },
+              "dropoff": {
+                "id": "dropoff_1",
+                "full_name": "Alex Smith",
+                "phone_number": "+1-555-0100",
+                "street_address": "456 Oak Ave",
                 "address_locality": "Springfield",
                 "address_region": "IL",
                 "postal_code": "62701",
                 "address_country": "US"
+              },
+              "items_value": {
+                "amount": 4599,
+                "currency": "USD"
               }
-            ],
-            "groups": [
-              {
-                "id": "package_1",
-                "selected_option_id": "express"
-              }
-            ]
+            }
           }
         ]
       }
@@ -664,49 +706,156 @@ Follow-up calls after initial `fulfillment` data to update selection.
       "fulfillment": {
         "methods": [
           {
-            "id": "shipping_1",
-            "type": "shipping",
-            "line_item_ids": ["item_123"],
-            "selected_destination_id": "dest_home",
-            "destinations": [
-              {
-                "id": "dest_home",
-                "street_address": "123 Main St",
+            "id": "delivery",
+            "type": "on_demand_delivery",
+            "delivery": {
+              "pickup": {
+                "id": "store_1",
+                "name": "Downtown Store",
+                "address": {
+                  "street_address": "123 Main St",
+                  "address_locality": "Springfield",
+                  "address_region": "IL",
+                  "postal_code": "62701",
+                  "address_country": "US"
+                }
+              },
+              "dropoff": {
+                "id": "dropoff_1",
+                "full_name": "Alex Smith",
+                "phone_number": "+1-555-0100",
+                "street_address": "456 Oak Ave",
                 "address_locality": "Springfield",
                 "address_region": "IL",
                 "postal_code": "62701",
                 "address_country": "US"
+              },
+              "items_value": {
+                "amount": 4599,
+                "currency": "USD"
               }
+            }
+          }
+        ]
+      },
+      "payment": {
+        "handlers": [
+          {
+            "id": "com.google.pay",
+            "name": "gpay",
+            "version": "2024-12-03",
+            "spec": "https://ucp.dev/handlers/google_pay",
+            "config_schema": "https://ucp.dev/handlers/google_pay/config.json",
+            "instrument_schemas": [
+              "https://ucp.dev/handlers/google_pay/card_payment_instrument.json"
             ],
-            "groups": [
-              {
-                "id": "package_1",
-                "line_item_ids": ["item_123"],
-                "selected_option_id": "express",
-                "options": [
-                  {
-                    "id": "standard",
-                    "title": "Standard Shipping",
-                    "description": "Arrives in 5-7 business days",
-                    "totals": [
-                      {
-                        "type": "total",
-                        "amount": 500
-                      }
-                    ]
-                  },
-                  {
-                    "id": "express",
-                    "title": "Express Shipping",
-                    "description": "Arrives in 2-3 business days",
-                    "totals": [
-                      {
-                        "type": "total",
-                        "amount": 1000
-                      }
+            "config": {
+              "allowed_payment_methods": [
+                {
+                  "type": "CARD",
+                  "parameters": {
+                    "allowed_card_networks": [
+                      "VISA",
+                      "MASTERCARD",
+                      "AMEX"
                     ]
                   }
-                ]
+                }
+              ]
+            }
+          }
+        ],
+        "selected_instrument_id": "pi_gpay_5678",
+        "instruments": [
+          {
+            "id": "pi_gpay_5678",
+            "handler_id": "com.google.pay",
+            "type": "card",
+            "brand": "mastercard",
+            "last_digits": "5678",
+            "rich_text_description": "Google Pay •••• 5678"
+          }
+        ]
+      }
+    }
+    ```
+
+=== "Response"
+
+    ```json
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+
+    {
+      "ucp": {
+        "version": "2026-01-11",
+        "capabilities": [
+          {
+            "name": "xyz.localprotocol.restaurant.checkout",
+            "version": "2026-01-11"
+          }
+        ],
+      },
+      "id": "chk_1234567890",
+      "status": "ready_for_complete",
+      "currency": "USD",
+      "line_items": [
+        {
+          "id": "li_1",
+          "item": {
+            "id": "item_123",
+            "title": "Red T-Shirt",
+            "price": 2500
+          },
+          "quantity": 2,
+          "totals": [
+            {"type": "subtotal", "amount": 5000},
+            {"type": "total", "amount": 5000}
+          ]
+        }
+      ],
+      "buyer": {
+        "email": "jane@example.com",
+        "first_name": "Jane",
+        "last_name": "Doe"
+      },
+      "totals": [
+        {
+          "type": "subtotal",
+          "amount": 5000
+        },
+        {
+          "type": "tax",
+          "amount": 400
+        },
+        {
+          "type": "total",
+          "amount": 5400
+        }
+      ],
+      "links": [
+        {
+          "type": "terms_of_service",
+          "url": "https://merchant.com/terms"
+        }
+      ],
+      "fulfillment": {
+        "methods": [
+          {
+            "id": "pickup",
+            "type": "pickup",
+            "selected_destination_id": "store_1",
+            "destinations": [
+              {
+                "id": "store_1",
+                "name": "Downtown Store",
+                "address": {
+                  "street_address": "123 Main St",
+                  "address_locality": "Springfield",
+                  "address_region": "IL",
+                  "postal_code": "62701",
+                  "address_country": "US"
+                }
               }
             ]
           }
@@ -815,7 +964,12 @@ place to set these expectations via `messages`.
       "currency": "USD",
       "order": {
         "id": "ord_99887766",
-        "permalink_url": "https://merchant.com/orders/ord_99887766"
+        "permalink_url": "https://merchant.com/orders/ord_99887766",
+        "delivery": {
+          "id": "dly_123",
+          "status": "pending",
+          "tracking_url": "https://delivery.example.com/track/dly_123"
+        }
       },
       "line_items": [
         {
@@ -860,49 +1014,20 @@ place to set these expectations via `messages`.
       "fulfillment": {
         "methods": [
           {
-            "id": "shipping_1",
-            "type": "shipping",
-            "line_item_ids": ["item_123"],
-            "selected_destination_id": "dest_home",
+            "id": "pickup",
+            "type": "pickup",
+            "selected_destination_id": "store_1",
             "destinations": [
               {
-                "id": "dest_home",
-                "street_address": "123 Main St",
-                "address_locality": "Springfield",
-                "address_region": "IL",
-                "postal_code": "62701",
-                "address_country": "US"
-              }
-            ],
-            "groups": [
-              {
-                "id": "package_1",
-                "line_item_ids": ["item_123"],
-                "selected_option_id": "express",
-                "options": [
-                  {
-                    "id": "standard",
-                    "title": "Standard Shipping",
-                    "description": "Arrives in 5-7 business days",
-                    "totals": [
-                      {
-                        "type": "total",
-                        "amount": 500
-                      }
-                    ]
-                  },
-                  {
-                    "id": "express",
-                    "title": "Express Shipping",
-                    "description": "Arrives in 2-3 business days",
-                    "totals": [
-                      {
-                        "type": "total",
-                        "amount": 1000
-                      }
-                    ]
-                  }
-                ]
+                "id": "store_1",
+                "name": "Downtown Store",
+                "address": {
+                  "street_address": "123 Main St",
+                  "address_locality": "Springfield",
+                  "address_region": "IL",
+                  "postal_code": "62701",
+                  "address_country": "US"
+                }
               }
             ]
           }
@@ -983,7 +1108,12 @@ place to set these expectations via `messages`.
       "currency": "USD",
       "order": {
         "id": "ord_99887766",
-        "permalink_url": "https://merchant.com/orders/ord_99887766"
+        "permalink_url": "https://merchant.com/orders/ord_99887766",
+        "delivery": {
+          "id": "dly_123",
+          "status": "pending",
+          "tracking_url": "https://delivery.example.com/track/dly_123"
+        }
       },
       "line_items": [
         {
@@ -1028,49 +1158,20 @@ place to set these expectations via `messages`.
       "fulfillment": {
         "methods": [
           {
-            "id": "shipping_1",
-            "type": "shipping",
-            "line_item_ids": ["item_123"],
-            "selected_destination_id": "dest_home",
+            "id": "pickup",
+            "type": "pickup",
+            "selected_destination_id": "store_1",
             "destinations": [
               {
-                "id": "dest_home",
-                "street_address": "123 Main St",
-                "address_locality": "Springfield",
-                "address_region": "IL",
-                "postal_code": "62701",
-                "address_country": "US"
-              }
-            ],
-            "groups": [
-              {
-                "id": "package_1",
-                "line_item_ids": ["item_123"],
-                "selected_option_id": "express",
-                "options": [
-                  {
-                    "id": "standard",
-                    "title": "Standard Shipping",
-                    "description": "Arrives in 5-7 business days",
-                    "totals": [
-                      {
-                        "type": "total",
-                        "amount": 500
-                      }
-                    ]
-                  },
-                  {
-                    "id": "express",
-                    "title": "Express Shipping",
-                    "description": "Arrives in 2-3 business days",
-                    "totals": [
-                      {
-                        "type": "total",
-                        "amount": 1000
-                      }
-                    ]
-                  }
-                ]
+                "id": "store_1",
+                "name": "Downtown Store",
+                "address": {
+                  "street_address": "123 Main St",
+                  "address_locality": "Springfield",
+                  "address_region": "IL",
+                  "postal_code": "62701",
+                  "address_country": "US"
+                }
               }
             ]
           }
@@ -1192,49 +1293,20 @@ place to set these expectations via `messages`.
       "fulfillment": {
         "methods": [
           {
-            "id": "shipping_1",
-            "type": "shipping",
-            "line_item_ids": ["item_123"],
-            "selected_destination_id": "dest_home",
+            "id": "pickup",
+            "type": "pickup",
+            "selected_destination_id": "store_1",
             "destinations": [
               {
-                "id": "dest_home",
-                "street_address": "123 Main St",
-                "address_locality": "Springfield",
-                "address_region": "IL",
-                "postal_code": "62701",
-                "address_country": "US"
-              }
-            ],
-            "groups": [
-              {
-                "id": "package_1",
-                "line_item_ids": ["item_123"],
-                "selected_option_id": "express",
-                "options": [
-                  {
-                    "id": "standard",
-                    "title": "Standard Shipping",
-                    "description": "Arrives in 5-7 business days",
-                    "totals": [
-                      {
-                        "type": "total",
-                        "amount": 500
-                      }
-                    ]
-                  },
-                  {
-                    "id": "express",
-                    "title": "Express Shipping",
-                    "description": "Arrives in 2-3 business days",
-                    "totals": [
-                      {
-                        "type": "total",
-                        "amount": 1000
-                      }
-                    ]
-                  }
-                ]
+                "id": "store_1",
+                "name": "Downtown Store",
+                "address": {
+                  "street_address": "123 Main St",
+                  "address_locality": "Springfield",
+                  "address_region": "IL",
+                  "postal_code": "62701",
+                  "address_country": "US"
+                }
               }
             ]
           }

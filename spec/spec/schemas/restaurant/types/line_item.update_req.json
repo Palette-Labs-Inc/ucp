@@ -21,7 +21,7 @@
       "items": {
         "$ref": "modifier_selection.json"
       },
-      "description": "Selected menu modifiers for this line item, including nested selections."
+      "description": "Selected menu modifiers for this line item."
     },
     "quantity": {
       "type": "integer",

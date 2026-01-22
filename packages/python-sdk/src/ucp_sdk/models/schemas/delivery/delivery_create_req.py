@@ -20,10 +20,15 @@ from __future__ import annotations
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, RootModel
 from ..shopping.types.context import Context as Context_1
+from ..shopping.types import (
+  message,
+  pagination as pagination_1,
+  price,
+  retail_location_req,
+  shipping_destination_req,
+)
 from .types import delivery_inputs_req, quote as quote_1
 from ..._internal import Response_1
-from ..shopping.types import message, pagination as pagination_1, price
-from ..shared.types import dropoff_location_req, pickup_location_req
 from ._internal import Delivery
 
 
@@ -43,35 +48,17 @@ class Context(Context_1):
   )
 
 
-class Quote(RootModel[quote_1.DeliveryQuote]):
-  root: quote_1.DeliveryQuote
-
-
-class QuoteResponse(BaseModel):
-  """Response containing quote details and UCP metadata."""
-
-  model_config = ConfigDict(
-    extra="allow",
-  )
-  ucp: Response_1
-  quote: Quote
-  messages: list[message.Message] | None = None
-  """
-    Errors, warnings, or informational messages about the quote.
-    """
-
-
 class DeliveryUpdateRequest(BaseModel):
   """Patchable fields for updating an existing delivery."""
 
   model_config = ConfigDict(
     extra="allow",
   )
-  pickup: pickup_location_req.PickupLocationRequest | None = None
+  pickup: retail_location_req.RetailLocationRequest | None = None
   """
     Updated pickup location.
     """
-  dropoff: dropoff_location_req.DropoffLocationRequest | None = None
+  dropoff: shipping_destination_req.ShippingDestinationRequest | None = None
   """
     Updated dropoff location.
     """
@@ -102,6 +89,24 @@ class DeliveryUpdateRequest(BaseModel):
   external_id: str | None = None
   """
     Optional external identifier for idempotency or correlation.
+    """
+
+
+class Quote(RootModel[quote_1.DeliveryQuote]):
+  root: quote_1.DeliveryQuote
+
+
+class QuoteResponse(BaseModel):
+  """Response containing quote details and UCP metadata."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  ucp: Response_1
+  quote: Quote
+  messages: list[message.Message] | None = None
+  """
+    Errors, warnings, or informational messages about the quote.
     """
 
 

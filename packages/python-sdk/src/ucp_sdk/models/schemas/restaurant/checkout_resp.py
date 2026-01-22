@@ -21,13 +21,18 @@ from __future__ import annotations
 from typing import Literal
 from pydantic import AnyUrl, AwareDatetime, BaseModel, ConfigDict
 from ..._internal import ResponseCheckout
-from .types import fulfillment_resp, line_item_resp, order_confirmation
-from ..shopping.types import buyer as buyer_1, link, message, total_resp
+from .types import (
+  fulfillment_resp,
+  line_item_resp,
+  order_confirmation,
+  total_resp,
+)
+from ..shopping.types import buyer as buyer_1, link, message
 from ..shopping import payment_resp
 
 
 class CheckoutRestaurantExtensionResponse(BaseModel):
-  """Extends checkout with menu modifier selections for restaurant ordering."""
+  """Restaurant checkout with menu modifier selections and embedded fulfillment (pickup or on-demand delivery)."""
 
   model_config = ConfigDict(
     extra="allow",
@@ -60,7 +65,7 @@ class CheckoutRestaurantExtensionResponse(BaseModel):
   """
     ISO 4217 currency code.
     """
-  totals: list[total_resp.TotalResponse]
+  totals: list[total_resp.RestaurantTotalResponse]
   """
     Different cart totals.
     """

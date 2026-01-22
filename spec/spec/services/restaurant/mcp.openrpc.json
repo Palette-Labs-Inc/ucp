@@ -131,44 +131,6 @@
       }
     },
     {
-      "name": "search_merchants",
-      "summary": "Search merchants",
-      "params": [
-        {
-          "name": "request",
-          "required": true,
-          "schema": {
-            "$ref": "https://localprotocol.xyz/schemas/restaurant/merchant.json#/$defs/search_request"
-          }
-        }
-      ],
-      "result": {
-        "name": "response",
-        "schema": {
-          "$ref": "https://localprotocol.xyz/schemas/restaurant/merchant.json#/$defs/search_response"
-        }
-      }
-    },
-    {
-      "name": "get_merchant",
-      "summary": "Get merchant",
-      "params": [
-        {
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        }
-      ],
-      "result": {
-        "name": "response",
-        "schema": {
-          "$ref": "https://localprotocol.xyz/schemas/restaurant/merchant.json#/$defs/get_merchant_response"
-        }
-      }
-    },
-    {
       "name": "get_merchant_menus",
       "summary": "Get merchant menus",
       "params": [

@@ -19,8 +19,7 @@
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
-from . import item as item_1
-from ._internal_1 import MenuModifierSelection
+from . import item as item_1, modifier_selection
 
 
 class RestaurantLineItemCreateRequest(BaseModel):
@@ -33,9 +32,11 @@ class RestaurantLineItemCreateRequest(BaseModel):
   """
     Menu item snapshot for checkout.
     """
-  modifier_selections: list[MenuModifierSelection] | None = None
+  modifier_selections: list[modifier_selection.MenuModifierSelection] | None = (
+    None
+  )
   """
-    Selected menu modifiers for this line item, including nested selections.
+    Selected menu modifiers for this line item.
     """
   quantity: int = Field(..., ge=1)
   """

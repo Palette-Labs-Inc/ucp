@@ -52,62 +52,17 @@ export type PaymentCredential = TokenCredentialResponse | CardCredential;
 /**
  * A fulfillment method for pickup or on-demand delivery in restaurant checkout.
  */
-export type RestaurantFulfillmentMethodCreateRequest = {
-  /**
-   * Fulfillment method type.
-   */
-  type: 'pickup' | 'on_demand_delivery';
-  /**
-   * Available destinations. Pickup uses pickup locations; on-demand delivery uses drop off locations.
-   */
-  destinations?: FulfillmentDestinationRequest[];
-  /**
-   * ID of the selected destination.
-   */
-  selected_destination_id?: string | null;
-  /**
-   * Required delivery inputs for on-demand delivery.
-   */
-  delivery?: DeliveryQuoteReference | DeliveryInputsRequest;
-  [k: string]: unknown;
-} & (
-  | {
-      type?: 'pickup';
-      [k: string]: unknown;
-    }
-  | {
-      type?: 'on_demand_delivery';
-      [k: string]: unknown;
-    }
-);
+export type RestaurantFulfillmentMethodCreateRequest =
+  | PickupFulfillmentMethodCreateRequest
+  | OnDemandDeliveryFulfillmentMethodCreateRequest;
 /**
- * A destination for pickup or on-demand delivery in restaurant checkout.
+ * Shipping destination.
  */
-export type FulfillmentDestinationRequest = DropoffLocationRequest | PickupLocationRequest;
-/**
- * A dropoff location for on-demand delivery.
- */
-export type DropoffLocationRequest = PostalAddress & {
+export type ShippingDestinationRequest = PostalAddress & {
   /**
-   * ID specific to this dropoff location.
+   * ID specific to this shipping destination.
    */
   id?: string;
-  location?: Location;
-  [k: string]: unknown;
-};
-/**
- * A pickup location for on-demand delivery.
- */
-export type PickupLocationRequest = PostalAddress & {
-  /**
-   * ID specific to this pickup location.
-   */
-  id?: string;
-  /**
-   * Pickup location name (e.g., store name).
-   */
-  name?: string;
-  location?: Location;
   [k: string]: unknown;
 };
 /**
@@ -123,66 +78,17 @@ export type Message = MessageError | MessageWarning | MessageInfo;
 /**
  * A fulfillment method for pickup or on-demand delivery in restaurant checkout.
  */
-export type RestaurantFulfillmentMethodResponse = {
+export type RestaurantFulfillmentMethodResponse =
+  | PickupFulfillmentMethodResponse
+  | OnDemandDeliveryFulfillmentMethodResponse;
+/**
+ * Shipping destination.
+ */
+export type ShippingDestinationResponse = PostalAddress & {
   /**
-   * Unique fulfillment method identifier.
+   * ID specific to this shipping destination.
    */
   id: string;
-  /**
-   * Fulfillment method type.
-   */
-  type: 'pickup' | 'on_demand_delivery';
-  /**
-   * Available destinations. Pickup uses pickup locations; on-demand delivery uses drop off locations.
-   */
-  destinations?: FulfillmentDestinationResponse[];
-  /**
-   * ID of the selected destination.
-   */
-  selected_destination_id?: string | null;
-  /**
-   * Required delivery inputs for on-demand delivery.
-   */
-  delivery?: DeliveryQuoteReference | DeliveryInputsResponse;
-  [k: string]: unknown;
-} & (
-  | {
-      type?: 'pickup';
-      [k: string]: unknown;
-    }
-  | {
-      type?: 'on_demand_delivery';
-      [k: string]: unknown;
-    }
-);
-/**
- * A destination for pickup or on-demand delivery in restaurant checkout.
- */
-export type FulfillmentDestinationResponse = DropoffLocationResponse | PickupLocationResponse;
-/**
- * A dropoff location for on-demand delivery.
- */
-export type DropoffLocationResponse = PostalAddress & {
-  /**
-   * ID specific to this dropoff location.
-   */
-  id: string;
-  location?: Location;
-  [k: string]: unknown;
-};
-/**
- * A pickup location for on-demand delivery.
- */
-export type PickupLocationResponse = PostalAddress & {
-  /**
-   * ID specific to this pickup location.
-   */
-  id: string;
-  /**
-   * Pickup location name (e.g., store name).
-   */
-  name?: string;
-  location?: Location;
   [k: string]: unknown;
 };
 /**
@@ -194,9 +100,6 @@ export type RestaurantOrderConfirmation = OrderConfirmation;
  *
  * This interface was referenced by `MenuCapability`'s JSON-Schema
  * via the `definition` "context".
- *
- * This interface was referenced by `MerchantCapability`'s JSON-Schema
- * via the `definition` "context".
  */
 export type RestaurantContext = Context & {
   /**
@@ -206,57 +109,22 @@ export type RestaurantContext = Context & {
   [k: string]: unknown;
 };
 /**
+ * Order-time item snapshot for menu items or modifier items.
+ */
+export type OrderItem = MenuItem | MenuModifierItem;
+/**
  * Append-only fulfillment event for restaurant pickup or on-demand delivery.
  */
 export type RestaurantFulfillmentEvent = RestaurantPickupEvent | DeliveryEvent;
 /**
- * Webhook payload for restaurant order lifecycle events. This is a snapshot of the full order state plus event metadata; fulfillment.events are part of the order state, not the webhook event itself.
- */
-export type RestaurantOrderEvent = RestaurantOrder & {
-  /**
-   * Unique event identifier.
-   */
-  event_id: string;
-  /**
-   * Event creation timestamp in RFC 3339 format.
-   */
-  created_time: string;
-  [k: string]: unknown;
-};
-/**
  * A fulfillment method for pickup or on-demand delivery in restaurant checkout.
  */
-export type RestaurantFulfillmentMethodUpdateRequest = {
-  /**
-   * Unique fulfillment method identifier.
-   */
-  id: string;
-  /**
-   * Available destinations. Pickup uses pickup locations; on-demand delivery uses drop off locations.
-   */
-  destinations?: FulfillmentDestinationRequest[];
-  /**
-   * ID of the selected destination.
-   */
-  selected_destination_id?: string | null;
-  /**
-   * Required delivery inputs for on-demand delivery.
-   */
-  delivery?: DeliveryQuoteReference | DeliveryInputsRequest;
-  [k: string]: unknown;
-} & (
-  | {
-      type?: 'pickup';
-      [k: string]: unknown;
-    }
-  | {
-      type?: 'on_demand_delivery';
-      [k: string]: unknown;
-    }
-);
+export type RestaurantFulfillmentMethodUpdateRequest =
+  | PickupFulfillmentMethodUpdateRequest
+  | OnDemandDeliveryFulfillmentMethodUpdateRequest;
 
 /**
- * Extends checkout with menu modifier selections for restaurant ordering.
+ * Restaurant checkout with menu modifier selections and embedded fulfillment (pickup or on-demand delivery).
  */
 export declare interface CheckoutRestaurantExtensionCreateRequest {
   /**
@@ -278,7 +146,7 @@ export declare interface CheckoutRestaurantExtensionCreateRequest {
 export declare interface RestaurantLineItemCreateRequest {
   item: MenuItem;
   /**
-   * Selected menu modifiers for this line item, including nested selections.
+   * Selected menu modifiers for this line item.
    */
   modifier_selections?: MenuModifierSelection[];
   /**
@@ -432,35 +300,33 @@ export declare interface MenuModifierOption {
   [k: string]: unknown;
 }
 /**
- * Selected modifiers for a modifier group, including nested selections.
+ * Flat modifier selection entry for a modifier group.
  */
 export declare interface MenuModifierSelection {
+  /**
+   * Selection identifier for linking nested modifier selections.
+   */
+  id: string;
   /**
    * Modifier group identifier for this selection.
    */
   modifier_group_id: string;
   /**
-   * Selections made within the modifier group.
-   */
-  selections: MenuModifierItemSelection[];
-  [k: string]: unknown;
-}
-/**
- * Selected modifier item and nested selections within a modifier group.
- */
-export declare interface MenuModifierItemSelection {
-  /**
    * Selected modifier item identifier.
    */
   item_id: string;
   /**
-   * Selected quantity for this modifier option.
+   * Selected quantity for this modifier item.
    */
   quantity?: number;
   /**
-   * Nested modifier selections triggered by this option.
+   * Immediate parent selection identifier that introduced this group (for nested groups).
    */
-  child_selections?: MenuModifierSelection[];
+  parent_selection_id?: string;
+  /**
+   * Normalized path of ancestor selection identifiers from root to immediate parent.
+   */
+  parent_selection_path?: string[];
   [k: string]: unknown;
 }
 export declare interface Buyer {
@@ -625,18 +491,41 @@ export declare interface RestaurantFulfillmentRequest {
   methods?: RestaurantFulfillmentMethodCreateRequest[];
   [k: string]: unknown;
 }
+export declare interface PickupFulfillmentMethodCreateRequest {
+  /**
+   * Fulfillment method type.
+   */
+  type: 'pickup';
+  /**
+   * Available pickup locations.
+   */
+  destinations?: RetailLocationRequest[];
+  /**
+   * ID of the selected destination.
+   */
+  selected_destination_id?: string | null;
+  [k: string]: unknown;
+}
 /**
- * Geographic coordinates in decimal degrees.
+ * A pickup location (retail store, locker, etc.).
  */
-export declare interface Location {
+export declare interface RetailLocationRequest {
   /**
-   * Latitude in decimal degrees.
+   * Location name (e.g., store name).
    */
-  lat?: number;
+  name: string;
+  address?: PostalAddress;
+  [k: string]: unknown;
+}
+export declare interface OnDemandDeliveryFulfillmentMethodCreateRequest {
   /**
-   * Longitude in decimal degrees.
+   * Fulfillment method type.
    */
-  lng?: number;
+  type: 'on_demand_delivery';
+  /**
+   * Required delivery inputs for on-demand delivery.
+   */
+  delivery: DeliveryQuoteReference | DeliveryInputsRequest;
   [k: string]: unknown;
 }
 /**
@@ -654,11 +543,11 @@ export declare interface DeliveryQuoteReference {
   [k: string]: unknown;
 }
 /**
- * Inputs required to create a delivery without a precomputed quote.
+ * Inputs required to create a delivery or to receive a quote for a delivery.
  */
 export declare interface DeliveryInputsRequest {
-  pickup: PickupLocationRequest;
-  dropoff: DropoffLocationRequest;
+  pickup: RetailLocationRequest;
+  dropoff: ShippingDestinationRequest;
   /**
    * RFC 3339 timestamp when pickup can begin.
    */
@@ -687,7 +576,7 @@ export declare interface DeliveryInputsRequest {
   [k: string]: unknown;
 }
 /**
- * Extends checkout with menu modifier selections for restaurant ordering.
+ * Restaurant checkout with menu modifier selections and embedded fulfillment (pickup or on-demand delivery).
  */
 export declare interface CheckoutRestaurantExtensionUpdateRequest {
   /**
@@ -714,7 +603,7 @@ export declare interface RestaurantLineItemUpdateRequest {
   id?: string;
   item: MenuItem;
   /**
-   * Selected menu modifiers for this line item, including nested selections.
+   * Selected menu modifiers for this line item.
    */
   modifier_selections?: MenuModifierSelection[];
   /**
@@ -742,7 +631,7 @@ export declare interface PaymentUpdateRequest {
   [k: string]: unknown;
 }
 /**
- * Extends checkout with menu modifier selections for restaurant ordering.
+ * Restaurant checkout with menu modifier selections and embedded fulfillment (pickup or on-demand delivery).
  */
 export declare interface CheckoutRestaurantExtensionResponse {
   ucp: UCPResponseMetadata;
@@ -772,7 +661,7 @@ export declare interface CheckoutRestaurantExtensionResponse {
   /**
    * Different cart totals.
    */
-  totals: TotalResponse[];
+  totals: RestaurantTotalResponse[];
   /**
    * List of messages with error and info about the checkout session state.
    */
@@ -844,7 +733,7 @@ export declare interface RestaurantLineItemResponse {
   id: string;
   item: MenuItem;
   /**
-   * Selected menu modifiers for this line item, including nested selections.
+   * Selected menu modifiers for this line item.
    */
   modifier_selections?: MenuModifierSelection[];
   /**
@@ -854,24 +743,24 @@ export declare interface RestaurantLineItemResponse {
   /**
    * Line item totals breakdown.
    */
-  totals: TotalResponse[];
+  totals: RestaurantTotalResponse[];
   /**
    * Parent line item identifier for any nested structures.
    */
   parent_id?: string;
   [k: string]: unknown;
 }
-export declare interface TotalResponse {
+export declare interface RestaurantTotalResponse {
   /**
    * Type of total categorization.
    */
-  type: 'items_discount' | 'subtotal' | 'discount' | 'fulfillment' | 'tax' | 'fee' | 'total';
+  type: 'items_discount' | 'subtotal' | 'discount' | 'fulfillment' | 'tax' | 'fee' | 'tip' | 'total';
   /**
-   * Text to display against the amount. Should reflect appropriate method (e.g., 'Shipping', 'Delivery').
+   * Text to display against the amount. Should reflect appropriate method (e.g., 'Delivery', 'Tip').
    */
   display_text?: string;
   /**
-   * If type == total, sums subtotal - discount + fulfillment + tax + fee. Should be >= 0. Amount in minor (cents) currency units.
+   * If type == total, sums subtotal - discount + fulfillment + tax + fee + tip. Should be >= 0. Amount in minor (cents) currency units.
    */
   amount: number;
   [k: string]: unknown;
@@ -1026,12 +915,61 @@ export declare interface RestaurantFulfillmentResponse {
   available_methods?: RestaurantFulfillmentAvailableMethodResponse[];
   [k: string]: unknown;
 }
+export declare interface PickupFulfillmentMethodResponse {
+  /**
+   * Unique fulfillment method identifier.
+   */
+  id: string;
+  /**
+   * Fulfillment method type.
+   */
+  type: 'pickup';
+  /**
+   * Available pickup locations.
+   */
+  destinations?: RetailLocationResponse[];
+  /**
+   * ID of the selected destination.
+   */
+  selected_destination_id?: string | null;
+  [k: string]: unknown;
+}
 /**
- * Inputs required to create a delivery without a precomputed quote.
+ * A pickup location (retail store, locker, etc.).
+ */
+export declare interface RetailLocationResponse {
+  /**
+   * Unique location identifier.
+   */
+  id: string;
+  /**
+   * Location name (e.g., store name).
+   */
+  name: string;
+  address?: PostalAddress;
+  [k: string]: unknown;
+}
+export declare interface OnDemandDeliveryFulfillmentMethodResponse {
+  /**
+   * Unique fulfillment method identifier.
+   */
+  id: string;
+  /**
+   * Fulfillment method type.
+   */
+  type: 'on_demand_delivery';
+  /**
+   * Required delivery inputs for on-demand delivery.
+   */
+  delivery: DeliveryQuoteReference | DeliveryInputsResponse;
+  [k: string]: unknown;
+}
+/**
+ * Inputs required to create a delivery or to receive a quote for a delivery.
  */
 export declare interface DeliveryInputsResponse {
-  pickup: PickupLocationResponse;
-  dropoff: DropoffLocationResponse;
+  pickup: RetailLocationResponse;
+  dropoff: ShippingDestinationResponse;
   /**
    * RFC 3339 timestamp when pickup can begin.
    */
@@ -1196,135 +1134,6 @@ export declare interface MenuModifierItem {
   [k: string]: unknown;
 }
 /**
- * Merchant search and retrieval capability for menu discovery.
- */
-export declare interface MerchantCapability {
-  [k: string]: unknown;
-}
-/**
- * Filter criteria to narrow menu merchant search results. All specified filters combine with AND logic.
- */
-export declare interface MenuMerchantSearchFilters {
-  /**
-   * Filter by merchant category. Categories are merchant-defined strings representing merchant taxonomy.
-   */
-  category?: string;
-  /**
-   * Whether the merchant is open at request time.
-   */
-  open_now?: boolean;
-  /**
-   * Required fulfillment method type for the merchant.
-   */
-  fulfillment_method?: 'pickup' | 'on_demand_delivery';
-  /**
-   * Filter by location using address fields and an optional radius. Partial matches are implementation-defined.
-   */
-  location?: {
-    address?: PostalAddress;
-    radius?: Distance;
-    [k: string]: unknown;
-  };
-  [k: string]: unknown;
-}
-/**
- * A distance value with a unit.
- */
-export declare interface Distance {
-  /**
-   * Distance value.
-   */
-  value: number;
-  /**
-   * Distance unit.
-   */
-  unit: 'km' | 'mi';
-  [k: string]: unknown;
-}
-/**
- * A merchant available for discovery and restaurant ordering.
- */
-export declare interface Merchant {
-  /**
-   * Global ID (GID) uniquely identifying this merchant.
-   */
-  id: string;
-  /**
-   * Merchant display name.
-   */
-  name: string;
-  /**
-   * Merchant description in one or more formats. At least one format must be provided.
-   */
-  description?: RichText;
-  /**
-   * Canonical merchant page URL.
-   */
-  url?: string;
-  /**
-   * Category: taxonomy path (e.g., 'Restaurants > Sushi') or merchant-defined type.
-   */
-  category?: string;
-  /**
-   * Merchant media (images, videos). First item is the featured media.
-   */
-  media?: Media[];
-  /**
-   * Merchant tags for categorization and search.
-   */
-  tags?: string[];
-  /**
-   * Merchant retail locations (stores, pickup points, etc.).
-   */
-  locations?: RetailLocationResponse[];
-  fulfillment_config?: RestaurantMerchantFulfillmentConfig;
-  /**
-   * Business-defined custom data extending the standard merchant model.
-   */
-  metadata?: {
-    [k: string]: unknown;
-  };
-  [k: string]: unknown;
-}
-/**
- * A pickup location (retail store, locker, etc.).
- */
-export declare interface RetailLocationResponse {
-  /**
-   * Unique location identifier.
-   */
-  id: string;
-  /**
-   * Location name (e.g., store name).
-   */
-  name: string;
-  address?: PostalAddress;
-  [k: string]: unknown;
-}
-/**
- * Merchant fulfillment configuration for restaurant checkout. Method types align with restaurant fulfillment methods.
- */
-export declare interface RestaurantMerchantFulfillmentConfig {
-  /**
-   * Permits multiple destinations per method type.
-   */
-  allows_multi_destination?: {
-    /**
-     * Multiple dropoff locations allowed.
-     */
-    on_demand_delivery?: boolean;
-    /**
-     * Multiple pickup locations allowed.
-     */
-    pickup?: boolean;
-  };
-  /**
-   * Allowed method type combinations for a single checkout.
-   */
-  allows_method_combinations?: Array<'on_demand_delivery' | 'pickup'>[];
-  [k: string]: unknown;
-}
-/**
  * Restaurant order schema with menu modifier selections and pickup/delivery fulfillment events.
  */
 export declare interface RestaurantOrder {
@@ -1352,9 +1161,24 @@ export declare interface RestaurantOrder {
     /**
      * Selected fulfillment type for this order.
      */
-    type?: 'pickup' | 'on_demand_delivery';
+    type: 'pickup' | 'on_demand_delivery';
     /**
-     * Append-only fulfillment events aligned to the selected fulfillment type.
+     * Derived fulfillment status from the latest pickup or delivery event log.
+     */
+    status:
+      | 'ready'
+      | 'arrived'
+      | 'completed'
+      | 'canceled'
+      | 'pending'
+      | 'pickup'
+      | 'pickup_complete'
+      | 'dropoff'
+      | 'delivered'
+      | 'returned'
+      | 'ongoing';
+    /**
+     * Append-only fulfillment event logc aligned to the selected fulfillment type.
      */
     events?: RestaurantFulfillmentEvent[];
     [k: string]: unknown;
@@ -1366,46 +1190,28 @@ export declare interface RestaurantOrder {
   /**
    * Different totals for the order.
    */
-  totals: TotalResponse[];
+  totals: RestaurantTotalResponse[];
   [k: string]: unknown;
 }
 /**
- * Order line item with menu modifier selections.
+ * Order line item snapshot.
  */
 export declare interface RestaurantOrderLineItem {
   /**
    * Line item identifier.
    */
   id: string;
-  item: MenuItem;
+  item: OrderItem;
   /**
-   * Selected menu modifiers for this line item, including nested selections.
+   * Quantity of the item being ordered.
    */
-  modifier_selections?: MenuModifierSelection[];
-  /**
-   * Quantity tracking. Values are merchant-calculated and may change as fulfillment progresses.
-   */
-  quantity: {
-    /**
-     * Current total quantity.
-     */
-    total: number;
-    /**
-     * Quantity fulfilled (sum from fulfillment events).
-     */
-    fulfilled: number;
-    [k: string]: unknown;
-  };
+  quantity: number;
   /**
    * Line item totals breakdown.
    */
-  totals: TotalResponse[];
+  totals: RestaurantTotalResponse[];
   /**
-   * Derived status: fulfilled if quantity.fulfilled == quantity.total, partial if quantity.fulfilled > 0, otherwise processing.
-   */
-  status: 'processing' | 'partial' | 'fulfilled';
-  /**
-   * Parent line item identifier for any nested structures.
+   * Parent reference identifier for nested structures (e.g., bundles or grouped items).
    */
   parent_id?: string;
   [k: string]: unknown;
@@ -1441,7 +1247,7 @@ export declare interface DeliveryEvent {
    */
   event_id: string;
   /**
-   * Delivery lifecycle event type aligned with delivery status values.
+   * Delivery lifecycle event type.
    */
   event_type: 'pending' | 'pickup' | 'pickup_complete' | 'dropoff' | 'delivered' | 'canceled' | 'returned' | 'ongoing';
   /**
@@ -1507,6 +1313,20 @@ export declare interface Courier {
   [k: string]: unknown;
 }
 /**
+ * Geographic coordinates in decimal degrees.
+ */
+export declare interface Location {
+  /**
+   * Latitude in decimal degrees.
+   */
+  lat?: number;
+  /**
+   * Longitude in decimal degrees.
+   */
+  lng?: number;
+  [k: string]: unknown;
+}
+/**
  * Append-only event that exists independently of fulfillment. Typically represents money movements but can be any post-order change. Polymorphic type that can optionally reference line items.
  */
 export declare interface Adjustment {
@@ -1567,6 +1387,32 @@ export declare interface PlatformOrderConfig {
  * Availability hint for pickup or on-demand delivery in restaurant checkout.
  */
 export declare interface RestaurantFulfillmentAvailableMethodRequest {
+  [k: string]: unknown;
+}
+export declare interface PickupFulfillmentMethodUpdateRequest {
+  /**
+   * Unique fulfillment method identifier.
+   */
+  id: string;
+  /**
+   * Available pickup locations.
+   */
+  destinations?: RetailLocationRequest[];
+  /**
+   * ID of the selected destination.
+   */
+  selected_destination_id?: string | null;
+  [k: string]: unknown;
+}
+export declare interface OnDemandDeliveryFulfillmentMethodUpdateRequest {
+  /**
+   * Unique fulfillment method identifier.
+   */
+  id: string;
+  /**
+   * Required delivery inputs for on-demand delivery.
+   */
+  delivery: DeliveryQuoteReference | DeliveryInputsRequest;
   [k: string]: unknown;
 }
 /**
@@ -1660,5 +1506,11 @@ export declare interface MenuAdditionalCharge {
     decimal_value?: number;
     [k: string]: unknown;
   };
+  [k: string]: unknown;
+}
+export declare interface RestaurantTotalCreateRequest {
+  [k: string]: unknown;
+}
+export declare interface RestaurantTotalUpdateRequest {
   [k: string]: unknown;
 }

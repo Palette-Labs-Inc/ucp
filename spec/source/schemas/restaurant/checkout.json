@@ -4,7 +4,7 @@
   "name": "xyz.localprotocol.restaurant.checkout",
   "version": "2026-01-11",
   "title": "Checkout Restaurant Extension",
-  "description": "Extends checkout with menu modifier selections for restaurant ordering.",
+  "description": "Restaurant checkout with menu modifier selections and embedded fulfillment (pickup or on-demand delivery).",
   "type": "object",
   "required": [
     "ucp",

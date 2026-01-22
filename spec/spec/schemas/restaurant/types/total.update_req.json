@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localprotocol.xyz/schemas/restaurant/types/total.update_req.json",
+  "title": "Restaurant Total Update Request",
+  "type": "object",
+  "properties": {}
+}

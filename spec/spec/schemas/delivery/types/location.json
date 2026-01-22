@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://localprotocol.xyz/schemas/shared/types/location.json",
+  "$id": "https://localprotocol.xyz/schemas/delivery/types/location.json",
   "title": "Location",
   "description": "Geographic coordinates in decimal degrees.",
   "type": "object",

@@ -43,6 +43,8 @@ tokenization). When the buyer submits payment, the platform populates the
 **Fulfillment**
 
 Fulfillment is modelled as an extension in UCP to account for diverse use cases.
+For restaurant checkout, fulfillment is embedded in the checkout payload, and
+businesses surface available options in `checkout.fulfillment.methods[]`.
 
 Fulfillment is optional in the checkout object. This is done to enable a
 platform to perform checkout for digital goods without needing to furnish
@@ -328,6 +330,9 @@ that can be used to reference the full state of the placed order.
 At the time of order persistence, fields from `Checkout` **MAY** be used
 to construct the order representation (i.e. information like `line_items`,
 `fulfillment` will be used to create the initial order representation).
+If fulfillment is `on_demand_delivery`, the business **SHOULD** create the
+delivery at completion time and return it in `order.delivery`.
+`complete_checkout` **SHOULD** be idempotent to avoid duplicate deliveries.
 
 After this call, other details will be updated through subsequent events
 as the order, and its associated items, moves through the supply chain.
@@ -360,9 +365,17 @@ defined below:
 
 {{ schema_fields('buyer', 'restaurant/checkout') }}
 
-### Fulfillment Option
+### Fulfillment
 
-{{ extension_schema_fields('fulfillment_resp.json#/$defs/fulfillment_option', 'restaurant/checkout') }}
+{{ schema_fields('types/fulfillment_resp', 'restaurant/checkout') }}
+
+### Fulfillment Method
+
+{{ schema_fields('types/fulfillment_method_resp', 'restaurant/checkout') }}
+
+### Fulfillment Availability
+
+{{ schema_fields('types/fulfillment_available_method_resp', 'restaurant/checkout') }}
 
 ### Item
 

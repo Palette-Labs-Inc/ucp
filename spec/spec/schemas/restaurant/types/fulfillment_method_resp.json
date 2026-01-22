@@ -3,63 +3,66 @@
   "$id": "https://localprotocol.xyz/schemas/restaurant/types/fulfillment_method.json",
   "title": "Restaurant Fulfillment Method Response",
   "description": "A fulfillment method for pickup or on-demand delivery in restaurant checkout.",
-  "type": "object",
-  "required": [
-    "id",
-    "type"
-  ],
-  "additionalProperties": true,
-  "properties": {
-    "id": {
-      "type": "string",
-      "description": "Unique fulfillment method identifier."
-    },
-    "type": {
-      "type": "string",
-      "enum": [
-        "pickup",
-        "on_demand_delivery"
-      ],
-      "description": "Fulfillment method type."
-    },
-    "destinations": {
-      "type": "array",
-      "description": "Available destinations. Pickup uses pickup locations; on-demand delivery uses drop off locations.",
-      "items": {
-        "$ref": "fulfillment_destination_resp.json"
-      }
-    },
-    "selected_destination_id": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "description": "ID of the selected destination."
-    },
-    "delivery": {
-      "oneOf": [
-        {
-          "$ref": "../../delivery/types/quote_reference.json"
-        },
-        {
-          "$ref": "../../delivery/types/delivery_inputs_resp.json"
-        }
-      ],
-      "description": "Required delivery inputs for on-demand delivery."
-    }
-  },
   "oneOf": [
     {
+      "title": "Pickup Fulfillment Method Response",
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "id",
+        "type"
+      ],
       "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique fulfillment method identifier."
+        },
         "type": {
-          "const": "pickup"
+          "const": "pickup",
+          "description": "Fulfillment method type."
+        },
+        "destinations": {
+          "type": "array",
+          "description": "Available pickup locations.",
+          "items": {
+            "$ref": "../../shopping/types/retail_location_resp.json"
+          }
+        },
+        "selected_destination_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "ID of the selected destination."
         }
+      },
+      "not": {
+        "required": [
+          "delivery"
+        ]
       }
     },
     {
+      "title": "On-Demand Delivery Fulfillment Method Response",
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "id",
+        "type",
+        "delivery"
+      ],
       "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique fulfillment method identifier."
+        },
         "type": {
-          "const": "on_demand_delivery"
+          "const": "on_demand_delivery",
+          "description": "Fulfillment method type."
+        },
+        "delivery": {
+          "$ref": "../../delivery/types/delivery_inputs_resp.json",
+          "description": "Required delivery inputs for on-demand delivery."
         }
       }
     }

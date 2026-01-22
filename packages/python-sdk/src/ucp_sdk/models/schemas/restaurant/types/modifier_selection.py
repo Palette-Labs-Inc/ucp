@@ -18,6 +18,36 @@
 
 from __future__ import annotations
 
-from ._internal_1 import MenuModifierSelection
+from pydantic import BaseModel, ConfigDict, Field
 
-__all__ = ["MenuModifierSelection"]
+
+class MenuModifierSelection(BaseModel):
+  """Flat modifier selection entry for a modifier group."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  id: str
+  """
+    Selection identifier for linking nested modifier selections.
+    """
+  modifier_group_id: str
+  """
+    Modifier group identifier for this selection.
+    """
+  item_id: str
+  """
+    Selected modifier item identifier.
+    """
+  quantity: int | None = Field(1, ge=1)
+  """
+    Selected quantity for this modifier item.
+    """
+  parent_selection_id: str | None = None
+  """
+    Immediate parent selection identifier that introduced this group (for nested groups).
+    """
+  parent_selection_path: list[str] | None = None
+  """
+    Normalized path of ancestor selection identifiers from root to immediate parent.
+    """

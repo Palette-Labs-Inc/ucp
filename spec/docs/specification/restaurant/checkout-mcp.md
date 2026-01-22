@@ -30,7 +30,7 @@ Businesses advertise MCP transport availability through their UCP profile at
   "ucp": {
     "version": "2026-01-11",
     "services": {
-      "dev.ucp.shopping": {
+      "xyz.localprotocol.restaurant": {
         "version": "2026-01-11",
         "spec": "https://ucp.dev/specification/overview",
         "mcp": {
@@ -45,13 +45,6 @@ Businesses advertise MCP transport availability through their UCP profile at
         "version": "2026-01-11",
         "spec": "https://localprotocol.xyz/specification/restaurant/checkout",
         "schema": "https://localprotocol.xyz/schemas/restaurant/checkout.json"
-      },
-      {
-        "name": "dev.ucp.shopping.fulfillment",
-        "version": "2026-01-11",
-        "spec": "https://ucp.dev/specification/fulfillment",
-        "schema": "https://ucp.dev/schemas/shopping/fulfillment.json",
-        "extends": "xyz.localprotocol.restaurant.checkout"
       }
     ]
   }
@@ -60,7 +53,9 @@ Businesses advertise MCP transport availability through their UCP profile at
 
 For menu checkout, businesses advertise the restaurant service endpoint and the
 `xyz.localprotocol.restaurant.checkout` capability. The MCP tool names remain the
-same, but the checkout schema includes `line_items[].modifier_selections`.
+same, but the checkout schema includes `line_items[].modifier_selections` using
+the flat restaurant modifier selection shape (`id`, `modifier_group_id`, `item_id`,
+`quantity`, optional `parent_selection_id`).
 
 ### Platform Profile Advertisement
 MCP clients **MUST** include the UCP platform profile URI with every request.
@@ -75,7 +70,7 @@ parameters:
   "params": {
     "_meta": {
       "ucp": {
-        "profile": "https://platform.example/profiles/v2026-01/shopping-agent.json"
+        "profile": "https://platform.example/profiles/v2026-01/restaurant-agent.json"
       }
     },
     "idempotency_key": "..."
@@ -118,10 +113,9 @@ Maps to the [Create Checkout](checkout.md#create-checkout) operation.
 *   [Checkout](checkout.md#create-checkout) object.
     *   Extensions (Optional):
         *   `dev.ucp.shopping.buyer_consent`: [Buyer Consent](../buyer-consent.md)
-        *   `dev.ucp.shopping.fulfillment`: [Fulfillment](../fulfillment.md)
         *   `dev.ucp.shopping.discount`: [Discount](../discount.md)
         *   `dev.ucp.shopping.ap2_mandate`: [AP2 Mandates](../ap2-mandates.md)
-        *   `xyz.localprotocol.restaurant.checkout`: Menu modifiers on line items (`modifier_selections`).
+        *   `xyz.localprotocol.restaurant.checkout`: Menu modifiers on line items (`modifier_selections`, flat shape).
 
 #### Output Schema
 
@@ -138,7 +132,7 @@ Maps to the [Create Checkout](checkout.md#create-checkout) operation.
       "params": {
         "_meta": {
           "ucp": {
-            "profile": "https://platform.example/profiles/v2026-01/shopping-agent.json"
+            "profile": "https://platform.example/profiles/v2026-01/restaurant-agent.json"
           }
         },
         "idempotency_key": "550e8400-e29b-41d4-a716-446655440000",
@@ -159,14 +153,18 @@ Maps to the [Create Checkout](checkout.md#create-checkout) operation.
         "fulfillment": {
           "methods": [
             {
-              "type": "shipping",
+              "type": "pickup",
               "destinations": [
                 {
-                  "street_address": "123 Main St",
-                  "address_locality": "Springfield",
-                  "address_region": "IL",
-                  "postal_code": "62701",
-                  "address_country": "US"
+                  "id": "store_1",
+                  "name": "Downtown Store",
+                  "address": {
+                    "street_address": "123 Main St",
+                    "address_locality": "Springfield",
+                    "address_region": "IL",
+                    "postal_code": "62701",
+                    "address_country": "US"
+                  }
                 }
               ]
             }
@@ -190,10 +188,6 @@ Maps to the [Create Checkout](checkout.md#create-checkout) operation.
           "capabilities": [
             {
               "name": "xyz.localprotocol.restaurant.checkout",
-              "version": "2026-01-11"
-            },
-            {
-              "name": "dev.ucp.shopping.fulfillment",
               "version": "2026-01-11"
             }
           ]
@@ -228,7 +222,7 @@ Maps to the [Create Checkout](checkout.md#create-checkout) operation.
           },
           {
             "type": "fulfillment",
-            "display_text": "Shipping",
+            "display_text": "Pickup",
             "amount": 500
           },
           {
@@ -239,49 +233,20 @@ Maps to the [Create Checkout](checkout.md#create-checkout) operation.
         "fulfillment": {
           "methods": [
             {
-              "id": "shipping_1",
-              "type": "shipping",
-              "line_item_ids": ["item_123"],
-              "selected_destination_id": "dest_home",
+              "id": "pickup",
+              "type": "pickup",
+              "selected_destination_id": "store_1",
               "destinations": [
                 {
-                  "id": "dest_home",
-                  "street_address": "123 Main St",
-                  "address_locality": "Springfield",
-                  "address_region": "IL",
-                  "postal_code": "62701",
-                  "address_country": "US"
-                }
-              ],
-              "groups": [
-                {
-                  "id": "package_1",
-                  "line_item_ids": ["item_123"],
-                  "selected_option_id": "standard",
-                  "options": [
-                    {
-                      "id": "standard",
-                      "title": "Standard Shipping",
-                      "description": "Arrives in 5-7 business days",
-                      "totals": [
-                        {
-                          "type": "total",
-                          "amount": 500
-                        }
-                      ]
-                    },
-                    {
-                      "id": "express",
-                      "title": "Express Shipping",
-                      "description": "Arrives in 2-3 business days",
-                      "totals": [
-                        {
-                          "type": "total",
-                          "amount": 1000
-                        }
-                      ]
-                    }
-                  ]
+                  "id": "store_1",
+                  "name": "Downtown Store",
+                  "address": {
+                    "street_address": "123 Main St",
+                    "address_locality": "Springfield",
+                    "address_region": "IL",
+                    "postal_code": "62701",
+                    "address_country": "US"
+                  }
                 }
               ]
             }
@@ -340,10 +305,9 @@ Maps to the [Update Checkout](checkout.md#update-checkout) operation.
 *   [Checkout](checkout.md#update-checkout) object.
     *   Extensions (Optional):
         *   `dev.ucp.shopping.buyer_consent`: [Buyer Consent](../buyer-consent.md)
-        *   `dev.ucp.shopping.fulfillment`: [Fulfillment](../fulfillment.md)
         *   `dev.ucp.shopping.discount`: [Discount](../discount.md)
         *   `dev.ucp.shopping.ap2_mandate`: [AP2 Mandates](../ap2-mandates.md)
-        *   `xyz.localprotocol.restaurant.checkout`: Menu modifiers on line items (`modifier_selections`).
+        *   `xyz.localprotocol.restaurant.checkout`: Menu modifiers on line items (`modifier_selections`, flat shape).
 
 #### Output Schema
 
@@ -360,7 +324,7 @@ Maps to the [Update Checkout](checkout.md#update-checkout) operation.
       "params": {
         "_meta": {
           "ucp": {
-            "profile": "https://platform.example/profiles/v2026-01/shopping-agent.json"
+            "profile": "https://platform.example/profiles/v2026-01/restaurant-agent.json"
           }
         },
         "id": "checkout_abc123",
@@ -381,14 +345,8 @@ Maps to the [Update Checkout](checkout.md#update-checkout) operation.
         "fulfillment": {
           "methods": [
             {
-              "id": "shipping_1",
-              "line_item_ids": ["item_123"],
-              "groups": [
-                {
-                  "id": "package_1",
-                  "selected_option_id": "express"
-                }
-              ]
+              "id": "pickup",
+              "selected_destination_id": "store_1"
             }
           ]
         },
@@ -410,10 +368,6 @@ Maps to the [Update Checkout](checkout.md#update-checkout) operation.
           "capabilities": [
             {
               "name": "xyz.localprotocol.restaurant.checkout",
-              "version": "2026-01-11"
-            },
-            {
-              "name": "dev.ucp.shopping.fulfillment",
               "version": "2026-01-11"
             }
           ]
@@ -448,7 +402,7 @@ Maps to the [Update Checkout](checkout.md#update-checkout) operation.
           },
           {
             "type": "fulfillment",
-            "display_text": "Shipping",
+            "display_text": "Pickup",
             "amount": 1000
           },
           {
@@ -459,49 +413,20 @@ Maps to the [Update Checkout](checkout.md#update-checkout) operation.
         "fulfillment": {
           "methods": [
             {
-              "id": "shipping_1",
-              "type": "shipping",
-              "line_item_ids": ["item_123"],
-              "selected_destination_id": "dest_home",
+              "id": "pickup",
+              "type": "pickup",
+              "selected_destination_id": "store_1",
               "destinations": [
                 {
-                  "id": "dest_home",
-                  "street_address": "123 Main St",
-                  "address_locality": "Springfield",
-                  "address_region": "IL",
-                  "postal_code": "62701",
-                  "address_country": "US"
-                }
-              ],
-              "groups": [
-                {
-                  "id": "package_1",
-                  "line_item_ids": ["item_123"],
-                  "selected_option_id": "express",
-                  "options": [
-                    {
-                      "id": "standard",
-                      "title": "Standard Shipping",
-                      "description": "Arrives in 5-7 business days",
-                      "totals": [
-                        {
-                          "type": "total",
-                          "amount": 500
-                        }
-                      ]
-                    },
-                    {
-                      "id": "express",
-                      "title": "Express Shipping",
-                      "description": "Arrives in 2-3 business days",
-                      "totals": [
-                        {
-                          "type": "total",
-                          "amount": 1000
-                        }
-                      ]
-                    }
-                  ]
+                  "id": "store_1",
+                  "name": "Downtown Store",
+                  "address": {
+                    "street_address": "123 Main St",
+                    "address_locality": "Springfield",
+                    "address_region": "IL",
+                    "postal_code": "62701",
+                    "address_country": "US"
+                  }
                 }
               ]
             }

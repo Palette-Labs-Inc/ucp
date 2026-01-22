@@ -16,3 +16,12 @@
 # pylint: disable=all
 # pyformat: disable
 
+from __future__ import annotations
+
+from pydantic import BaseModel, ConfigDict
+
+
+class RestaurantTotalUpdateRequest(BaseModel):
+  model_config = ConfigDict(
+    extra="allow",
+  )

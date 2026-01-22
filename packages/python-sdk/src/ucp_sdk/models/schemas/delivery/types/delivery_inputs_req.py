@@ -19,21 +19,24 @@
 from __future__ import annotations
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict
-from ...shared.types import dropoff_location_req, pickup_location_req
-from ...shopping.types import price
+from ...shopping.types import (
+  price,
+  retail_location_req,
+  shipping_destination_req,
+)
 
 
 class DeliveryInputsRequest(BaseModel):
-  """Inputs required to create a delivery without a precomputed quote."""
+  """Inputs required to create a delivery or to receive a quote for a delivery."""
 
   model_config = ConfigDict(
     extra="allow",
   )
-  pickup: pickup_location_req.PickupLocationRequest
+  pickup: retail_location_req.RetailLocationRequest
   """
     Pickup location.
     """
-  dropoff: dropoff_location_req.DropoffLocationRequest
+  dropoff: shipping_destination_req.ShippingDestinationRequest
   """
     Dropoff location.
     """

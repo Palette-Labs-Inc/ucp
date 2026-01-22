@@ -20,7 +20,7 @@ from __future__ import annotations
 
 from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, RootModel
-from . import fulfillment_destination_resp
+from ...shopping.types import retail_location_resp
 from ...delivery.types import delivery_inputs_resp, quote_reference
 
 
@@ -38,23 +38,13 @@ class RestaurantFulfillmentMethodResponse1(BaseModel):
   """
     Fulfillment method type.
     """
-  destinations: (
-    list[fulfillment_destination_resp.FulfillmentDestinationResponse] | None
-  ) = None
+  destinations: list[retail_location_resp.RetailLocationResponse] | None = None
   """
-    Available destinations. Pickup uses pickup locations; on-demand delivery uses drop off locations.
+    Available pickup locations.
     """
   selected_destination_id: str | None = None
   """
     ID of the selected destination.
-    """
-  delivery: (
-    quote_reference.DeliveryQuoteReference
-    | delivery_inputs_resp.DeliveryInputsResponse
-    | None
-  ) = None
-  """
-    Required delivery inputs for on-demand delivery.
     """
 
 
@@ -72,21 +62,10 @@ class RestaurantFulfillmentMethodResponse2(BaseModel):
   """
     Fulfillment method type.
     """
-  destinations: (
-    list[fulfillment_destination_resp.FulfillmentDestinationResponse] | None
-  ) = None
-  """
-    Available destinations. Pickup uses pickup locations; on-demand delivery uses drop off locations.
-    """
-  selected_destination_id: str | None = None
-  """
-    ID of the selected destination.
-    """
   delivery: (
     quote_reference.DeliveryQuoteReference
     | delivery_inputs_resp.DeliveryInputsResponse
-    | None
-  ) = None
+  )
   """
     Required delivery inputs for on-demand delivery.
     """

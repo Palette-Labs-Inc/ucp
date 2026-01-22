@@ -21,9 +21,14 @@ from __future__ import annotations
 from pydantic import AnyUrl, AwareDatetime, BaseModel, ConfigDict, RootModel
 from ..shopping.types.context import Context as Context_1
 from .types import courier as courier_1, delivery_inputs_resp, quote as quote_1
+from ..shopping.types import (
+  message,
+  pagination as pagination_1,
+  price,
+  retail_location_resp,
+  shipping_destination_resp,
+)
 from ..._internal import Response_1
-from ..shopping.types import message, pagination as pagination_1, price
-from ..shared.types import dropoff_location_resp, pickup_location_resp
 from typing import Literal
 
 
@@ -43,24 +48,6 @@ class Context(Context_1):
   )
 
 
-class Quote(RootModel[quote_1.DeliveryQuote]):
-  root: quote_1.DeliveryQuote
-
-
-class QuoteResponse(BaseModel):
-  """Response containing quote details and UCP metadata."""
-
-  model_config = ConfigDict(
-    extra="allow",
-  )
-  ucp: Response_1
-  quote: Quote
-  messages: list[message.Message] | None = None
-  """
-    Errors, warnings, or informational messages about the quote.
-    """
-
-
 class DeliveryRequest(RootModel[delivery_inputs_resp.DeliveryInputsResponse]):
   root: delivery_inputs_resp.DeliveryInputsResponse
 
@@ -71,11 +58,11 @@ class DeliveryUpdateRequest(BaseModel):
   model_config = ConfigDict(
     extra="allow",
   )
-  pickup: pickup_location_resp.PickupLocationResponse | None = None
+  pickup: retail_location_resp.RetailLocationResponse | None = None
   """
     Updated pickup location.
     """
-  dropoff: dropoff_location_resp.DropoffLocationResponse | None = None
+  dropoff: shipping_destination_resp.ShippingDestinationResponse | None = None
   """
     Updated dropoff location.
     """
@@ -122,6 +109,24 @@ class QuoteRequest(BaseModel):
   delivery_request: DeliveryRequest
   """
     Delivery request details used to generate a quote.
+    """
+
+
+class Quote(RootModel[quote_1.DeliveryQuote]):
+  root: quote_1.DeliveryQuote
+
+
+class QuoteResponse(BaseModel):
+  """Response containing quote details and UCP metadata."""
+
+  model_config = ConfigDict(
+    extra="allow",
+  )
+  ucp: Response_1
+  quote: Quote
+  messages: list[message.Message] | None = None
+  """
+    Errors, warnings, or informational messages about the quote.
     """
 
 

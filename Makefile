@@ -31,8 +31,7 @@ export CHAIN_ID
 help:
 	@echo "Targets:"
 	@echo "  make init                 - init submodules (no-op for subtrees) + tooling"
-	@echo "  make update-upstream       - pull latest upstream into subtrees"
-	@echo "  make generate              - run all spec + SDK generators"
+	@echo "  make generate              - run all UCP spec + SDK generators"
 	@echo "  make spec-conformance-sdks - spec types -> conformance -> SDKs"
 	@echo "  make build-js-sdk          - build js-sdk + (re)generate models from ./spec"
 	@echo "  make build-python-sdk      - build python-sdk + (re)generate models from ./spec"

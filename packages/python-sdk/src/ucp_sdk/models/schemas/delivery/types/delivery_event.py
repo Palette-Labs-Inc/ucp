@@ -44,7 +44,7 @@ class DeliveryEvent(BaseModel):
     "ongoing",
   ]
   """
-    Delivery lifecycle event type aligned with delivery status values.
+    Delivery lifecycle event type.
     """
   created_at: AwareDatetime
   """

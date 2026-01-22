@@ -19,7 +19,7 @@
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
-from ...shared.types import location as location_1
+from . import location as location_1
 
 
 class Courier(BaseModel):

@@ -70,11 +70,11 @@
       "minProperties": 1,
       "properties": {
         "pickup": {
-          "$ref": "../shared/types/pickup_location_resp.json",
+          "$ref": "../shopping/types/retail_location_resp.json",
           "description": "Updated pickup location."
         },
         "dropoff": {
-          "$ref": "../shared/types/dropoff_location_resp.json",
+          "$ref": "../shopping/types/shipping_destination_resp.json",
           "description": "Updated dropoff location."
         },
         "pickup_ready_dt": {

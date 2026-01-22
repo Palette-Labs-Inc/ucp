@@ -18,7 +18,7 @@
       "description": "Courier vehicle type (e.g., car, bike, scooter)."
     },
     "location": {
-      "$ref": "../../shared/types/location.json",
+      "$ref": "location.json",
       "description": "Courier live location."
     }
   }

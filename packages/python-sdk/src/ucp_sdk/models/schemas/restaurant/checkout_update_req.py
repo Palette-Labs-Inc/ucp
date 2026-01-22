@@ -25,7 +25,7 @@ from ..shopping import payment_update_req
 
 
 class CheckoutRestaurantExtensionUpdateRequest(BaseModel):
-  """Extends checkout with menu modifier selections for restaurant ordering."""
+  """Restaurant checkout with menu modifier selections and embedded fulfillment (pickup or on-demand delivery)."""
 
   model_config = ConfigDict(
     extra="allow",

@@ -19,30 +19,11 @@
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
-from typing import Literal
-from . import item as item_1
-from ._internal_1 import MenuModifierSelection
-from ...shopping.types import total_resp
-
-
-class Quantity(BaseModel):
-  """Quantity tracking. Values are merchant-calculated and may change as fulfillment progresses."""
-
-  model_config = ConfigDict(
-    extra="allow",
-  )
-  total: int = Field(..., ge=0)
-  """
-    Current total quantity.
-    """
-  fulfilled: int = Field(..., ge=0)
-  """
-    Quantity fulfilled (sum from fulfillment events).
-    """
+from . import order_item, total_resp
 
 
 class RestaurantOrderLineItem(BaseModel):
-  """Order line item with menu modifier selections."""
+  """Order line item snapshot."""
 
   model_config = ConfigDict(
     extra="allow",
@@ -51,27 +32,19 @@ class RestaurantOrderLineItem(BaseModel):
   """
     Line item identifier.
     """
-  item: item_1.MenuItem
+  item: order_item.OrderItem
   """
-    Menu item snapshot for the order.
+    Order-time item snapshot (menu item or modifier item).
     """
-  modifier_selections: list[MenuModifierSelection] | None = None
+  quantity: int = Field(..., ge=1)
   """
-    Selected menu modifiers for this line item, including nested selections.
+    Quantity of the item being ordered.
     """
-  quantity: Quantity
-  """
-    Quantity tracking. Values are merchant-calculated and may change as fulfillment progresses.
-    """
-  totals: list[total_resp.TotalResponse]
+  totals: list[total_resp.RestaurantTotalResponse]
   """
     Line item totals breakdown.
     """
-  status: Literal["processing", "partial", "fulfilled"]
-  """
-    Derived status: fulfilled if quantity.fulfilled == quantity.total, partial if quantity.fulfilled > 0, otherwise processing.
-    """
   parent_id: str | None = None
   """
-    Parent line item identifier for any nested structures.
+    Parent reference identifier for nested structures (e.g., bundles or grouped items).
     """

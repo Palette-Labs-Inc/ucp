@@ -54,12 +54,6 @@
         "extends": "dev.ucp.shopping.checkout"
       },
       {
-        "name": "xyz.localprotocol.restaurant.merchant",
-        "version": "2026-01-11",
-        "spec": "https://localprotocol.xyz/specification/restaurant/merchant",
-        "schema": "https://localprotocol.xyz/schemas/restaurant/merchant.json"
-      },
-      {
         "name": "xyz.localprotocol.restaurant.menu",
         "version": "2026-01-11",
         "spec": "https://localprotocol.xyz/specification/restaurant/menu",

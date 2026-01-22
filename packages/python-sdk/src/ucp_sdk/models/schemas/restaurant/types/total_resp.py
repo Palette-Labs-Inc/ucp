@@ -18,43 +18,32 @@
 
 from __future__ import annotations
 
+from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class MenuModifierItemSelection(BaseModel):
-  """Selected modifier item and nested selections within a modifier group."""
-
+class RestaurantTotalResponse(BaseModel):
   model_config = ConfigDict(
     extra="allow",
   )
-  item_id: str
+  type: Literal[
+    "items_discount",
+    "subtotal",
+    "discount",
+    "fulfillment",
+    "tax",
+    "fee",
+    "tip",
+    "total",
+  ]
   """
-    Selected modifier item identifier.
+    Type of total categorization.
     """
-  quantity: int | None = Field(None, ge=1)
+  display_text: str | None = None
   """
-    Selected quantity for this modifier option.
+    Text to display against the amount. Should reflect appropriate method (e.g., 'Delivery', 'Tip').
     """
-  child_selections: list[MenuModifierSelection] | None = None
+  amount: int = Field(..., ge=0)
   """
-    Nested modifier selections triggered by this option.
+    If type == total, sums subtotal - discount + fulfillment + tax + fee + tip. Should be >= 0. Amount in minor (cents) currency units.
     """
-
-
-class MenuModifierSelection(BaseModel):
-  """Selected modifiers for a modifier group, including nested selections."""
-
-  model_config = ConfigDict(
-    extra="allow",
-  )
-  modifier_group_id: str
-  """
-    Modifier group identifier for this selection.
-    """
-  selections: list[MenuModifierItemSelection]
-  """
-    Selections made within the modifier group.
-    """
-
-
-MenuModifierItemSelection.model_rebuild()

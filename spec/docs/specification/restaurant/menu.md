@@ -39,8 +39,9 @@ nested modifier groups for customization.
 ## Modifier Selection Flow
 
 Menu items do not resolve to a single variant. Instead, a buyer selects one or
-more modifier options (including nested options) to form a selection set that is
-attached to the base item.
+more modifier options to form a flat selection list attached to the base item.
+Nested modifier groups are represented by linking selections with
+`parent_item_id`.
 
 **Example (donut box with nested glaze choice)**
 
@@ -78,9 +79,9 @@ attached to the base item.
     ]
   },
   "modifier_selections": [
-    { "modifier_group_id": "flavors", "modifier_item_id": "chocolate", "quantity": 2 },
-    { "modifier_group_id": "glaze", "modifier_item_id": "extra_glaze", "quantity": 1 },
-    { "modifier_group_id": "flavors", "modifier_item_id": "strawberry", "quantity": 3 }
+    { "id": "sel_1", "modifier_group_id": "flavors", "item_id": "chocolate", "quantity": 2 },
+    { "id": "sel_2", "modifier_group_id": "glaze", "item_id": "extra_glaze", "quantity": 1, "parent_selection_id": "sel_1" },
+    { "id": "sel_3", "modifier_group_id": "flavors", "item_id": "strawberry", "quantity": 3 }
   ]
 }
 ```
@@ -90,6 +91,9 @@ In this model:
 - **Modifier option** is the selection wrapper that references the item and can
   attach nested groups (e.g., `glaze`).
 - **Modifier selection** captures what the buyer chose and quantities.
+- **Selection `id`** is required for linking nested selections via `parent_selection_id`.
+- **Nested groups** are linked via `parent_selection_id` to the modifier selection that
+  introduced the child group.
 
 ## Operations
 

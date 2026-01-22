@@ -8,29 +8,13 @@
  */
 
 /**
- * A pickup location for on-demand delivery.
+ * Shipping destination.
  */
-export type PickupLocationRequest = PostalAddress & {
+export type ShippingDestinationRequest = PostalAddress & {
   /**
-   * ID specific to this pickup location.
+   * ID specific to this shipping destination.
    */
   id?: string;
-  /**
-   * Pickup location name (e.g., store name).
-   */
-  name?: string;
-  location?: Location;
-  [k: string]: unknown;
-};
-/**
- * A dropoff location for on-demand delivery.
- */
-export type DropoffLocationRequest = PostalAddress & {
-  /**
-   * ID specific to this dropoff location.
-   */
-  id?: string;
-  location?: Location;
   [k: string]: unknown;
 };
 /**
@@ -44,29 +28,13 @@ export type CapabilityResponse = Base & {
  */
 export type Message = MessageError | MessageWarning | MessageInfo;
 /**
- * A pickup location for on-demand delivery.
+ * Shipping destination.
  */
-export type PickupLocationResponse = PostalAddress & {
+export type ShippingDestinationResponse = PostalAddress & {
   /**
-   * ID specific to this pickup location.
+   * ID specific to this shipping destination.
    */
   id: string;
-  /**
-   * Pickup location name (e.g., store name).
-   */
-  name?: string;
-  location?: Location;
-  [k: string]: unknown;
-};
-/**
- * A dropoff location for on-demand delivery.
- */
-export type DropoffLocationResponse = PostalAddress & {
-  /**
-   * ID specific to this dropoff location.
-   */
-  id: string;
-  location?: Location;
   [k: string]: unknown;
 };
 
@@ -112,7 +80,7 @@ export declare interface DeliveryQuoteRequestCreateRequest {
   [k: string]: unknown;
 }
 /**
- * Inputs required to create a delivery without a precomputed quote.
+ * Inputs required to create a delivery or to receive a quote for a delivery.
  *
  * This interface was referenced by `DeliveryCapabilityCreateRequest`'s JSON-Schema
  * via the `definition` "delivery_request".
@@ -121,8 +89,8 @@ export declare interface DeliveryQuoteRequestCreateRequest {
  * via the `definition` "delivery_request".
  */
 export declare interface DeliveryInputsRequest {
-  pickup: PickupLocationRequest;
-  dropoff: DropoffLocationRequest;
+  pickup: RetailLocationRequest;
+  dropoff: ShippingDestinationRequest;
   /**
    * RFC 3339 timestamp when pickup can begin.
    */
@@ -148,6 +116,17 @@ export declare interface DeliveryInputsRequest {
    * Optional external identifier for idempotency or correlation.
    */
   external_id?: string;
+  [k: string]: unknown;
+}
+/**
+ * A pickup location (retail store, locker, etc.).
+ */
+export declare interface RetailLocationRequest {
+  /**
+   * Location name (e.g., store name).
+   */
+  name: string;
+  address?: PostalAddress;
   [k: string]: unknown;
 }
 export declare interface PostalAddress {
@@ -191,20 +170,6 @@ export declare interface PostalAddress {
    * Optional. Phone number of the contact associated with the address.
    */
   phone_number?: string;
-  [k: string]: unknown;
-}
-/**
- * Geographic coordinates in decimal degrees.
- */
-export declare interface Location {
-  /**
-   * Latitude in decimal degrees.
-   */
-  lat?: number;
-  /**
-   * Longitude in decimal degrees.
-   */
-  lng?: number;
   [k: string]: unknown;
 }
 /**
@@ -401,8 +366,8 @@ export declare interface MessageInfo {
  * via the `definition` "delivery_update_request".
  */
 export declare interface DeliveryUpdateRequestCreateRequest {
-  pickup?: PickupLocationRequest;
-  dropoff?: DropoffLocationRequest;
+  pickup?: RetailLocationRequest;
+  dropoff?: ShippingDestinationRequest;
   /**
    * RFC 3339 timestamp when pickup can begin.
    */
@@ -486,14 +451,14 @@ export declare interface Delivery {
   [k: string]: unknown;
 }
 /**
- * Inputs required to create a delivery without a precomputed quote.
+ * Inputs required to create a delivery or to receive a quote for a delivery.
  *
  * This interface was referenced by `DeliveryCapabilityResponse`'s JSON-Schema
  * via the `definition` "delivery_request".
  */
 export declare interface DeliveryInputsResponse {
-  pickup: PickupLocationResponse;
-  dropoff: DropoffLocationResponse;
+  pickup: RetailLocationResponse;
+  dropoff: ShippingDestinationResponse;
   /**
    * RFC 3339 timestamp when pickup can begin.
    */
@@ -522,6 +487,21 @@ export declare interface DeliveryInputsResponse {
   [k: string]: unknown;
 }
 /**
+ * A pickup location (retail store, locker, etc.).
+ */
+export declare interface RetailLocationResponse {
+  /**
+   * Unique location identifier.
+   */
+  id: string;
+  /**
+   * Location name (e.g., store name).
+   */
+  name: string;
+  address?: PostalAddress;
+  [k: string]: unknown;
+}
+/**
  * Assigned courier details.
  */
 export declare interface Courier {
@@ -538,6 +518,20 @@ export declare interface Courier {
    */
   vehicle_type?: string;
   location?: Location;
+  [k: string]: unknown;
+}
+/**
+ * Geographic coordinates in decimal degrees.
+ */
+export declare interface Location {
+  /**
+   * Latitude in decimal degrees.
+   */
+  lat?: number;
+  /**
+   * Longitude in decimal degrees.
+   */
+  lng?: number;
   [k: string]: unknown;
 }
 /**
@@ -618,8 +612,8 @@ export declare interface DeliveryQuoteResponseUpdateRequest {
  * via the `definition` "delivery_update_request".
  */
 export declare interface DeliveryUpdateRequestUpdateRequest {
-  pickup?: PickupLocationRequest;
-  dropoff?: DropoffLocationRequest;
+  pickup?: RetailLocationRequest;
+  dropoff?: ShippingDestinationRequest;
   /**
    * RFC 3339 timestamp when pickup can begin.
    */
@@ -726,8 +720,8 @@ export declare interface DeliveryQuoteResponseResponse {
  * via the `definition` "delivery_update_request".
  */
 export declare interface DeliveryUpdateRequestResponse {
-  pickup?: PickupLocationResponse;
-  dropoff?: DropoffLocationResponse;
+  pickup?: RetailLocationResponse;
+  dropoff?: ShippingDestinationResponse;
   /**
    * RFC 3339 timestamp when pickup can begin.
    */
@@ -798,7 +792,7 @@ export declare interface DeliveryEvent {
    */
   event_id: string;
   /**
-   * Delivery lifecycle event type aligned with delivery status values.
+   * Delivery lifecycle event type.
    */
   event_type: 'pending' | 'pickup' | 'pickup_complete' | 'dropoff' | 'delivered' | 'canceled' | 'returned' | 'ongoing';
   /**

@@ -18,26 +18,14 @@
 
 from __future__ import annotations
 
-from pydantic import ConfigDict
-from . import location as location_1
-from ...shopping.types.postal_address import PostalAddress
+from pydantic import Field, RootModel
+from . import item, modifier_item
 
 
-class PickupLocationResponse(PostalAddress):
-  """A pickup location for on-demand delivery."""
-
-  model_config = ConfigDict(
-    extra="allow",
+class OrderItem(RootModel[item.MenuItem | modifier_item.MenuModifierItem]):
+  root: item.MenuItem | modifier_item.MenuModifierItem = Field(
+    ..., title="Order Item"
   )
-  id: str
   """
-    ID specific to this pickup location.
-    """
-  name: str | None = None
-  """
-    Pickup location name (e.g., store name).
-    """
-  location: location_1.Location | None = None
-  """
-    Geographic coordinates for this address.
+    Order-time item snapshot for menu items or modifier items.
     """
