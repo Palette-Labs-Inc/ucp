@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localprotocol.xyz/schemas/restaurant/types/line_item.json",
+  "title": "Restaurant Line Item Response",
+  "description": "Checkout line item with menu modifier selections.",
+  "type": "object",
+  "required": [
+    "id",
+    "item",
+    "quantity",
+    "totals"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "item": {
+      "$ref": "item.json",
+      "description": "Menu item snapshot for checkout."
+    },
+    "modifier_selections": {
+      "type": "array",
+      "items": {
+        "$ref": "modifier_selection.json"
+      },
+      "description": "Selected menu modifiers for this line item, including nested selections."
+    },
+    "quantity": {
+      "type": "integer",
+      "description": "Quantity of the item being purchased.",
+      "minimum": 1
+    },
+    "totals": {
+      "type": "array",
+      "items": {
+        "$ref": "../../shopping/types/total_resp.json"
+      },
+      "description": "Line item totals breakdown."
+    },
+    "parent_id": {
+      "type": "string",
+      "description": "Parent line item identifier for any nested structures."
+    }
+  }
+}

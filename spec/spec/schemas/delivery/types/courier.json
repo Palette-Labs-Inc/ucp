@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://xyz.localprotocol/schemas/delivery/types/courier.json",
+  "$id": "https://localprotocol.xyz/schemas/delivery/types/courier.json",
   "title": "Courier",
   "description": "Assigned courier details.",
   "type": "object",
@@ -18,7 +18,7 @@
       "description": "Courier vehicle type (e.g., car, bike, scooter)."
     },
     "location": {
-      "$ref": "location.json",
+      "$ref": "../../shared/types/location.json",
       "description": "Courier live location."
     }
   }

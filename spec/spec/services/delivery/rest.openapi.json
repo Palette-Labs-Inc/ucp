@@ -126,7 +126,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/delivery_request_request"
+                "$ref": "#/components/schemas/delivery_request"
               }
             }
           }
@@ -142,7 +142,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/delivery"
+                  "$ref": "#/components/schemas/delivery_response"
                 }
               }
             }
@@ -260,7 +260,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/delivery"
+                  "$ref": "#/components/schemas/delivery_response"
                 }
               }
             }
@@ -308,7 +308,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/delivery_update_request_request"
+                "$ref": "#/components/schemas/delivery_update_request"
               }
             }
           }
@@ -324,7 +324,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/delivery"
+                  "$ref": "#/components/schemas/delivery_response"
                 }
               }
             }
@@ -382,7 +382,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/delivery"
+                  "$ref": "#/components/schemas/delivery_response"
                 }
               }
             }
@@ -458,10 +458,13 @@
           "type": "string",
           "enum": [
             "pending",
-            "in_progress",
-            "completed",
+            "pickup",
+            "pickup_complete",
+            "dropoff",
+            "delivered",
             "canceled",
-            "failed"
+            "returned",
+            "ongoing"
           ]
         }
       },
@@ -588,34 +591,31 @@
     },
     "schemas": {
       "delivery_quote_request": {
-        "$ref": "https://xyz.localprotocol/schemas/delivery/types/delivery_quote_request.json"
+        "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/quote_request"
       },
       "delivery_quote_response": {
-        "$ref": "https://xyz.localprotocol/schemas/delivery/types/delivery_quote_response.json"
+        "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/quote_response"
+      },
+      "delivery_request": {
+        "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/delivery_request"
+      },
+      "delivery_response": {
+        "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/delivery_response"
       },
       "delivery_event": {
-        "$ref": "https://xyz.localprotocol/schemas/delivery/types/delivery_event.json"
+        "$ref": "https://localprotocol.xyz/schemas/delivery/types/delivery_event.json"
+      },
+      "delivery_update_request": {
+        "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/delivery_update_request"
       },
       "delivery_list_response": {
-        "$ref": "https://xyz.localprotocol/schemas/delivery/types/delivery_list_response.json"
+        "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/delivery_list_response"
       },
       "delivery": {
-        "$ref": "https://xyz.localprotocol/schemas/delivery/types/delivery.json"
+        "$ref": "https://localprotocol.xyz/schemas/delivery/types/delivery.json"
       },
       "ucp": {
         "$ref": "https://ucp.dev/schemas/ucp.json"
-      },
-      "delivery_request_response": {
-        "$ref": "https://xyz.localprotocol/schemas/delivery/types/delivery_request_resp.json"
-      },
-      "delivery_request_request": {
-        "$ref": "https://xyz.localprotocol/schemas/delivery/types/delivery_request_req.json"
-      },
-      "delivery_update_request_response": {
-        "$ref": "https://xyz.localprotocol/schemas/delivery/types/delivery_update_request_resp.json"
-      },
-      "delivery_update_request_request": {
-        "$ref": "https://xyz.localprotocol/schemas/delivery/types/delivery_update_request_req.json"
       }
     }
   }

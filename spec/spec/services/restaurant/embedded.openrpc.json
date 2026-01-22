@@ -48,7 +48,7 @@
               }
             },
             "checkout": {
-              "$ref": "../../schemas/restaurant/checkout.json",
+              "$ref": "../../schemas/restaurant/checkout_resp.json",
               "description": "Initial checkout state with host-provided data (saved instruments, addresses)."
             }
           }
@@ -64,7 +64,7 @@
           "name": "checkout",
           "required": true,
           "schema": {
-            "$ref": "../../schemas/restaurant/checkout.json",
+            "$ref": "../../schemas/restaurant/checkout_resp.json",
             "description": "Current checkout state."
           },
           "description": "Current checkout state."
@@ -80,7 +80,7 @@
           "name": "checkout",
           "required": true,
           "schema": {
-            "$ref": "../../schemas/restaurant/checkout.json",
+            "$ref": "../../schemas/restaurant/checkout_resp.json",
             "description": "Final checkout state."
           },
           "description": "Final checkout state."
@@ -96,7 +96,7 @@
           "name": "checkout",
           "required": true,
           "schema": {
-            "$ref": "../../schemas/restaurant/checkout.json",
+            "$ref": "../../schemas/restaurant/checkout_resp.json",
             "description": "Current checkout state with updated messages."
           },
           "description": "Current checkout state with updated messages."
@@ -112,7 +112,7 @@
           "name": "checkout",
           "required": true,
           "schema": {
-            "$ref": "../../schemas/restaurant/checkout.json",
+            "$ref": "../../schemas/restaurant/checkout_resp.json",
             "description": "Current checkout state with updated line items."
           },
           "description": "Current checkout state with updated line items."
@@ -128,7 +128,7 @@
           "name": "checkout",
           "required": true,
           "schema": {
-            "$ref": "../../schemas/restaurant/checkout.json",
+            "$ref": "../../schemas/restaurant/checkout_resp.json",
             "description": "Current checkout state with updated buyer."
           },
           "description": "Current checkout state with updated buyer."
@@ -144,7 +144,7 @@
           "name": "checkout",
           "required": true,
           "schema": {
-            "$ref": "../../schemas/restaurant/checkout.json",
+            "$ref": "../../schemas/restaurant/checkout_resp.json",
             "description": "Current checkout state with updated payment."
           },
           "description": "Current checkout state with updated payment."
@@ -160,7 +160,7 @@
           "name": "checkout",
           "required": true,
           "schema": {
-            "$ref": "../../schemas/restaurant/checkout.json",
+            "$ref": "../../schemas/restaurant/checkout_resp.json",
             "description": "Current checkout state."
           },
           "description": "Current checkout state."
@@ -210,7 +210,7 @@
           "name": "checkout",
           "required": true,
           "schema": {
-            "$ref": "../../schemas/restaurant/checkout.json",
+            "$ref": "../../schemas/restaurant/checkout_resp.json",
             "description": "Current checkout state with selected instrument."
           },
           "description": "Current checkout state with selected instrument."
@@ -256,7 +256,7 @@
           "name": "checkout",
           "required": true,
           "schema": {
-            "$ref": "../../schemas/shopping/checkout.json",
+            "$ref": "../../schemas/shopping/checkout_resp.json",
             "description": "Current checkout state with updated fulfillment."
           },
           "description": "Current checkout state with updated fulfillment."
@@ -272,7 +272,7 @@
           "name": "checkout",
           "required": true,
           "schema": {
-            "$ref": "../../schemas/shopping/checkout.json",
+            "$ref": "../../schemas/shopping/checkout_resp.json",
             "description": "Current checkout state with fulfillment context."
           },
           "description": "Current checkout state with fulfillment context."
@@ -292,7 +292,7 @@
               "description": "Partial checkout update with fulfillment address selection.",
               "properties": {
                 "fulfillment": {
-                  "$ref": "../../schemas/shopping/types/fulfillment.json",
+                  "$ref": "../../schemas/shopping/types/fulfillment_resp.json",
                   "description": "Fulfillment with updated destinations and selected_destination_id."
                 }
               }

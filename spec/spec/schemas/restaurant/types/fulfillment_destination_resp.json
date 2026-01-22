@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localprotocol.xyz/schemas/restaurant/types/fulfillment_destination.json",
+  "title": "Fulfillment Destination Response",
+  "description": "A destination for pickup or on-demand delivery in restaurant checkout.",
+  "type": "object",
+  "oneOf": [
+    {
+      "$ref": "../../shared/types/dropoff_location_resp.json"
+    },
+    {
+      "$ref": "../../shared/types/pickup_location_resp.json"
+    }
+  ]
+}

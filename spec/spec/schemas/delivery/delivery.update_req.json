@@ -1,23 +1,27 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://localprotocol.xyz/schemas/delivery/delivery.json",
+  "$id": "https://localprotocol.xyz/schemas/delivery/delivery.update_req.json",
   "name": "xyz.localprotocol.delivery",
   "version": "2026-01-19",
-  "title": "Delivery Capability",
+  "title": "Delivery Capability Update Request",
   "description": "Standalone delivery capability for pickup and on-demand delivery.",
   "type": "object",
   "$defs": {
     "context": {
       "allOf": [
-        { "$ref": "../shopping/types/context.json" }
+        {
+          "$ref": "../shopping/types/context.json"
+        }
       ],
       "description": "Location and market context for delivery operations."
     },
     "quote_request": {
-      "title": "Delivery Quote Request",
+      "title": "Delivery Quote Request Update Request",
       "description": "Inputs required to request an on-demand delivery quote.",
       "type": "object",
-      "required": ["delivery_request"],
+      "required": [
+        "delivery_request"
+      ],
       "properties": {
         "context": {
           "$ref": "#/$defs/context",
@@ -33,10 +37,13 @@
       "$ref": "types/quote.json"
     },
     "quote_response": {
-      "title": "Delivery Quote Response",
+      "title": "Delivery Quote Response Update Request",
       "description": "Response containing quote details and UCP metadata.",
       "type": "object",
-      "required": ["ucp", "quote"],
+      "required": [
+        "ucp",
+        "quote"
+      ],
       "properties": {
         "ucp": {
           "$ref": "../ucp.json#/$defs/response"
@@ -54,21 +61,20 @@
       }
     },
     "delivery_request": {
-      "$ref": "types/delivery_inputs.json"
+      "$ref": "types/delivery_inputs_req.json"
     },
     "delivery_update_request": {
-      "title": "Delivery Update Request",
+      "title": "Delivery Update Request Update Request",
       "description": "Patchable fields for updating an existing delivery.",
       "type": "object",
-      "ucp_shared_request": true,
       "minProperties": 1,
       "properties": {
         "pickup": {
-          "$ref": "../shared/types/pickup_location.json",
+          "$ref": "../shared/types/pickup_location_req.json",
           "description": "Updated pickup location."
         },
         "dropoff": {
-          "$ref": "../shared/types/dropoff_location.json",
+          "$ref": "../shared/types/dropoff_location_req.json",
           "description": "Updated dropoff location."
         },
         "pickup_ready_dt": {
@@ -106,10 +112,13 @@
       }
     },
     "delivery_list_response": {
-      "title": "Delivery List Response",
+      "title": "Delivery List Response Update Request",
       "description": "Paginated delivery list response with UCP metadata.",
       "type": "object",
-      "required": ["ucp", "data"],
+      "required": [
+        "ucp",
+        "data"
+      ],
       "properties": {
         "ucp": {
           "$ref": "../ucp.json#/$defs/response"
@@ -117,7 +126,9 @@
         "data": {
           "type": "array",
           "description": "Deliveries matching the list query.",
-          "items": { "$ref": "types/delivery.json" }
+          "items": {
+            "$ref": "types/delivery.json"
+          }
         },
         "pagination": {
           "$ref": "../shopping/types/pagination.json#/$defs/response",
@@ -133,10 +144,13 @@
       }
     },
     "delivery_response": {
-      "title": "Delivery Response",
+      "title": "Delivery Response Update Request",
       "description": "Response containing delivery details and UCP metadata.",
       "type": "object",
-      "required": ["ucp", "delivery"],
+      "required": [
+        "ucp",
+        "delivery"
+      ],
       "properties": {
         "ucp": {
           "$ref": "../ucp.json#/$defs/response"

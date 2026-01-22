@@ -21,6 +21,21 @@
       ]
     },
     {
+      "name": "ed.delivery.event",
+      "summary": "Delivery event",
+      "description": "Service notifies host of a delivery lifecycle event.",
+      "params": [
+        {
+          "name": "event",
+          "required": true,
+          "schema": {
+            "$ref": "../../schemas/delivery/types/delivery_event.json",
+            "description": "Delivery lifecycle event payload."
+          }
+        }
+      ]
+    },
+    {
       "name": "ed.delivery.quote_change",
       "summary": "Quote changed",
       "description": "Service notifies host that a delivery quote has changed or expired.",
@@ -29,7 +44,7 @@
           "name": "quote",
           "required": true,
           "schema": {
-            "$ref": "../../schemas/delivery/delivery.json#/$defs/quote_response",
+            "$ref": "../../schemas/delivery/types/quote.json",
             "description": "Updated quote details."
           }
         }

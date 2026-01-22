@@ -5,48 +5,35 @@
   "version": "2026-01-11",
   "title": "Checkout Restaurant Extension Create Request",
   "description": "Extends checkout with menu modifier selections for restaurant ordering.",
-  "$defs": {
-    "restaurant_line_item": {
-      "title": "Line Item with Menu Modifiers Create Request",
-      "description": "Line item extended with menu modifier selections.",
-      "allOf": [
-        {
-          "$ref": "../shopping/types/line_item.create_req.json"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "modifier_selections": {
-              "type": "array",
-              "items": {
-                "$ref": "types/modifier_selection.json"
-              },
-              "description": "Selected menu modifiers for this line item, including nested selections."
-            }
-          }
-        }
-      ]
+  "type": "object",
+  "required": [
+    "line_items",
+    "currency",
+    "payment"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "line_items": {
+      "type": "array",
+      "items": {
+        "$ref": "types/line_item.create_req.json"
+      },
+      "description": "List of line items being checked out."
     },
-    "checkout": {
-      "title": "Checkout with Menu Modifiers Create Request",
-      "description": "Checkout extended with menu modifier selections on line items.",
-      "allOf": [
-        {
-          "$ref": "../shopping/checkout.create_req.json"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "line_items": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/restaurant_line_item"
-              },
-              "description": "List of line items being checked out."
-            }
-          }
-        }
-      ]
+    "buyer": {
+      "$ref": "../shopping/types/buyer.json",
+      "description": "Representation of the buyer."
+    },
+    "currency": {
+      "type": "string",
+      "description": "ISO 4217 currency code."
+    },
+    "payment": {
+      "$ref": "../shopping/payment.create_req.json"
+    },
+    "fulfillment": {
+      "$ref": "types/fulfillment_req.json",
+      "description": "Fulfillment selection and availability for the checkout."
     }
   }
 }

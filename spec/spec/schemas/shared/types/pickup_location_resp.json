@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localprotocol.xyz/schemas/shared/types/pickup_location.json",
+  "title": "Pickup Location Response",
+  "description": "A pickup location for on-demand delivery.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../shopping/types/postal_address.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "ID specific to this pickup location."
+        },
+        "name": {
+          "type": "string",
+          "description": "Pickup location name (e.g., store name)."
+        },
+        "location": {
+          "$ref": "location.json",
+          "description": "Geographic coordinates for this address."
+        }
+      },
+      "required": [
+        "id"
+      ]
+    }
+  ]
+}

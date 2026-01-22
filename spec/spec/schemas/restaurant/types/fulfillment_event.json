@@ -4,7 +4,11 @@
   "title": "Restaurant Fulfillment Event",
   "description": "Append-only fulfillment event for restaurant pickup or on-demand delivery.",
   "oneOf": [
-    { "$ref": "pickup_event.json" },
-    { "$ref": "../../delivery/types/delivery_event.json" }
+    {
+      "$ref": "pickup_event.json"
+    },
+    {
+      "$ref": "../../delivery/types/delivery_event.json"
+    }
   ]
 }

@@ -10,7 +10,9 @@
       "title": "Platform Order Config",
       "description": "Platform's order capability configuration.",
       "type": "object",
-      "required": ["webhook_url"],
+      "required": [
+        "webhook_url"
+      ],
       "properties": {
         "webhook_url": {
           "type": "string",
@@ -59,7 +61,10 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["pickup", "on_demand_delivery"],
+          "enum": [
+            "pickup",
+            "on_demand_delivery"
+          ],
           "description": "Selected fulfillment type for this order."
         },
         "events": {
@@ -82,7 +87,7 @@
     "totals": {
       "type": "array",
       "items": {
-        "$ref": "../shopping/types/total.json"
+        "$ref": "../shopping/types/total_resp.json"
       },
       "description": "Different totals for the order."
     }

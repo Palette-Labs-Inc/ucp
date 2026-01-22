@@ -3,7 +3,7 @@
   "info": {
     "title": "UCP Delivery Service",
     "version": "2026-01-19",
-    "description": "Canonical MCP/JSON-RPC interface for UCP Delivery service. Schema references are logical pointers - actual payload shape is determined by negotiated capabilities.\n\n**Endpoint Resolution:** This spec defines methods only. The endpoint URL MUST be obtained from the merchant's discovery profile at `/.well-known/ucp` under `services[\"xyz.localprotocol.delivery\"].mcp.endpoint`. The server entry below is a placeholder for tooling compatibility."
+    "description": "Canonical MCP/JSON-RPC interface for UCP Delivery service. Schema references are logical pointers - actual payload shape is determined by negotiated capabilities.\n\n**Endpoint Resolution:** This spec defines methods only. The endpoint URL MUST be obtained from the delivery service's discovery profile at `/.well-known/ucp` under `services[\"xyz.localprotocol.delivery\"].mcp.endpoint`. The server entry below is a placeholder for tooling compatibility."
   },
   "servers": [
     {
@@ -26,12 +26,12 @@
         {
           "name": "request",
           "required": true,
-          "schema": { "$ref": "https://xyz.localprotocol/schemas/delivery/types/delivery_quote_request.json" }
+            "schema": { "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/quote_request" }
         }
       ],
       "result": {
         "name": "quote",
-        "schema": { "$ref": "https://xyz.localprotocol/schemas/delivery/types/delivery_quote_response.json" }
+        "schema": { "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/quote_response" }
       }
     },
     {
@@ -41,12 +41,12 @@
         {
           "name": "request",
           "required": true,
-          "schema": { "$ref": "https://xyz.localprotocol/schemas/delivery/types/delivery_request.json" }
+            "schema": { "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/delivery_request" }
         }
       ],
       "result": {
         "name": "delivery",
-        "schema": { "$ref": "https://xyz.localprotocol/schemas/delivery/types/delivery.json" }
+        "schema": { "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/delivery_response" }
       }
     },
     {
@@ -58,7 +58,16 @@
           "required": false,
           "schema": {
             "type": "string",
-            "enum": ["pending", "in_progress", "completed", "canceled", "failed"]
+            "enum": [
+              "pending",
+              "pickup",
+              "pickup_complete",
+              "dropoff",
+              "delivered",
+              "canceled",
+              "returned",
+              "ongoing"
+            ]
           }
         },
         {
@@ -74,7 +83,7 @@
       ],
       "result": {
         "name": "response",
-        "schema": { "$ref": "https://xyz.localprotocol/schemas/delivery/types/delivery_list_response.json" }
+        "schema": { "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/delivery_list_response" }
       }
     },
     {
@@ -89,7 +98,7 @@
       ],
       "result": {
         "name": "delivery",
-        "schema": { "$ref": "https://xyz.localprotocol/schemas/delivery/types/delivery.json" }
+        "schema": { "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/delivery_response" }
       }
     },
     {
@@ -104,12 +113,12 @@
         {
           "name": "request",
           "required": true,
-          "schema": { "$ref": "https://xyz.localprotocol/schemas/delivery/types/delivery_update_request.json" }
+          "schema": { "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/delivery_update_request" }
         }
       ],
       "result": {
         "name": "delivery",
-        "schema": { "$ref": "https://xyz.localprotocol/schemas/delivery/types/delivery.json" }
+        "schema": { "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/delivery_response" }
       }
     },
     {
@@ -124,7 +133,7 @@
       ],
       "result": {
         "name": "delivery",
-        "schema": { "$ref": "https://xyz.localprotocol/schemas/delivery/types/delivery.json" }
+        "schema": { "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/delivery_response" }
       }
     }
   ]

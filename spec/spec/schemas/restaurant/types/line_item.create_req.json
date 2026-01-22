@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localprotocol.xyz/schemas/restaurant/types/line_item.create_req.json",
+  "title": "Restaurant Line Item Create Request",
+  "description": "Checkout line item with menu modifier selections.",
+  "type": "object",
+  "required": [
+    "item",
+    "quantity"
+  ],
+  "properties": {
+    "item": {
+      "$ref": "item.json",
+      "description": "Menu item snapshot for checkout."
+    },
+    "modifier_selections": {
+      "type": "array",
+      "items": {
+        "$ref": "modifier_selection.json"
+      },
+      "description": "Selected menu modifiers for this line item, including nested selections."
+    },
+    "quantity": {
+      "type": "integer",
+      "description": "Quantity of the item being purchased.",
+      "minimum": 1
+    }
+  }
+}

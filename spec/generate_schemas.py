@@ -515,7 +515,11 @@ def rewrite_refs_for_ecp(data: Any, annotated_schemas: set[str]) -> Any:
     result = {}
     for k, v in data.items():
       if k == "$ref" and isinstance(v, str) and not v.startswith("#"):
-        schema_prefixes = ["schemas/shopping/", "schemas/commerce/"]
+        schema_prefixes = [
+          "schemas/shopping/",
+          "schemas/restaurant/",
+          "schemas/delivery/",
+        ]
         matched = None
         for prefix in schema_prefixes:
           if prefix in v:
@@ -760,10 +764,12 @@ def main() -> None:
     return rel_paths
 
   shopping_ecp_annotated = _build_ecp_annotated("schemas/shopping")
-  commerce_ecp_annotated = _build_ecp_annotated("schemas/commerce")
+  restaurant_ecp_annotated = _build_ecp_annotated("schemas/restaurant")
+  delivery_ecp_annotated = _build_ecp_annotated("schemas/delivery")
   ecp_annotated_by_service = {
     "shopping": shopping_ecp_annotated,
-    "commerce": shopping_ecp_annotated | commerce_ecp_annotated,
+    "restaurant": shopping_ecp_annotated | restaurant_ecp_annotated,
+    "delivery": shopping_ecp_annotated | delivery_ecp_annotated,
   }
 
   for service_name, source_file in ECP_SOURCE_FILES:

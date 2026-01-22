@@ -8,189 +8,29 @@
  */
 
 /**
- * A fulfillment method for pickup or on-demand delivery.
+ * A pickup location for on-demand delivery.
  */
-export type DeliveryFulfillmentMethod = {
+export type PickupLocationRequest = PostalAddress & {
   /**
-   * Unique fulfillment method identifier.
+   * ID specific to this pickup location.
    */
-  id: string;
+  id?: string;
   /**
-   * Fulfillment method type.
+   * Pickup location name (e.g., store name).
    */
-  type: 'pickup' | 'on_demand_delivery';
-  /**
-   * Line item IDs fulfilled via this method.
-   */
-  line_item_ids: string[];
-  /**
-   * Available destinations. Pickup uses retail locations; on-demand delivery uses addresses.
-   */
-  destinations?: FulfillmentDestinationResponse[];
-  /**
-   * ID of the selected destination.
-   */
-  selected_destination_id?: string | null;
-  /**
-   * Fulfillment groups for selecting options.
-   */
-  groups?: FulfillmentGroupResponse[];
-  /**
-   * Required delivery inputs for on-demand delivery.
-   */
-  delivery?: DeliveryFulfillmentQuoteReference | DeliveryFulfillmentRequestResponse;
-  [k: string]: unknown;
-} & (
-  | {
-      type?: 'pickup';
-      [k: string]: unknown;
-    }
-  | {
-      type?: 'on_demand_delivery';
-      [k: string]: unknown;
-    }
-);
-/**
- * A destination for fulfillment.
- */
-export type FulfillmentDestinationResponse = ShippingDestinationResponse | RetailLocationResponse;
-/**
- * Shipping destination.
- */
-export type ShippingDestinationResponse = PostalAddress & {
-  /**
-   * ID specific to this shipping destination.
-   */
-  id: string;
-  [k: string]: unknown;
-};
-/**
- * A postal address with optional geocoordinates.
- */
-export type DeliveryLocationResponse = ShippingDestinationResponse & {
+  name?: string;
   location?: Location;
   [k: string]: unknown;
 };
 /**
- * Checkout extended with delivery fulfillment details.
- *
- * This interface was referenced by `DeliveryFulfillmentExtensionCreateRequest`'s JSON-Schema
- * via the `definition` "checkout".
+ * A dropoff location for on-demand delivery.
  */
-export type CheckoutWithDeliveryFulfillmentCreateRequest = CheckoutWithMenuModifiersCreateRequest & {
-  fulfillment?: DeliveryFulfillmentRequest;
-  [k: string]: unknown;
-};
-/**
- * Checkout extended with menu modifier selections on line items.
- */
-export type CheckoutWithMenuModifiersCreateRequest = CheckoutCreateRequest & {
+export type DropoffLocationRequest = PostalAddress & {
   /**
-   * List of line items being checked out.
+   * ID specific to this dropoff location.
    */
-  line_items?: LineItemWithMenuModifiersCreateRequest[];
-  [k: string]: unknown;
-};
-/**
- * Matches a specific instrument type based on validation logic.
- */
-export type PaymentInstrument = CardPaymentInstrument;
-/**
- * A basic card payment instrument with visible card details. Can be inherited by a handler's instrument schema to define handler-specific display details or more complex credential structures.
- */
-export type CardPaymentInstrument = PaymentInstrumentBase & {
-  /**
-   * Indicates this is a card payment instrument.
-   */
-  type: 'card';
-  /**
-   * The card brand/network (e.g., visa, mastercard, amex).
-   */
-  brand: string;
-  /**
-   * Last 4 digits of the card number.
-   */
-  last_digits: string;
-  /**
-   * The month of the card's expiration date (1-12).
-   */
-  expiry_month?: number;
-  /**
-   * The year of the card's expiration date.
-   */
-  expiry_year?: number;
-  /**
-   * An optional rich text description of the card to display to the user (e.g., 'Visa ending in 1234, expires 12/2025').
-   */
-  rich_text_description?: string;
-  /**
-   * An optional URI to a rich image representing the card (e.g., card art provided by the issuer).
-   */
-  rich_card_art?: string;
-  [k: string]: unknown;
-};
-/**
- * Container for sensitive payment data. Use the specific schema matching the 'type' field.
- */
-export type PaymentCredential = TokenCredentialResponse | CardCredential;
-/**
- * Line item extended with menu modifier selections.
- */
-export type LineItemWithMenuModifiersCreateRequest = LineItemCreateRequest & {
-  /**
-   * Selected menu modifiers for this line item, including nested selections.
-   */
-  modifier_selections?: MenuModifierSelection[];
-  [k: string]: unknown;
-};
-/**
- * Checkout extended with delivery fulfillment details.
- *
- * This interface was referenced by `DeliveryFulfillmentExtensionUpdateRequest`'s JSON-Schema
- * via the `definition` "checkout".
- */
-export type CheckoutWithDeliveryFulfillmentUpdateRequest = CheckoutWithMenuModifiersUpdateRequest & {
-  fulfillment?: DeliveryFulfillmentRequest;
-  [k: string]: unknown;
-};
-/**
- * Checkout extended with menu modifier selections on line items.
- */
-export type CheckoutWithMenuModifiersUpdateRequest = CheckoutUpdateRequest & {
-  /**
-   * List of line items being checked out.
-   */
-  line_items?: LineItemWithMenuModifiersUpdateRequest[];
-  [k: string]: unknown;
-};
-/**
- * Line item extended with menu modifier selections.
- */
-export type LineItemWithMenuModifiersUpdateRequest = LineItemUpdateRequest & {
-  /**
-   * Selected menu modifiers for this line item, including nested selections.
-   */
-  modifier_selections?: MenuModifierSelection[];
-  [k: string]: unknown;
-};
-/**
- * Checkout extended with delivery fulfillment details.
- *
- * This interface was referenced by `DeliveryFulfillmentExtensionResponse`'s JSON-Schema
- * via the `definition` "checkout".
- */
-export type CheckoutWithDeliveryFulfillmentResponse = CheckoutWithMenuModifiersResponse & {
-  fulfillment?: DeliveryFulfillmentResponse;
-  [k: string]: unknown;
-};
-/**
- * Checkout extended with menu modifier selections on line items.
- */
-export type CheckoutWithMenuModifiersResponse = CheckoutResponse & {
-  /**
-   * List of line items being checked out.
-   */
-  line_items?: LineItemWithMenuModifiersResponse[];
+  id?: string;
+  location?: Location;
   [k: string]: unknown;
 };
 /**
@@ -204,59 +44,110 @@ export type CapabilityResponse = Base & {
  */
 export type Message = MessageError | MessageWarning | MessageInfo;
 /**
- * Line item extended with menu modifier selections.
+ * A pickup location for on-demand delivery.
  */
-export type LineItemWithMenuModifiersResponse = LineItemResponse & {
+export type PickupLocationResponse = PostalAddress & {
   /**
-   * Selected menu modifiers for this line item, including nested selections.
+   * ID specific to this pickup location.
    */
-  modifier_selections?: MenuModifierSelection[];
-  [k: string]: unknown;
-};
-/**
- * A postal address with optional geocoordinates.
- */
-export type DeliveryLocationRequest = ShippingDestinationRequest & {
+  id: string;
+  /**
+   * Pickup location name (e.g., store name).
+   */
+  name?: string;
   location?: Location;
   [k: string]: unknown;
 };
 /**
- * Shipping destination.
+ * A dropoff location for on-demand delivery.
  */
-export type ShippingDestinationRequest = PostalAddress & {
+export type DropoffLocationResponse = PostalAddress & {
   /**
-   * ID specific to this shipping destination.
+   * ID specific to this dropoff location.
    */
-  id?: string;
+  id: string;
+  location?: Location;
   [k: string]: unknown;
 };
 
 /**
  * Standalone delivery capability for pickup and on-demand delivery.
  */
-export declare interface DeliveryCapability {
+export declare interface DeliveryCapabilityCreateRequest {
   [k: string]: unknown;
 }
 /**
- * Extends restaurant checkout with delivery fulfillment details.
+ * Location and market context. All fields optional. Platforms MAY geo-detect from request; provided fields MUST override.
  */
-export declare interface DeliveryFulfillmentExtensionCreateRequest {
-  [k: string]: unknown;
-}
-/**
- * Container for pickup and on-demand delivery methods.
- *
- * This interface was referenced by `DeliveryFulfillmentExtensionCreateRequest`'s JSON-Schema
- * via the `definition` "fulfillment".
- *
- * This interface was referenced by `DeliveryFulfillmentExtensionUpdateRequest`'s JSON-Schema
- * via the `definition` "fulfillment".
- */
-export declare interface DeliveryFulfillmentRequest {
+export declare interface Context {
   /**
-   * Fulfillment methods for cart items.
+   * ISO 3166-1 alpha-2 country code (e.g., 'US', 'CA'). Market context for product availability, pricing, and currency. Detected from request if omitted.
    */
-  methods?: DeliveryFulfillmentMethod[];
+  country?: string;
+  /**
+   * State, province, emirate, or district (e.g., 'CA', 'ON', 'Dubai'). Format varies by country.
+   */
+  region?: string;
+  /**
+   * Postal or ZIP code for regional refinement. Not applicable in all countries.
+   */
+  postal_code?: string;
+  [k: string]: unknown;
+}
+/**
+ * Inputs required to request an on-demand delivery quote.
+ *
+ * This interface was referenced by `DeliveryCapabilityCreateRequest`'s JSON-Schema
+ * via the `definition` "quote_request".
+ */
+export declare interface DeliveryQuoteRequestCreateRequest {
+  /**
+   * Location and market context for delivery operations.
+   *
+   * This interface was referenced by `DeliveryCapabilityCreateRequest`'s JSON-Schema
+   * via the `definition` "context".
+   */
+  context?: Context;
+  delivery_request: DeliveryInputsRequest;
+  [k: string]: unknown;
+}
+/**
+ * Inputs required to create a delivery without a precomputed quote.
+ *
+ * This interface was referenced by `DeliveryCapabilityCreateRequest`'s JSON-Schema
+ * via the `definition` "delivery_request".
+ *
+ * This interface was referenced by `DeliveryCapabilityUpdateRequest`'s JSON-Schema
+ * via the `definition` "delivery_request".
+ */
+export declare interface DeliveryInputsRequest {
+  pickup: PickupLocationRequest;
+  dropoff: DropoffLocationRequest;
+  /**
+   * RFC 3339 timestamp when pickup can begin.
+   */
+  pickup_ready_dt?: string;
+  /**
+   * RFC 3339 timestamp after which pickup is no longer valid.
+   */
+  pickup_deadline_dt?: string;
+  /**
+   * RFC 3339 timestamp when dropoff can begin.
+   */
+  dropoff_ready_dt?: string;
+  /**
+   * RFC 3339 timestamp after which dropoff is no longer valid.
+   */
+  dropoff_deadline_dt?: string;
+  items_value: Price;
+  /**
+   * Optional store identifier for routing or pricing.
+   */
+  external_store_id?: string;
+  /**
+   * Optional external identifier for idempotency or correlation.
+   */
+  external_id?: string;
   [k: string]: unknown;
 }
 export declare interface PostalAddress {
@@ -303,142 +194,6 @@ export declare interface PostalAddress {
   [k: string]: unknown;
 }
 /**
- * A pickup location (retail store, locker, etc.).
- */
-export declare interface RetailLocationResponse {
-  /**
-   * Unique location identifier.
-   */
-  id: string;
-  /**
-   * Location name (e.g., store name).
-   */
-  name: string;
-  address?: PostalAddress;
-  [k: string]: unknown;
-}
-/**
- * A merchant-generated package/group of line items with fulfillment options.
- */
-export declare interface FulfillmentGroupResponse {
-  /**
-   * Group identifier for referencing merchant-generated groups in updates.
-   */
-  id: string;
-  /**
-   * Line item IDs included in this group/package.
-   */
-  line_item_ids: string[];
-  /**
-   * Available fulfillment options for this group.
-   */
-  options?: FulfillmentOptionResponse[];
-  /**
-   * ID of the selected fulfillment option for this group.
-   */
-  selected_option_id?: string | null;
-  [k: string]: unknown;
-}
-/**
- * A fulfillment option within a group (e.g., Standard Shipping $5, Express $15).
- */
-export declare interface FulfillmentOptionResponse {
-  /**
-   * Unique fulfillment option identifier.
-   */
-  id: string;
-  /**
-   * Short label (e.g., 'Express Shipping', 'Curbside Pickup').
-   */
-  title: string;
-  /**
-   * Complete context for buyer decision (e.g., 'Arrives Dec 12-15 via FedEx').
-   */
-  description?: string;
-  /**
-   * Carrier name (for shipping).
-   */
-  carrier?: string;
-  /**
-   * Earliest fulfillment date.
-   */
-  earliest_fulfillment_time?: string;
-  /**
-   * Latest fulfillment date.
-   */
-  latest_fulfillment_time?: string;
-  /**
-   * Fulfillment option totals breakdown.
-   */
-  totals: TotalResponse[];
-  [k: string]: unknown;
-}
-export declare interface TotalResponse {
-  /**
-   * Type of total categorization.
-   */
-  type: 'items_discount' | 'subtotal' | 'discount' | 'fulfillment' | 'tax' | 'fee' | 'total';
-  /**
-   * Text to display against the amount. Should reflect appropriate method (e.g., 'Shipping', 'Delivery').
-   */
-  display_text?: string;
-  /**
-   * If type == total, sums subtotal - discount + fulfillment + tax + fee. Should be >= 0. Amount in minor (cents) currency units.
-   */
-  amount: number;
-  [k: string]: unknown;
-}
-/**
- * Delivery fulfillment reference to a previously created quote.
- */
-export declare interface DeliveryFulfillmentQuoteReference {
-  /**
-   * Delivery quote identifier for this checkout.
-   */
-  quote_id: string;
-  [k: string]: unknown;
-}
-/**
- * Delivery fulfillment details when no quote is provided.
- */
-export declare interface DeliveryFulfillmentRequestResponse {
-  delivery_request: DeliveryRequestResponse;
-  [k: string]: unknown;
-}
-/**
- * Inputs required to create a delivery without a precomputed quote.
- */
-export declare interface DeliveryRequestResponse {
-  pickup: DeliveryLocationResponse;
-  dropoff: DeliveryLocationResponse;
-  /**
-   * RFC 3339 timestamp when pickup can begin.
-   */
-  pickup_ready_dt?: string;
-  /**
-   * RFC 3339 timestamp after which pickup is no longer valid.
-   */
-  pickup_deadline_dt?: string;
-  /**
-   * RFC 3339 timestamp when dropoff can begin.
-   */
-  dropoff_ready_dt?: string;
-  /**
-   * RFC 3339 timestamp after which dropoff is no longer valid.
-   */
-  dropoff_deadline_dt?: string;
-  manifest_total_value: Price;
-  /**
-   * Optional store identifier for routing or pricing.
-   */
-  external_store_id?: string;
-  /**
-   * Optional external identifier for idempotency or correlation.
-   */
-  external_id?: string;
-  [k: string]: unknown;
-}
-/**
  * Geographic coordinates in decimal degrees.
  */
 export declare interface Location {
@@ -467,316 +222,60 @@ export declare interface Price {
   [k: string]: unknown;
 }
 /**
- * Base checkout schema. Extensions compose onto this using allOf.
- */
-export declare interface CheckoutCreateRequest {
-  /**
-   * List of line items being checked out.
-   */
-  line_items: LineItemCreateRequest[];
-  buyer?: Buyer;
-  /**
-   * ISO 4217 currency code.
-   */
-  currency: string;
-  payment: PaymentCreateRequest;
-  [k: string]: unknown;
-}
-/**
- * Line item object. Expected to use the currency of the parent object.
- */
-export declare interface LineItemCreateRequest {
-  item: ItemCreateRequest;
-  /**
-   * Quantity of the item being purchased.
-   */
-  quantity: number;
-  [k: string]: unknown;
-}
-export declare interface ItemCreateRequest {
-  /**
-   * Should be recognized by both the Platform, and the Business. For Google it should match the id provided in the "id" field in the product feed.
-   */
-  id: string;
-  [k: string]: unknown;
-}
-export declare interface Buyer {
-  /**
-   * First name of the buyer.
-   */
-  first_name?: string;
-  /**
-   * Last name of the buyer.
-   */
-  last_name?: string;
-  /**
-   * Optional, buyer's full name (if first_name or last_name fields are present they take precedence).
-   */
-  full_name?: string;
-  /**
-   * Email of the buyer.
-   */
-  email?: string;
-  /**
-   * E.164 standard.
-   */
-  phone_number?: string;
-  [k: string]: unknown;
-}
-/**
- * Payment configuration containing handlers.
- */
-export declare interface PaymentCreateRequest {
-  /**
-   * The id of the currently selected payment instrument from the instruments array. Set by the agent when submitting payment, and echoed back by the merchant in finalized state.
-   */
-  selected_instrument_id?: string;
-  /**
-   * The payment instruments available for this payment. Each instrument is associated with a specific handler via the handler_id field. Handlers can extend the base payment_instrument schema to add handler-specific fields.
-   */
-  instruments?: PaymentInstrument[];
-  [k: string]: unknown;
-}
-/**
- * The base definition for any payment instrument. It links the instrument to a specific Merchant configuration (handler_id) and defines common fields like billing address.
- */
-export declare interface PaymentInstrumentBase {
-  /**
-   * A unique identifier for this instrument instance, assigned by the Agent. Used to reference this specific instrument in the 'payment.selected_instrument_id' field.
-   */
-  id: string;
-  /**
-   * The unique identifier for the handler instance that produced this instrument. This corresponds to the 'id' field in the Payment Handler definition.
-   */
-  handler_id: string;
-  /**
-   * The broad category of the instrument (e.g., 'card', 'tokenized_card'). Specific schemas will constrain this to a constant value.
-   */
-  type: string;
-  billing_address?: PostalAddress;
-  credential?: PaymentCredential;
-  [k: string]: unknown;
-}
-/**
- * Base token credential schema. Concrete payment handlers may extend this schema with additional fields and define their own constraints.
- */
-export declare interface TokenCredentialResponse {
-  /**
-   * The specific type of token produced by the handler (e.g., 'stripe_token').
-   */
-  type: string;
-  [k: string]: unknown;
-}
-/**
- * A card credential containing sensitive payment card details including raw Primary Account Numbers (PANs). This credential type MUST NOT be used for checkout, only with payment handlers that tokenize or encrypt credentials. CRITICAL: Both parties handling CardCredential (sender and receiver) MUST be PCI DSS compliant. Transmission MUST use HTTPS/TLS with strong cipher suites.
- */
-export declare interface CardCredential {
-  /**
-   * The credential type identifier for card credentials.
-   */
-  type: 'card';
-  /**
-   * The type of card number. Network tokens are preferred with fallback to FPAN. See PCI Scope for more details.
-   */
-  card_number_type: 'fpan' | 'network_token' | 'dpan';
-  /**
-   * Card number.
-   */
-  number?: string;
-  /**
-   * The month of the card's expiration date (1-12).
-   */
-  expiry_month?: number;
-  /**
-   * The year of the card's expiration date.
-   */
-  expiry_year?: number;
-  /**
-   * Cardholder name.
-   */
-  name?: string;
-  /**
-   * Card CVC number.
-   */
-  cvc?: string;
-  /**
-   * Cryptogram provided with network tokens.
-   */
-  cryptogram?: string;
-  /**
-   * Electronic Commerce Indicator / Security Level Indicator provided with network tokens.
-   */
-  eci_value?: string;
-  [k: string]: unknown;
-}
-/**
- * Selected modifiers for a modifier group, including nested selections.
- */
-export declare interface MenuModifierSelection {
-  /**
-   * Modifier group identifier for this selection.
-   */
-  modifier_group_id: string;
-  /**
-   * Selections made within the modifier group.
-   */
-  selections: MenuModifierItemSelection[];
-  [k: string]: unknown;
-}
-/**
- * Selected modifier item and nested selections within a modifier group.
- */
-export declare interface MenuModifierItemSelection {
-  /**
-   * Selected modifier item identifier.
-   */
-  item_id: string;
-  /**
-   * Selected quantity for this modifier option.
-   */
-  quantity?: number;
-  /**
-   * Nested modifier selections triggered by this option.
-   */
-  child_selections?: MenuModifierSelection[];
-  [k: string]: unknown;
-}
-/**
- * Extends restaurant checkout with delivery fulfillment details.
- */
-export declare interface DeliveryFulfillmentExtensionUpdateRequest {
-  [k: string]: unknown;
-}
-/**
- * Base checkout schema. Extensions compose onto this using allOf.
- */
-export declare interface CheckoutUpdateRequest {
-  /**
-   * Unique identifier of the checkout session.
-   */
-  id: string;
-  /**
-   * List of line items being checked out.
-   */
-  line_items: LineItemUpdateRequest[];
-  buyer?: Buyer;
-  /**
-   * ISO 4217 currency code.
-   */
-  currency: string;
-  payment: PaymentUpdateRequest;
-  [k: string]: unknown;
-}
-/**
- * Line item object. Expected to use the currency of the parent object.
- */
-export declare interface LineItemUpdateRequest {
-  id?: string;
-  item: ItemUpdateRequest;
-  /**
-   * Quantity of the item being purchased.
-   */
-  quantity: number;
-  /**
-   * Parent line item identifier for any nested structures.
-   */
-  parent_id?: string;
-  [k: string]: unknown;
-}
-export declare interface ItemUpdateRequest {
-  /**
-   * Should be recognized by both the Platform, and the Business. For Google it should match the id provided in the "id" field in the product feed.
-   */
-  id: string;
-  [k: string]: unknown;
-}
-/**
- * Payment configuration containing handlers.
- */
-export declare interface PaymentUpdateRequest {
-  /**
-   * The id of the currently selected payment instrument from the instruments array. Set by the agent when submitting payment, and echoed back by the merchant in finalized state.
-   */
-  selected_instrument_id?: string;
-  /**
-   * The payment instruments available for this payment. Each instrument is associated with a specific handler via the handler_id field. Handlers can extend the base payment_instrument schema to add handler-specific fields.
-   */
-  instruments?: PaymentInstrument[];
-  [k: string]: unknown;
-}
-/**
- * Extends restaurant checkout with delivery fulfillment details.
- */
-export declare interface DeliveryFulfillmentExtensionResponse {
-  [k: string]: unknown;
-}
-/**
- * Container for pickup and on-demand delivery methods.
+ * Quote details for an on-demand delivery request.
  *
- * This interface was referenced by `DeliveryFulfillmentExtensionResponse`'s JSON-Schema
- * via the `definition` "fulfillment".
+ * This interface was referenced by `DeliveryCapabilityCreateRequest`'s JSON-Schema
+ * via the `definition` "quote".
+ *
+ * This interface was referenced by `DeliveryCapabilityUpdateRequest`'s JSON-Schema
+ * via the `definition` "quote".
+ *
+ * This interface was referenced by `DeliveryCapabilityResponse`'s JSON-Schema
+ * via the `definition` "quote".
  */
-export declare interface DeliveryFulfillmentResponse {
+export declare interface DeliveryQuote {
   /**
-   * Fulfillment methods for cart items.
+   * Delivery quote identifier.
    */
-  methods?: DeliveryFulfillmentMethod[];
+  quote_id: string;
   /**
-   * Availability hints for fulfillment methods.
-   */
-  available_methods?: DeliveryFulfillmentMethod[];
-  [k: string]: unknown;
-}
-/**
- * Base checkout schema. Extensions compose onto this using allOf.
- */
-export declare interface CheckoutResponse {
-  ucp: UCPResponseMetadata;
-  /**
-   * Unique identifier of the checkout session.
-   */
-  id: string;
-  /**
-   * List of line items being checked out.
-   */
-  line_items: LineItemResponse[];
-  buyer?: Buyer;
-  /**
-   * Checkout state indicating the current phase and required action. See Checkout Status lifecycle documentation for state transition details.
-   */
-  status:
-    | 'incomplete'
-    | 'requires_escalation'
-    | 'ready_for_complete'
-    | 'complete_in_progress'
-    | 'completed'
-    | 'canceled';
-  /**
-   * ISO 4217 currency code.
-   */
-  currency: string;
-  /**
-   * Different cart totals.
-   */
-  totals: TotalResponse[];
-  /**
-   * List of messages with error and info about the checkout session state.
-   */
-  messages?: Message[];
-  /**
-   * Links to be displayed by the platform (Privacy Policy, TOS). Mandatory for legal compliance.
-   */
-  links: Link[];
-  /**
-   * RFC 3339 expiry timestamp. Default TTL is 6 hours from creation if not sent.
+   * Quote expiration timestamp.
    */
   expires_at?: string;
   /**
-   * URL for checkout handoff and session recovery. MUST be provided when status is requires_escalation. See specification for format and availability requirements.
+   * Quoted totals for the delivery.
    */
-  continue_url?: string;
-  payment: PaymentResponse;
-  order?: OrderConfirmation;
+  totals?: TotalResponse[];
+  [k: string]: unknown;
+}
+export declare interface TotalResponse {
+  /**
+   * Type of total categorization.
+   */
+  type: 'items_discount' | 'subtotal' | 'discount' | 'fulfillment' | 'tax' | 'fee' | 'total';
+  /**
+   * Text to display against the amount. Should reflect appropriate method (e.g., 'Shipping', 'Delivery').
+   */
+  display_text?: string;
+  /**
+   * If type == total, sums subtotal - discount + fulfillment + tax + fee. Should be >= 0. Amount in minor (cents) currency units.
+   */
+  amount: number;
+  [k: string]: unknown;
+}
+/**
+ * Response containing quote details and UCP metadata.
+ *
+ * This interface was referenced by `DeliveryCapabilityCreateRequest`'s JSON-Schema
+ * via the `definition` "quote_response".
+ */
+export declare interface DeliveryQuoteResponseCreateRequest {
+  ucp: UCPResponseMetadata;
+  quote: DeliveryQuote;
+  /**
+   * Errors, warnings, or informational messages about the quote.
+   */
+  messages?: Message[];
   [k: string]: unknown;
 }
 /**
@@ -820,45 +319,6 @@ export declare interface Base {
   config?: {
     [k: string]: unknown;
   };
-  [k: string]: unknown;
-}
-/**
- * Line item object. Expected to use the currency of the parent object.
- */
-export declare interface LineItemResponse {
-  id: string;
-  item: ItemResponse;
-  /**
-   * Quantity of the item being purchased.
-   */
-  quantity: number;
-  /**
-   * Line item totals breakdown.
-   */
-  totals: TotalResponse[];
-  /**
-   * Parent line item identifier for any nested structures.
-   */
-  parent_id?: string;
-  [k: string]: unknown;
-}
-export declare interface ItemResponse {
-  /**
-   * Should be recognized by both the Platform, and the Business. For Google it should match the id provided in the "id" field in the product feed.
-   */
-  id: string;
-  /**
-   * Product title.
-   */
-  title: string;
-  /**
-   * Unit price in minor (cents) currency units.
-   */
-  price: number;
-  /**
-   * Product image URI.
-   */
-  image_url?: string;
   [k: string]: unknown;
 }
 export declare interface MessageError {
@@ -934,127 +394,15 @@ export declare interface MessageInfo {
   content: string;
   [k: string]: unknown;
 }
-export declare interface Link {
-  /**
-   * Type of link. Well-known values: `privacy_policy`, `terms_of_service`, `refund_policy`, `shipping_policy`, `faq`. Consumers SHOULD handle unknown values gracefully by displaying them using the `title` field or omitting the link.
-   */
-  type: string;
-  /**
-   * The actual URL pointing to the content to be displayed.
-   */
-  url: string;
-  /**
-   * Optional display text for the link. When provided, use this instead of generating from type.
-   */
-  title?: string;
-  [k: string]: unknown;
-}
 /**
- * Payment configuration containing handlers.
+ * Patchable fields for updating an existing delivery.
+ *
+ * This interface was referenced by `DeliveryCapabilityCreateRequest`'s JSON-Schema
+ * via the `definition` "delivery_update_request".
  */
-export declare interface PaymentResponse {
-  /**
-   * Processing configurations that define how payment instruments can be collected. Each handler specifies a tokenization or payment collection strategy.
-   */
-  handlers: PaymentHandlerResponse[];
-  /**
-   * The id of the currently selected payment instrument from the instruments array. Set by the agent when submitting payment, and echoed back by the merchant in finalized state.
-   */
-  selected_instrument_id?: string;
-  /**
-   * The payment instruments available for this payment. Each instrument is associated with a specific handler via the handler_id field. Handlers can extend the base payment_instrument schema to add handler-specific fields.
-   */
-  instruments?: PaymentInstrument[];
-  [k: string]: unknown;
-}
-export declare interface PaymentHandlerResponse {
-  /**
-   * The unique identifier for this handler instance within the payment.handlers. Used by payment instruments to reference which handler produced them.
-   */
-  id: string;
-  /**
-   * The specification name using reverse-DNS format. For example, dev.ucp.delegate_payment.
-   */
-  name: string;
-  /**
-   * UCP protocol version in YYYY-MM-DD format.
-   */
-  version: string;
-  /**
-   * A URI pointing to the technical specification or schema that defines how this handler operates.
-   */
-  spec: string;
-  /**
-   * A URI pointing to a JSON Schema used to validate the structure of the config object.
-   */
-  config_schema: string;
-  instrument_schemas: string[];
-  /**
-   * A dictionary containing provider-specific configuration details, such as merchant IDs, supported networks, or gateway credentials.
-   */
-  config: {
-    [k: string]: unknown;
-  };
-  [k: string]: unknown;
-}
-/**
- * Order details available at the time of checkout completion.
- */
-export declare interface OrderConfirmation {
-  /**
-   * Unique order identifier.
-   */
-  id: string;
-  /**
-   * Permalink to access the order on merchant site.
-   */
-  permalink_url: string;
-  [k: string]: unknown;
-}
-/**
- * Standalone delivery resource.
- */
-export declare interface Delivery {
-  /**
-   * Unique delivery identifier.
-   */
-  id: string;
-  /**
-   * Delivery status.
-   */
-  status: 'pending' | 'in_progress' | 'completed' | 'canceled' | 'failed';
-  /**
-   * Quote identifier used to create this delivery.
-   */
-  quote_id?: string;
-  delivery_request?: DeliveryRequestResponse;
-  /**
-   * Tracking URL for delivery progress.
-   */
-  tracking_url?: string;
-  /**
-   * Delivery creation timestamp.
-   */
-  created_at?: string;
-  /**
-   * Delivery update timestamp.
-   */
-  updated_at?: string;
-  [k: string]: unknown;
-}
-/**
- * Delivery fulfillment details when no quote is provided.
- */
-export declare interface DeliveryFulfillmentRequestRequest {
-  delivery_request: DeliveryRequestRequest;
-  [k: string]: unknown;
-}
-/**
- * Inputs required to create a delivery without a precomputed quote.
- */
-export declare interface DeliveryRequestRequest {
-  pickup: DeliveryLocationRequest;
-  dropoff: DeliveryLocationRequest;
+export declare interface DeliveryUpdateRequestCreateRequest {
+  pickup?: PickupLocationRequest;
+  dropoff?: DropoffLocationRequest;
   /**
    * RFC 3339 timestamp when pickup can begin.
    */
@@ -1071,7 +419,7 @@ export declare interface DeliveryRequestRequest {
    * RFC 3339 timestamp after which dropoff is no longer valid.
    */
   dropoff_deadline_dt?: string;
-  manifest_total_value: Price;
+  items_value?: Price;
   /**
    * Optional store identifier for routing or pricing.
    */
@@ -1083,16 +431,387 @@ export declare interface DeliveryRequestRequest {
   [k: string]: unknown;
 }
 /**
- * Inputs required to request an on-demand delivery quote.
+ * Paginated delivery list response with UCP metadata.
+ *
+ * This interface was referenced by `DeliveryCapabilityCreateRequest`'s JSON-Schema
+ * via the `definition` "delivery_list_response".
  */
-export declare interface DeliveryQuoteRequest {
-  delivery_request: DeliveryRequestResponse;
+export declare interface DeliveryListResponseCreateRequest {
+  ucp: UCPResponseMetadata;
+  /**
+   * Deliveries matching the list query.
+   */
+  data: Delivery[];
+  pagination?: Response;
+  /**
+   * Errors, warnings, or informational messages about the list results.
+   */
+  messages?: Message[];
   [k: string]: unknown;
 }
 /**
- * Quote details for an on-demand delivery request.
+ * Standalone delivery resource.
  */
-export declare interface DeliveryQuoteResponse {
+export declare interface Delivery {
+  /**
+   * Unique delivery identifier.
+   */
+  id: string;
+  /**
+   * Delivery status.
+   */
+  status: 'pending' | 'pickup' | 'pickup_complete' | 'dropoff' | 'delivered' | 'canceled' | 'returned' | 'ongoing';
+  /**
+   * Quote identifier used to create this delivery.
+   */
+  quote_id?: string;
+  delivery_request?: DeliveryInputsResponse;
+  /**
+   * Tracking URL for delivery progress.
+   */
+  tracking_url?: string;
+  courier?: Courier;
+  /**
+   * True when the courier is imminent/near pickup.
+   */
+  courier_imminent?: boolean;
+  /**
+   * Delivery creation timestamp.
+   */
+  created_at?: string;
+  /**
+   * Delivery update timestamp.
+   */
+  updated_at?: string;
+  [k: string]: unknown;
+}
+/**
+ * Inputs required to create a delivery without a precomputed quote.
+ *
+ * This interface was referenced by `DeliveryCapabilityResponse`'s JSON-Schema
+ * via the `definition` "delivery_request".
+ */
+export declare interface DeliveryInputsResponse {
+  pickup: PickupLocationResponse;
+  dropoff: DropoffLocationResponse;
+  /**
+   * RFC 3339 timestamp when pickup can begin.
+   */
+  pickup_ready_dt?: string;
+  /**
+   * RFC 3339 timestamp after which pickup is no longer valid.
+   */
+  pickup_deadline_dt?: string;
+  /**
+   * RFC 3339 timestamp when dropoff can begin.
+   */
+  dropoff_ready_dt?: string;
+  /**
+   * RFC 3339 timestamp after which dropoff is no longer valid.
+   */
+  dropoff_deadline_dt?: string;
+  items_value: Price;
+  /**
+   * Optional store identifier for routing or pricing.
+   */
+  external_store_id?: string;
+  /**
+   * Optional external identifier for idempotency or correlation.
+   */
+  external_id?: string;
+  [k: string]: unknown;
+}
+/**
+ * Assigned courier details.
+ */
+export declare interface Courier {
+  /**
+   * Courier name.
+   */
+  name?: string;
+  /**
+   * Courier phone number.
+   */
+  phone_number?: string;
+  /**
+   * Courier vehicle type (e.g., car, bike, scooter).
+   */
+  vehicle_type?: string;
+  location?: Location;
+  [k: string]: unknown;
+}
+/**
+ * Pagination information in responses.
+ */
+export declare interface Response {
+  /**
+   * Cursor to fetch the next page of results.
+   */
+  cursor?: string;
+  /**
+   * Whether more results are available.
+   */
+  has_next_page?: boolean;
+  /**
+   * Total number of matching items (if available).
+   */
+  total_count?: number;
+  [k: string]: unknown;
+}
+/**
+ * Response containing delivery details and UCP metadata.
+ *
+ * This interface was referenced by `DeliveryCapabilityCreateRequest`'s JSON-Schema
+ * via the `definition` "delivery_response".
+ */
+export declare interface DeliveryResponseCreateRequest {
+  ucp: UCPResponseMetadata;
+  delivery: Delivery;
+  /**
+   * Errors, warnings, or informational messages about the delivery.
+   */
+  messages?: Message[];
+  [k: string]: unknown;
+}
+/**
+ * Standalone delivery capability for pickup and on-demand delivery.
+ */
+export declare interface DeliveryCapabilityUpdateRequest {
+  [k: string]: unknown;
+}
+/**
+ * Inputs required to request an on-demand delivery quote.
+ *
+ * This interface was referenced by `DeliveryCapabilityUpdateRequest`'s JSON-Schema
+ * via the `definition` "quote_request".
+ */
+export declare interface DeliveryQuoteRequestUpdateRequest {
+  /**
+   * Location and market context for delivery operations.
+   *
+   * This interface was referenced by `DeliveryCapabilityUpdateRequest`'s JSON-Schema
+   * via the `definition` "context".
+   */
+  context?: Context;
+  delivery_request: DeliveryInputsRequest;
+  [k: string]: unknown;
+}
+/**
+ * Response containing quote details and UCP metadata.
+ *
+ * This interface was referenced by `DeliveryCapabilityUpdateRequest`'s JSON-Schema
+ * via the `definition` "quote_response".
+ */
+export declare interface DeliveryQuoteResponseUpdateRequest {
+  ucp: UCPResponseMetadata;
+  quote: DeliveryQuote;
+  /**
+   * Errors, warnings, or informational messages about the quote.
+   */
+  messages?: Message[];
+  [k: string]: unknown;
+}
+/**
+ * Patchable fields for updating an existing delivery.
+ *
+ * This interface was referenced by `DeliveryCapabilityUpdateRequest`'s JSON-Schema
+ * via the `definition` "delivery_update_request".
+ */
+export declare interface DeliveryUpdateRequestUpdateRequest {
+  pickup?: PickupLocationRequest;
+  dropoff?: DropoffLocationRequest;
+  /**
+   * RFC 3339 timestamp when pickup can begin.
+   */
+  pickup_ready_dt?: string;
+  /**
+   * RFC 3339 timestamp after which pickup is no longer valid.
+   */
+  pickup_deadline_dt?: string;
+  /**
+   * RFC 3339 timestamp when dropoff can begin.
+   */
+  dropoff_ready_dt?: string;
+  /**
+   * RFC 3339 timestamp after which dropoff is no longer valid.
+   */
+  dropoff_deadline_dt?: string;
+  items_value?: Price;
+  /**
+   * Optional store identifier for routing or pricing.
+   */
+  external_store_id?: string;
+  /**
+   * Optional external identifier for idempotency or correlation.
+   */
+  external_id?: string;
+  [k: string]: unknown;
+}
+/**
+ * Paginated delivery list response with UCP metadata.
+ *
+ * This interface was referenced by `DeliveryCapabilityUpdateRequest`'s JSON-Schema
+ * via the `definition` "delivery_list_response".
+ */
+export declare interface DeliveryListResponseUpdateRequest {
+  ucp: UCPResponseMetadata;
+  /**
+   * Deliveries matching the list query.
+   */
+  data: Delivery[];
+  pagination?: Response;
+  /**
+   * Errors, warnings, or informational messages about the list results.
+   */
+  messages?: Message[];
+  [k: string]: unknown;
+}
+/**
+ * Response containing delivery details and UCP metadata.
+ *
+ * This interface was referenced by `DeliveryCapabilityUpdateRequest`'s JSON-Schema
+ * via the `definition` "delivery_response".
+ */
+export declare interface DeliveryResponseUpdateRequest {
+  ucp: UCPResponseMetadata;
+  delivery: Delivery;
+  /**
+   * Errors, warnings, or informational messages about the delivery.
+   */
+  messages?: Message[];
+  [k: string]: unknown;
+}
+/**
+ * Standalone delivery capability for pickup and on-demand delivery.
+ */
+export declare interface DeliveryCapabilityResponse {
+  [k: string]: unknown;
+}
+/**
+ * Inputs required to request an on-demand delivery quote.
+ *
+ * This interface was referenced by `DeliveryCapabilityResponse`'s JSON-Schema
+ * via the `definition` "quote_request".
+ */
+export declare interface DeliveryQuoteRequestResponse {
+  /**
+   * Location and market context for delivery operations.
+   *
+   * This interface was referenced by `DeliveryCapabilityResponse`'s JSON-Schema
+   * via the `definition` "context".
+   */
+  context?: Context;
+  delivery_request: DeliveryInputsResponse;
+  [k: string]: unknown;
+}
+/**
+ * Response containing quote details and UCP metadata.
+ *
+ * This interface was referenced by `DeliveryCapabilityResponse`'s JSON-Schema
+ * via the `definition` "quote_response".
+ */
+export declare interface DeliveryQuoteResponseResponse {
+  ucp: UCPResponseMetadata;
+  quote: DeliveryQuote;
+  /**
+   * Errors, warnings, or informational messages about the quote.
+   */
+  messages?: Message[];
+  [k: string]: unknown;
+}
+/**
+ * Patchable fields for updating an existing delivery.
+ *
+ * This interface was referenced by `DeliveryCapabilityResponse`'s JSON-Schema
+ * via the `definition` "delivery_update_request".
+ */
+export declare interface DeliveryUpdateRequestResponse {
+  pickup?: PickupLocationResponse;
+  dropoff?: DropoffLocationResponse;
+  /**
+   * RFC 3339 timestamp when pickup can begin.
+   */
+  pickup_ready_dt?: string;
+  /**
+   * RFC 3339 timestamp after which pickup is no longer valid.
+   */
+  pickup_deadline_dt?: string;
+  /**
+   * RFC 3339 timestamp when dropoff can begin.
+   */
+  dropoff_ready_dt?: string;
+  /**
+   * RFC 3339 timestamp after which dropoff is no longer valid.
+   */
+  dropoff_deadline_dt?: string;
+  items_value?: Price;
+  /**
+   * Optional store identifier for routing or pricing.
+   */
+  external_store_id?: string;
+  /**
+   * Optional external identifier for idempotency or correlation.
+   */
+  external_id?: string;
+  [k: string]: unknown;
+}
+/**
+ * Paginated delivery list response with UCP metadata.
+ *
+ * This interface was referenced by `DeliveryCapabilityResponse`'s JSON-Schema
+ * via the `definition` "delivery_list_response".
+ */
+export declare interface DeliveryListResponseResponse {
+  ucp: UCPResponseMetadata;
+  /**
+   * Deliveries matching the list query.
+   */
+  data: Delivery[];
+  pagination?: Response;
+  /**
+   * Errors, warnings, or informational messages about the list results.
+   */
+  messages?: Message[];
+  [k: string]: unknown;
+}
+/**
+ * Response containing delivery details and UCP metadata.
+ *
+ * This interface was referenced by `DeliveryCapabilityResponse`'s JSON-Schema
+ * via the `definition` "delivery_response".
+ */
+export declare interface DeliveryResponseResponse {
+  ucp: UCPResponseMetadata;
+  delivery: Delivery;
+  /**
+   * Errors, warnings, or informational messages about the delivery.
+   */
+  messages?: Message[];
+  [k: string]: unknown;
+}
+/**
+ * Delivery lifecycle event payload.
+ */
+export declare interface DeliveryEvent {
+  /**
+   * Unique event identifier.
+   */
+  event_id: string;
+  /**
+   * Delivery lifecycle event type aligned with delivery status values.
+   */
+  event_type: 'pending' | 'pickup' | 'pickup_complete' | 'dropoff' | 'delivered' | 'canceled' | 'returned' | 'ongoing';
+  /**
+   * Event creation timestamp in RFC 3339 format.
+   */
+  created_at: string;
+  delivery: Delivery;
+  [k: string]: unknown;
+}
+/**
+ * Reference to a previously created delivery quote.
+ */
+export declare interface DeliveryQuoteReference {
   /**
    * Delivery quote identifier.
    */
@@ -1101,9 +820,5 @@ export declare interface DeliveryQuoteResponse {
    * Quote expiration timestamp.
    */
   expires_at?: string;
-  /**
-   * Quoted totals for the delivery.
-   */
-  totals?: TotalResponse[];
   [k: string]: unknown;
 }

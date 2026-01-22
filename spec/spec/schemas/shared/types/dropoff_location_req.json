@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localprotocol.xyz/schemas/shared/types/dropoff_location_req.json",
+  "title": "Dropoff Location Request",
+  "description": "A dropoff location for on-demand delivery.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../shopping/types/postal_address.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "ID specific to this dropoff location."
+        },
+        "location": {
+          "$ref": "location.json",
+          "description": "Geographic coordinates for this address."
+        }
+      }
+    }
+  ]
+}

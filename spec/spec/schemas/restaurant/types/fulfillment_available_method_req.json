@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localprotocol.xyz/schemas/restaurant/types/fulfillment_available_method_req.json",
+  "title": "Restaurant Fulfillment Available Method Request",
+  "description": "Availability hint for pickup or on-demand delivery in restaurant checkout.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {}
+}
