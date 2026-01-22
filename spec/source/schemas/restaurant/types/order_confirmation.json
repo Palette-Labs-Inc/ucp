@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localprotocol.xyz/schemas/restaurant/types/order_confirmation.json",
+  "title": "Restaurant Order Confirmation",
+  "description": "Order confirmation details for restaurant checkout.",
+  "allOf": [
+    { "$ref": "../../shopping/types/order_confirmation.json" }
+  ]
+}

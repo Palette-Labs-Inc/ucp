@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://xyz.localprotocol/schemas/restaurant/types/fulfillment_method.json",
+  "$id": "https://localprotocol.xyz/schemas/restaurant/types/fulfillment_method.json",
   "title": "Restaurant Fulfillment Method",
   "description": "A fulfillment method for pickup or on-demand delivery in restaurant checkout.",
   "type": "object",
-  "required": ["id", "type", "line_item_ids"],
+  "required": ["id", "type"],
   "additionalProperties": true,
   "properties": {
     "id": {
@@ -18,12 +18,6 @@
       "description": "Fulfillment method type.",
       "ucp_request": {"create": "required", "update": "omit"}
     },
-    "line_item_ids": {
-      "type": "array",
-      "description": "Line item IDs fulfilled via this method.",
-      "items": { "type": "string" },
-      "ucp_request": {"create": "optional", "update": "required"}
-    },
     "destinations": {
       "type": "array",
       "description": "Available destinations. Pickup uses retail locations; on-demand delivery uses addresses.",
@@ -32,11 +26,6 @@
     "selected_destination_id": {
       "type": ["string", "null"],
       "description": "ID of the selected destination."
-    },
-    "groups": {
-      "type": "array",
-      "description": "Fulfillment groups for selecting options.",
-      "items": { "$ref": "fulfillment_group.json" }
     },
     "delivery": {
       "oneOf": [

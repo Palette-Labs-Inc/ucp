@@ -15,7 +15,7 @@
     },
     "fulfillment_method": {
       "type": "string",
-      "enum": ["shipping", "pickup"],
+      "enum": ["pickup", "on_demand_delivery"],
       "description": "Required fulfillment method type for the merchant."
     },
     "location": {

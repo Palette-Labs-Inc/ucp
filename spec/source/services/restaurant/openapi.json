@@ -781,6 +781,47 @@
       }
     }
   },
+  "webhooks": {
+    "orderEvent": {
+      "post": {
+        "operationId": "restaurant_order_event_webhook",
+        "summary": "Restaurant Order Event Webhook",
+        "description": "Merchant sends restaurant order lifecycle events to the platform's registered webhook URL. Payload is a full order snapshot plus event metadata. The platform provides the webhook URL during partner onboarding.",
+        "parameters": [
+          { "$ref": "#/components/parameters/request_signature" },
+          { "$ref": "#/components/parameters/x_api_key" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/order_event"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Event received and acknowledged",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ucp"],
+                  "properties": {
+                    "ucp": {
+                      "$ref": "#/components/schemas/ucp"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   "components": {
     "parameters": {
       "checkout_session_id_path": {
@@ -925,11 +966,20 @@
       "checkout": {
         "$ref": "https://localprotocol.xyz/schemas/restaurant/checkout.json"
       },
+      "order": {
+        "$ref": "https://localprotocol.xyz/schemas/restaurant/order.json"
+      },
+      "order_event": {
+        "$ref": "https://localprotocol.xyz/schemas/restaurant/order_event.json"
+      },
       "payment": {
         "$ref": "https://ucp.dev/schemas/shopping/payment.json"
       },
       "payment_data": {
         "$ref": "https://ucp.dev/schemas/shopping/payment_data.json"
+      },
+      "ucp": {
+        "$ref": "https://ucp.dev/schemas/ucp.json"
       },
       "menu_search_response": {
         "$ref": "https://localprotocol.xyz/schemas/restaurant/menu.json#/$defs/search_response"

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://xyz.localprotocol/schemas/delivery/delivery.json",
+  "$id": "https://localprotocol.xyz/schemas/delivery/delivery.json",
   "name": "xyz.localprotocol.delivery",
   "version": "2026-01-19",
   "title": "Delivery Capability",
@@ -63,11 +63,11 @@
       "ucp_shared_request": true,
       "properties": {
         "pickup": {
-          "$ref": "types/pickup_location.json",
+          "$ref": "../shared/types/pickup_location.json",
           "description": "Updated pickup location."
         },
         "dropoff": {
-          "$ref": "types/dropoff_location.json",
+          "$ref": "../shared/types/dropoff_location.json",
           "description": "Updated dropoff location."
         },
         "pickup_ready_dt": {
@@ -167,6 +167,21 @@
             "schema": {
               "$ref": "types/delivery.json",
               "description": "Current delivery state."
+            }
+          }
+        ]
+      },
+      {
+        "name": "ed.delivery.event",
+        "summary": "Delivery event",
+        "description": "Service notifies host of a delivery lifecycle event.",
+        "params": [
+          {
+            "name": "event",
+            "required": true,
+            "schema": {
+              "$ref": "types/delivery_event.json",
+              "description": "Delivery lifecycle event payload."
             }
           }
         ]

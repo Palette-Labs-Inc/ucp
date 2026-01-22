@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://xyz.localprotocol/schemas/delivery/types/delivery_inputs.json",
+  "$id": "https://localprotocol.xyz/schemas/delivery/types/delivery_inputs.json",
   "title": "Delivery Inputs",
   "description": "Inputs required to create a delivery without a precomputed quote.",
   "type": "object",
@@ -8,11 +8,11 @@
   "required": ["pickup", "dropoff", "items_value"],
   "properties": {
     "pickup": {
-      "$ref": "pickup_location.json",
+      "$ref": "../../shared/types/pickup_location.json",
       "description": "Pickup location."
     },
     "dropoff": {
-      "$ref": "dropoff_location.json",
+      "$ref": "../../shared/types/dropoff_location.json",
       "description": "Dropoff location."
     },
     "pickup_ready_dt": {

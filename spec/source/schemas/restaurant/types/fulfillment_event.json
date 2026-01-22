@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localprotocol.xyz/schemas/restaurant/types/fulfillment_event.json",
+  "title": "Restaurant Fulfillment Event",
+  "description": "Append-only fulfillment event for restaurant pickup or on-demand delivery. This event does not carry per-line-item quantities; those remain on the order snapshot.",
+  "type": "object",
+  "required": ["id", "occurred_at", "type"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Fulfillment event identifier."
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "RFC 3339 timestamp when this fulfillment event occurred."
+    },
+    "type": {
+      "type": "string",
+      "description": "Fulfillment event type. Examples: pickup.ready, pickup.arrived, pickup.completed, pickup.canceled, delivery.pending, delivery.pickup, delivery.pickup_complete, delivery.dropoff, delivery.delivered, delivery.canceled, delivery.returned, delivery.ongoing."
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of the fulfillment status."
+    }
+  }
+}

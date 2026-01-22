@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localprotocol.xyz/schemas/restaurant/types/order_line_item.json",
+  "title": "Restaurant Order Line Item",
+  "description": "Order line item with menu modifier selections.",
+  "type": "object",
+  "required": ["id", "item", "quantity", "totals", "status"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Line item identifier."
+    },
+    "item": {
+      "$ref": "item.json",
+      "description": "Menu item snapshot for the order."
+    },
+    "modifier_selections": {
+      "type": "array",
+      "items": {
+        "$ref": "modifier_selection.json"
+      },
+      "description": "Selected menu modifiers for this line item, including nested selections."
+    },
+    "quantity": {
+      "type": "object",
+      "required": ["total", "fulfilled"],
+      "properties": {
+        "total": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Current total quantity."
+        },
+        "fulfilled": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Quantity fulfilled (sum from fulfillment events)."
+        }
+      },
+      "description": "Quantity tracking. Values are merchant-calculated and may change as fulfillment progresses."
+    },
+    "totals": {
+      "type": "array",
+      "items": {
+        "$ref": "../../shopping/types/total.json"
+      },
+      "description": "Line item totals breakdown."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["processing", "partial", "fulfilled"],
+      "description": "Derived status: fulfilled if quantity.fulfilled == quantity.total, partial if quantity.fulfilled > 0, otherwise processing."
+    },
+    "parent_id": {
+      "type": "string",
+      "description": "Parent line item identifier for any nested structures."
+    }
+  }
+}

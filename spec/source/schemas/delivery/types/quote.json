@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://xyz.localprotocol/schemas/delivery/types/quote.json",
+  "$id": "https://localprotocol.xyz/schemas/delivery/types/quote.json",
   "title": "Delivery Quote",
   "description": "Quote details for an on-demand delivery request.",
   "type": "object",

@@ -398,28 +398,28 @@
     },
     "schemas": {
       "delivery_quote_request": {
-        "$ref": "https://xyz.localprotocol/schemas/delivery/delivery.json#/$defs/quote_request"
+        "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/quote_request"
       },
       "delivery_quote_response": {
-        "$ref": "https://xyz.localprotocol/schemas/delivery/delivery.json#/$defs/quote_response"
+        "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/quote_response"
       },
       "delivery_request": {
-        "$ref": "https://xyz.localprotocol/schemas/delivery/delivery.json#/$defs/delivery_request"
+        "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/delivery_request"
       },
       "delivery_response": {
-        "$ref": "https://xyz.localprotocol/schemas/delivery/delivery.json#/$defs/delivery_response"
+        "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/delivery_response"
       },
       "delivery_event": {
-        "$ref": "https://xyz.localprotocol/schemas/delivery/types/delivery_event.json"
+        "$ref": "https://localprotocol.xyz/schemas/delivery/types/delivery_event.json"
       },
       "delivery_update_request": {
-        "$ref": "https://xyz.localprotocol/schemas/delivery/delivery.json#/$defs/delivery_update_request"
+        "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/delivery_update_request"
       },
       "delivery_list_response": {
-        "$ref": "https://xyz.localprotocol/schemas/delivery/delivery.json#/$defs/delivery_list_response"
+        "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/delivery_list_response"
       },
       "delivery": {
-        "$ref": "https://xyz.localprotocol/schemas/delivery/types/delivery.json"
+        "$ref": "https://localprotocol.xyz/schemas/delivery/types/delivery.json"
       },
       "ucp": {
         "$ref": "https://ucp.dev/schemas/ucp.json"
