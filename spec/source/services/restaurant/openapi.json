@@ -796,7 +796,24 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/order_event"
+                "allOf": [
+                  { "$ref": "#/components/schemas/order" },
+                  {
+                    "type": "object",
+                    "required": ["event_id", "created_time"],
+                    "properties": {
+                      "event_id": {
+                        "type": "string",
+                        "description": "Unique event identifier."
+                      },
+                      "created_time": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Event creation timestamp in RFC 3339 format."
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -968,9 +985,6 @@
       },
       "order": {
         "$ref": "https://localprotocol.xyz/schemas/restaurant/order.json"
-      },
-      "order_event": {
-        "$ref": "https://localprotocol.xyz/schemas/restaurant/order_event.json"
       },
       "payment": {
         "$ref": "https://ucp.dev/schemas/shopping/payment.json"

@@ -82,7 +82,7 @@
     "totals": {
       "type": "array",
       "items": {
-        "$ref": "../shopping/types/total.json"
+        "$ref": "types/total.json"
       },
       "description": "Different totals for the order."
     }
