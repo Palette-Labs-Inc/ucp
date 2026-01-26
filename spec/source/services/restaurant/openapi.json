@@ -339,15 +339,12 @@
         }
       }
     },
-    "/merchants/{id}/menus": {
+    "/menus": {
       "get": {
-        "operationId": "get_merchant_menus",
-        "summary": "Get merchant menus",
-        "description": "Get menus and categories for a merchant by ID.",
+        "operationId": "get_menus",
+        "summary": "Get menus",
+        "description": "Get menus and categories.",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/merchant_id_path"
-          },
           {
             "$ref": "#/components/parameters/authorization"
           },
@@ -385,278 +382,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/menu_list_response"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/menu/search": {
-      "post": {
-        "operationId": "search_menu",
-        "summary": "Search menu items",
-        "description": "Search for menu items by query and context.",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/authorization"
-          },
-          {
-            "$ref": "#/components/parameters/x_api_key"
-          },
-          {
-            "$ref": "#/components/parameters/request_signature"
-          },
-          {
-            "$ref": "#/components/parameters/request_id"
-          },
-          {
-            "$ref": "#/components/parameters/user_agent"
-          },
-          {
-            "$ref": "#/components/parameters/content_type"
-          },
-          {
-            "$ref": "#/components/parameters/accept"
-          },
-          {
-            "$ref": "#/components/parameters/accept_language"
-          },
-          {
-            "$ref": "#/components/parameters/accept_encoding"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/menu_search_request"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Menu search results",
-            "headers": {
-              "X-Detached-JWT": {
-                "$ref": "#/components/headers/x_detached_jwt"
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/menu_search_response"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/menu/items": {
-      "get": {
-        "operationId": "list_menu_items",
-        "summary": "List menu items",
-        "description": "List menu items available in the current context.",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/authorization"
-          },
-          {
-            "$ref": "#/components/parameters/x_api_key"
-          },
-          {
-            "$ref": "#/components/parameters/request_signature"
-          },
-          {
-            "$ref": "#/components/parameters/request_id"
-          },
-          {
-            "$ref": "#/components/parameters/user_agent"
-          },
-          {
-            "$ref": "#/components/parameters/accept"
-          },
-          {
-            "$ref": "#/components/parameters/accept_language"
-          },
-          {
-            "$ref": "#/components/parameters/accept_encoding"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Menu item list",
-            "headers": {
-              "X-Detached-JWT": {
-                "$ref": "#/components/headers/x_detached_jwt"
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/menu_list_response"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/menu/items/{id}": {
-      "get": {
-        "operationId": "get_menu_item",
-        "summary": "Get menu item",
-        "description": "Get a menu item by ID.",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/item_id_path"
-          },
-          {
-            "$ref": "#/components/parameters/authorization"
-          },
-          {
-            "$ref": "#/components/parameters/x_api_key"
-          },
-          {
-            "$ref": "#/components/parameters/request_signature"
-          },
-          {
-            "$ref": "#/components/parameters/request_id"
-          },
-          {
-            "$ref": "#/components/parameters/user_agent"
-          },
-          {
-            "$ref": "#/components/parameters/accept"
-          },
-          {
-            "$ref": "#/components/parameters/accept_language"
-          },
-          {
-            "$ref": "#/components/parameters/accept_encoding"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Menu item",
-            "headers": {
-              "X-Detached-JWT": {
-                "$ref": "#/components/headers/x_detached_jwt"
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/menu_get_item_response"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/menu/items/{id}/modifier-groups": {
-      "get": {
-        "operationId": "get_item_modifier_groups",
-        "summary": "Get item modifier groups",
-        "description": "Get modifier groups for a menu item by ID.",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/item_id_path"
-          },
-          {
-            "$ref": "#/components/parameters/authorization"
-          },
-          {
-            "$ref": "#/components/parameters/x_api_key"
-          },
-          {
-            "$ref": "#/components/parameters/request_signature"
-          },
-          {
-            "$ref": "#/components/parameters/request_id"
-          },
-          {
-            "$ref": "#/components/parameters/user_agent"
-          },
-          {
-            "$ref": "#/components/parameters/accept"
-          },
-          {
-            "$ref": "#/components/parameters/accept_language"
-          },
-          {
-            "$ref": "#/components/parameters/accept_encoding"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Modifier groups",
-            "headers": {
-              "X-Detached-JWT": {
-                "$ref": "#/components/headers/x_detached_jwt"
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/menu_get_item_modifier_groups_response"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/menu/modifiers/{id}": {
-      "get": {
-        "operationId": "get_modifier_item",
-        "summary": "Get modifier item",
-        "description": "Get a modifier item by ID.",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/modifier_id_path"
-          },
-          {
-            "$ref": "#/components/parameters/authorization"
-          },
-          {
-            "$ref": "#/components/parameters/x_api_key"
-          },
-          {
-            "$ref": "#/components/parameters/request_signature"
-          },
-          {
-            "$ref": "#/components/parameters/request_id"
-          },
-          {
-            "$ref": "#/components/parameters/user_agent"
-          },
-          {
-            "$ref": "#/components/parameters/accept"
-          },
-          {
-            "$ref": "#/components/parameters/accept_language"
-          },
-          {
-            "$ref": "#/components/parameters/accept_encoding"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Modifier item",
-            "headers": {
-              "X-Detached-JWT": {
-                "$ref": "#/components/headers/x_detached_jwt"
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/menu_get_modifier_item_response"
                 }
               }
             }
@@ -730,24 +455,6 @@
         "in": "path",
         "required": true,
         "description": "The unique identifier of the checkout session.",
-        "schema": {
-          "type": "string"
-        }
-      },
-      "item_id_path": {
-        "name": "id",
-        "in": "path",
-        "required": true,
-        "description": "Global ID (GID) of menu item.",
-        "schema": {
-          "type": "string"
-        }
-      },
-      "merchant_id_path": {
-        "name": "id",
-        "in": "path",
-        "required": true,
-        "description": "Global ID (GID) of merchant.",
         "schema": {
           "type": "string"
         }
@@ -843,15 +550,6 @@
           "type": "string"
         },
         "description": "Compression. The client tells the server which content-codings it supports, usually for compression"
-      },
-      "modifier_id_path": {
-        "name": "id",
-        "in": "path",
-        "required": true,
-        "description": "Global ID (GID) of modifier item.",
-        "schema": {
-          "type": "string"
-        }
       }
     },
     "headers": {
@@ -879,23 +577,8 @@
       "ucp": {
         "$ref": "https://ucp.dev/schemas/ucp.json"
       },
-      "menu_search_response": {
-        "$ref": "https://localprotocol.xyz/schemas/restaurant/menu.json#/$defs/search_response"
-      },
-      "menu_search_request": {
-        "$ref": "https://localprotocol.xyz/schemas/restaurant/menu.json#/$defs/search_request"
-      },
-      "menu_get_item_response": {
-        "$ref": "https://localprotocol.xyz/schemas/restaurant/menu.json#/$defs/get_item_response"
-      },
       "menu_list_response": {
         "$ref": "https://localprotocol.xyz/schemas/restaurant/menu.json#/$defs/list_response"
-      },
-      "menu_get_item_modifier_groups_response": {
-        "$ref": "https://localprotocol.xyz/schemas/restaurant/menu.json#/$defs/get_item_modifier_groups_response"
-      },
-      "menu_get_modifier_item_response": {
-        "$ref": "https://localprotocol.xyz/schemas/restaurant/menu.json#/$defs/get_modifier_item_response"
       }
     }
   }

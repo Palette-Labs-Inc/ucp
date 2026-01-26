@@ -4,11 +4,7 @@
   "title": "Menu Category",
   "description": "A menu category grouping items for display.",
   "type": "object",
-  "required": [
-    "id",
-    "name",
-    "items"
-  ],
+  "required": ["id", "name"],
   "properties": {
     "id": {
       "type": "string",
@@ -22,13 +18,21 @@
       "type": "string",
       "description": "Optional category description."
     },
-    "items": {
+    "item_ids": {
       "type": "array",
       "items": {
-        "$ref": "item.json"
+        "type": "string"
       },
-      "minItems": 1,
-      "description": "Items contained in this category."
+      "default": [],
+      "description": "Menu item identifiers contained in this category."
+    },
+    "media_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Media identifiers for this category."
     }
   }
 }

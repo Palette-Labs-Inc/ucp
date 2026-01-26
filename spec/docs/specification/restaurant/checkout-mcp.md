@@ -55,7 +55,7 @@ For menu checkout, businesses advertise the restaurant service endpoint and the
 `xyz.localprotocol.restaurant.checkout` capability. The MCP tool names remain the
 same, but the checkout schema includes `line_items[].modifier_selections` using
 the flat restaurant modifier selection shape (`id`, `modifier_group_id`, `item_id`,
-`quantity`, optional `parent_selection_id`).
+`quantity`, optional `parent_selection_id` / `parent_selection_path`).
 
 ### Platform Profile Advertisement
 MCP clients **MUST** include the UCP platform profile URI with every request.
@@ -115,7 +115,7 @@ Maps to the [Create Checkout](checkout.md#create-checkout) operation.
         *   `dev.ucp.shopping.buyer_consent`: [Buyer Consent](../buyer-consent.md)
         *   `dev.ucp.shopping.discount`: [Discount](../discount.md)
         *   `dev.ucp.shopping.ap2_mandate`: [AP2 Mandates](../ap2-mandates.md)
-        *   `xyz.localprotocol.restaurant.checkout`: Menu modifiers on line items (`modifier_selections`, flat shape).
+        *   `xyz.localprotocol.restaurant.checkout`: Menu modifiers on line items (`modifier_selections`, flat shape with optional parent selection links).
 
 #### Output Schema
 
@@ -307,7 +307,7 @@ Maps to the [Update Checkout](checkout.md#update-checkout) operation.
         *   `dev.ucp.shopping.buyer_consent`: [Buyer Consent](../buyer-consent.md)
         *   `dev.ucp.shopping.discount`: [Discount](../discount.md)
         *   `dev.ucp.shopping.ap2_mandate`: [AP2 Mandates](../ap2-mandates.md)
-        *   `xyz.localprotocol.restaurant.checkout`: Menu modifiers on line items (`modifier_selections`, flat shape).
+        *   `xyz.localprotocol.restaurant.checkout`: Menu modifiers on line items (`modifier_selections`, flat shape with optional parent selection links).
 
 #### Output Schema
 

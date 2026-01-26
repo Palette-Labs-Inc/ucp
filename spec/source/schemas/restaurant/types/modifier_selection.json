@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://localprotocol.xyz/schemas/restaurant/types/modifier_selection.json",
   "title": "Menu Modifier Selection",
-  "description": "Flat modifier selection entry for a modifier group.",
+  "description": "Flat modifier selection entry for a modifier group. Use parent_selection_id/path to model nested selections.",
   "type": "object",
   "required": ["id", "modifier_group_id", "item_id"],
   "properties": {

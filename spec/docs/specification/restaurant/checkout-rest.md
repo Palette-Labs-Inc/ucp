@@ -53,8 +53,8 @@ All REST endpoints **MUST** be served over HTTPS with minimum TLS version
 When negotiating `xyz.localprotocol.restaurant.checkout`, the checkout payload is
 the base checkout schema extended with menu modifier selections on line items:
 `line_items[].modifier_selections` uses the flat restaurant modifier selection
-shape (`id`, `modifier_group_id`, `item_id`, `quantity`, and optional `parent_selection_id`
-for nested groups). The REST endpoints remain `/checkout-sessions/*` on the
+shape (`id`, `modifier_group_id`, `item_id`, `quantity`, and optional
+`parent_selection_id` / `parent_selection_path` for nested groups). The REST endpoints remain `/checkout-sessions/*` on the
 restaurant service endpoint advertised in `/.well-known/ucp`.
 
 ## Examples

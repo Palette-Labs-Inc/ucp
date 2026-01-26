@@ -7,8 +7,8 @@
   "required": [
     "id",
     "name",
-    "description",
-    "price"
+    "price",
+    "media_ids"
   ],
   "properties": {
     "id": {
@@ -31,19 +31,27 @@
       "$ref": "../../shopping/types/price.json",
       "description": "Base price for the menu item."
     },
-    "media": {
+    "media_ids": {
       "type": "array",
       "items": {
-        "$ref": "../../shopping/types/media.json"
+        "type": "string"
       },
-      "description": "Menu item media (images, videos, 3D models)."
+      "description": "Media identifiers for this menu item."
     },
-    "modifier_groups": {
+    "modifier_group_ids": {
       "type": "array",
       "items": {
-        "$ref": "modifier_group.json"
+        "type": "string"
       },
-      "description": "Modifier groups available for this item."
+      "default": [],
+      "description": "Modifier group identifiers available for this item."
+    },
+    "additional_charges": {
+      "type": "array",
+      "description": "Additional charges applied to orders from this menu.",
+      "items": {
+        "$ref": "menu_additional_charge.json"
+      }
     },
     "metadata": {
       "type": "object",

@@ -6,8 +6,7 @@
   "type": "object",
   "required": [
     "id",
-    "name",
-    "category_ids"
+    "name"
   ],
   "properties": {
     "id": {
@@ -23,7 +22,7 @@
       "items": {
         "type": "string"
       },
-      "minItems": 1,
+      "default": [],
       "description": "Category identifiers included in this menu."
     },
     "fulfillment_modes": {
@@ -31,6 +30,7 @@
       "items": {
         "type": "string"
       },
+      "default": [],
       "description": "Fulfillment modes supported by this menu."
     },
     "description": {

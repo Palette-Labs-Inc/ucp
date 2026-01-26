@@ -50,6 +50,14 @@ Fulfillment is optional in the checkout object. This is done to enable a
 platform to perform checkout for digital goods without needing to furnish
 fulfillment details more relevant for physical goods.
 
+**Menu Items and Modifiers**
+
+Restaurant checkout builds line items from the Menu capability's normalized
+menus. Each `line_items[].item` is a menu item snapshot, while modifier choices
+are expressed via `line_items[].modifier_selections` as a flat list. Nested
+modifier groups are represented by linking selections with
+`parent_selection_id` and/or `parent_selection_path`.
+
 **Checkout Status Lifecycle**
 
 The checkout `status` field indicates the current phase of the session and

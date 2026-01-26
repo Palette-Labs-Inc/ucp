@@ -6,7 +6,7 @@
   "type": "object",
   "required": [
     "id",
-    "title",
+    "name",
     "price"
   ],
   "properties": {
@@ -14,9 +14,9 @@
       "type": "string",
       "description": "Modifier item identifier."
     },
-    "title": {
+    "name": {
       "type": "string",
-      "description": "Modifier item title."
+      "description": "Modifier item name."
     },
     "price": {
       "$ref": "../../shopping/types/price.json",

@@ -56,45 +56,10 @@ Businesses advertise REST transport availability through their UCP profile at
 
 | Endpoint | Method | Operation | Description |
 | :--- | :--- | :--- | :--- |
-| `/menu/search` | POST | [Search Menu](menu.md#search-menu) | Search for menu items. |
-| `/menu/items` | GET | [List Menu Items](menu.md#list-menu-items) | List menu categories and items. |
-| `/menu/items/{id}` | GET | [Get Menu Item](menu.md#get-menu-item) | Get a menu item by ID. |
-| `/menu/items/{id}/modifier-groups` | GET | [Get Item Modifier Groups](menu.md#get-item-modifier-groups) | Get modifier groups for an item. |
-| `/menu/modifiers/{id}` | GET | [Get Modifier Item](menu.md#get-modifier-item) | Get a modifier item by ID. |
-| `/merchants/{id}/menus` | GET | [Get Merchant Menus](menu.md#get-merchant-menus) | Get menus for a merchant. |
+| `/menus` | GET | [Get Menus](menu.md#get-menus) | Get normalized menu data. |
 
-### `POST /menu/search`
+### `GET /menus`
 
-Maps to the [Search Menu](menu.md#search-menu) operation.
+Maps to the [Get Menus](menu.md#get-menus) operation.
 
-{{ method_fields('search_menu', 'rest.openapi.json', 'menu-rest') }}
-
-### `GET /menu/items`
-
-Maps to the [List Menu Items](menu.md#list-menu-items) operation.
-
-{{ method_fields('list_menu_items', 'rest.openapi.json', 'menu-rest') }}
-
-### `GET /menu/items/{id}`
-
-Maps to the [Get Menu Item](menu.md#get-menu-item) operation.
-
-{{ method_fields('get_menu_item', 'rest.openapi.json', 'menu-rest') }}
-
-### `GET /menu/items/{id}/modifier-groups`
-
-Maps to the [Get Item Modifier Groups](menu.md#get-item-modifier-groups) operation.
-
-{{ method_fields('get_item_modifier_groups', 'rest.openapi.json', 'menu-rest') }}
-
-### `GET /menu/modifiers/{id}`
-
-Maps to the [Get Modifier Item](menu.md#get-modifier-item) operation.
-
-{{ method_fields('get_modifier_item', 'rest.openapi.json', 'menu-rest') }}
-
-### `GET /merchants/{id}/menus`
-
-Maps to the [Get Merchant Menus](menu.md#get-merchant-menus) operation.
-
-{{ method_fields('get_merchant_menus', 'rest.openapi.json', 'menu-rest') }}
+{{ method_fields('get_menus', 'rest.openapi.json', 'menu-rest') }}
