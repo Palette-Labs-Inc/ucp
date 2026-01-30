@@ -30,7 +30,7 @@ The delivery service endpoint is discovered via `/.well-known/ucp` in:
 
 * `services["xyz.localprotocol.delivery"].rest.endpoint`
 
-### Payment Requirement (Standalone)
+### Payment Requirement
 
 Delivery is standalone (no shopping checkout required), but **payment is
 mandatory** for delivery creation. Platforms MUST:
@@ -44,6 +44,7 @@ and delivery creation instead of checkout completion.
 
 See:
 
+- [Delivery Lifecycle & Payments](delivery-lifecycle.md)
 - [Payment Handler Guide](../payment-handler-guide.md)
 - [Payment Handler Template](../payment-handler-template.md)
 - [Tokenization Guide](../tokenization-guide.md)
@@ -51,6 +52,7 @@ See:
 - [Business Tokenizer Example](../examples/business-tokenizer-payment-handler.md)
 - [Encrypted Credential Example](../examples/encrypted-credential-handler.md)
 - [Localprotocol Auth/Capture Example](../examples/localprotocol-auth-capture-handler.md)
+- [Delivery-First Auth/Capture Example](../examples/delivery-first-payment-handler.md)
 
 ### Handler Patterns for Delivery
 
@@ -76,6 +78,8 @@ checkout completion. Quotes are time-bound and must be refreshed when expired.
 * `quote_id` is required for subsequent reference.
 * `expires_at` indicates quote validity window.
 * `totals` contain delivery pricing.
+* `payment.handlers` are **required** and define how platforms must acquire
+  payment instruments for delivery creation.
 
 **Quote Refresh:**
 
@@ -138,15 +142,100 @@ checkout completion. Quotes are time-bound and must be refreshed when expired.
       { "type": "tax", "amount": 48 },
       { "type": "total", "amount": 647 }
     ]
+  },
+  "payment": {
+    "handlers": [
+      {
+        "id": "delivery_tokenizer",
+        "name": "com.example.processor_tokenizer",
+        "version": "2026-01-11",
+        "spec": "https://example.com/ucp/processor-tokenizer.json",
+        "config_schema": "https://example.com/ucp/processor-tokenizer/config.json",
+        "instrument_schemas": [
+          "https://ucp.dev/schemas/shopping/types/card_payment_instrument.json"
+        ],
+        "config": {
+          "endpoint": "https://api.psp.example/v1/tokenize",
+          "identity": { "access_token": "delivery_merchant_123" },
+          "environment": "production"
+        }
+      }
+    ]
   }
 }
 ```
 
+## Delivery Creation Flow (Payment Required)
+
+Deliveries are created using a `delivery_request` plus **required** `payment_data`.
+The payment instrument MUST be produced using one of the handler declarations
+from the quote response.
+
+### Create Delivery Example
+
+```json
+{
+  "delivery_request": {
+    "pickup": {
+      "id": "store_1",
+      "title": "Downtown Store",
+      "address": {
+        "street_address": "123 Main St",
+        "address_locality": "Springfield",
+        "address_region": "IL",
+        "postal_code": "62701",
+        "address_country": "US"
+      }
+    },
+    "dropoff": {
+      "id": "dropoff_1",
+      "recipient_name": "Alex Smith",
+      "address": {
+        "street_address": "456 Oak Ave",
+        "address_locality": "Springfield",
+        "address_region": "IL",
+        "postal_code": "62701",
+        "address_country": "US"
+      }
+    },
+    "pickup_ready_dt": "2026-01-30T18:05:00Z",
+    "dropoff_deadline_dt": "2026-01-30T19:00:00Z",
+    "items_value": {
+      "amount": 4599,
+      "currency": "USD"
+    },
+    "external_store_id": "store_1"
+  },
+  "payment_data": {
+    "id": "instr_1",
+    "handler_id": "delivery_tokenizer",
+    "type": "card",
+    "brand": "visa",
+    "last_digits": "4242",
+    "credential": {
+      "type": "token",
+      "token": "tok_delivery_abc123"
+    }
+  }
+}
+```
+
+### Payment Binding Requirements
+
+Payment credentials MUST be bound to the delivery context to prevent replay:
+
+- Bind to `quote_id` whenever possible (preferred).
+- Bind to `delivery_id` after creation when required by the handler.
+- Use `PaymentIdentity` from the handler configuration when acting on behalf of
+  another participant (PSP or platform tokenizer).
+
+See [Tokenization Guide](../tokenization-guide.md) for binding requirements and
+examples.
+
 ## Delivery Lifecycle
 
-Deliveries are created using a `delivery_request` (same structure as quote
-inputs). Once created, the delivery progresses through status updates and can
-be tracked via polling or events.
+Once created, the delivery progresses through status updates and can be tracked
+via polling or events.
 
 ### Status Progression (Typical)
 
@@ -173,7 +262,7 @@ delivery snapshot:
 | Operation | Description |
 | :--- | :--- |
 | **Create Delivery Quote** | Get pricing and availability for a delivery request. |
-| **Create Delivery** | Create a delivery from pickup + dropoff inputs. |
+| **Create Delivery** | Create a delivery from pickup + dropoff inputs and required payment data. |
 | **Get Delivery** | Retrieve a delivery by ID. |
 | **List Deliveries** | List deliveries with status filtering and pagination. |
 | **Update Delivery** | Update patchable delivery fields (timing, addresses, value). |
@@ -185,3 +274,5 @@ delivery snapshot:
 * Delivery resource: `spec/source/schemas/delivery/types/delivery.json`
 * Quote: `spec/source/schemas/delivery/types/quote.json`
 * Delivery inputs: `spec/source/schemas/delivery/types/delivery_inputs.json`
+* Payment handlers: `spec/source/schemas/shopping/payment.json`
+* Payment data: `spec/source/schemas/shopping/payment_data.json`

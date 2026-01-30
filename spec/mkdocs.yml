@@ -62,6 +62,8 @@ nav:
         - HTTP/REST Binding: specification/restaurant/menu-rest.md
         - MCP Binding: specification/restaurant/menu-mcp.md
     - Delivery:
+      - Overview: specification/delivery/delivery.md
+      - Lifecycle & Payments: specification/delivery/delivery-lifecycle.md
       - Fulfillment Extension: specification/delivery/fulfillment.md
     - Identity Linking Capability: specification/identity-linking.md
     - Payment Handlers:
@@ -71,6 +73,7 @@ nav:
       - Examples:
         - Business Tokenizer: specification/examples/business-tokenizer-payment-handler.md
         - Platform Tokenizer: specification/examples/platform-tokenizer-payment-handler.md
+        - Delivery-First Auth/Capture: specification/examples/delivery-first-payment-handler.md
         - Encrypted Credential: specification/examples/encrypted-credential-handler.md
     - Schema Authoring: documentation/schema-authoring.md
     - Reference: specification/reference.md
@@ -237,6 +240,9 @@ plugins:
           - specification/restaurant/menu.md
           - specification/restaurant/menu-rest.md
           - specification/restaurant/menu-mcp.md
+        Delivery Capability:
+          - specification/delivery/delivery.md
+          - specification/delivery/delivery-lifecycle.md
         Shopping Order Capability:
           - specification/shopping/order.md
         Identity Linking Capability:
@@ -248,6 +254,7 @@ plugins:
         Payment Handler Examples:
           - specification/examples/business-tokenizer-payment-handler.md
           - specification/examples/platform-tokenizer-payment-handler.md
+          - specification/examples/delivery-first-payment-handler.md
           - specification/examples/encrypted-credential-handler.md
         Schema Authoring:
           - documentation/schema-authoring.md
