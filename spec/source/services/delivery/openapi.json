@@ -62,7 +62,7 @@
       "post": {
         "operationId": "create_delivery",
         "summary": "Create Delivery",
-        "description": "Create a delivery from a delivery request.",
+        "description": "Create a delivery from a delivery request and required payment data.",
         "parameters": [
           { "$ref": "#/components/parameters/authorization" },
           { "$ref": "#/components/parameters/x_api_key" },
@@ -79,7 +79,7 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/delivery_request" }
+              "schema": { "$ref": "#/components/schemas/delivery_create_request" }
             }
           }
         },
@@ -405,6 +405,9 @@
       },
       "delivery_request": {
         "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/delivery_request"
+      },
+      "delivery_create_request": {
+        "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/delivery_create_request"
       },
       "delivery_response": {
         "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/delivery_response"

@@ -34,15 +34,19 @@
     },
     "quote_response": {
       "title": "Delivery Quote Response",
-      "description": "Response containing quote details and UCP metadata.",
+      "description": "Response containing quote details, payment handlers, and UCP metadata.",
       "type": "object",
-      "required": ["ucp", "quote"],
+      "required": ["ucp", "quote", "payment"],
       "properties": {
         "ucp": {
           "$ref": "../ucp.json#/$defs/response"
         },
         "quote": {
           "$ref": "#/$defs/quote"
+        },
+        "payment": {
+          "$ref": "../shopping/payment.json",
+          "description": "Payment handlers required to create a delivery."
         },
         "messages": {
           "type": "array",
@@ -55,6 +59,21 @@
     },
     "delivery_request": {
       "$ref": "types/delivery_inputs.json"
+    },
+    "delivery_create_request": {
+      "title": "Create Delivery Request",
+      "description": "Delivery request details and required payment data.",
+      "type": "object",
+      "required": ["delivery_request", "payment_data"],
+      "properties": {
+        "delivery_request": {
+          "$ref": "#/$defs/delivery_request"
+        },
+        "payment_data": {
+          "$ref": "../shopping/payment_data.json",
+          "description": "Payment instrument used to authorize delivery charges."
+        }
+      }
     },
     "delivery_update_request": {
       "title": "Delivery Update Request",

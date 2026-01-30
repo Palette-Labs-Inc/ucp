@@ -41,7 +41,7 @@
         {
           "name": "request",
           "required": true,
-            "schema": { "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/delivery_request" }
+          "schema": { "$ref": "https://localprotocol.xyz/schemas/delivery/delivery.json#/$defs/delivery_create_request" }
         }
       ],
       "result": {

@@ -30,6 +30,37 @@ The delivery service endpoint is discovered via `/.well-known/ucp` in:
 
 * `services["xyz.localprotocol.delivery"].rest.endpoint`
 
+### Payment Requirement (Standalone)
+
+Delivery is standalone (no shopping checkout required), but **payment is
+mandatory** for delivery creation. Platforms MUST:
+
+1. Fetch `payment.handlers` from the delivery quote response.
+2. Acquire a payment instrument using the handler specification.
+3. Submit `payment_data` when creating the delivery.
+
+This mirrors the UCP payment handler model, but applies it to delivery quotes
+and delivery creation instead of checkout completion.
+
+See:
+
+- [Payment Handler Guide](../payment-handler-guide.md)
+- [Payment Handler Template](../payment-handler-template.md)
+- [Tokenization Guide](../tokenization-guide.md)
+- [Platform Tokenizer Example](../examples/platform-tokenizer-payment-handler.md)
+- [Business Tokenizer Example](../examples/business-tokenizer-payment-handler.md)
+- [Encrypted Credential Example](../examples/encrypted-credential-handler.md)
+- [Localprotocol Auth/Capture Example](../examples/localprotocol-auth-capture-handler.md)
+
+### Handler Patterns for Delivery
+
+Delivery fees are often captured after fulfillment. Common patterns:
+
+- **Authorize/Capture** for delivery-friendly timing and escrow.
+- **Processor Tokenizer** when PSP tokenizes and processes without detokenize.
+- **Platform Tokenizer / Encrypted Credential** when platforms operate a
+  compliant credential provider and hand off secure payloads.
+
 ## Quote Retrieval Flow
 
 Delivery quotes let platforms price and validate on-demand delivery before
